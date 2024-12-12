@@ -15,7 +15,7 @@ AmPower OrderIT is a powerful app designed to streamline sales order booking for
 
 ### Gif
 
-<img src="https://github.com/Ambibuzz/ebuzz-Internal/blob/ampower_orderit/gif/orderit_recording1.gif" alt="OrderIT GIF" width="216" height="432">
+<img src="https://github.com/Ambibuzz/ampower_orderit_mobile/blob/ampower_orderit/gif/orderit_recording1.gif" alt="OrderIT GIF" width="216" height="432">
 
 ### Features of OrderIT
 
