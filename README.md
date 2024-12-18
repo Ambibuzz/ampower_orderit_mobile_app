@@ -1,6 +1,6 @@
 
 ## AmPower OrderIT
-AmPower OrderIT is a powerful app designed to streamline sales order booking for customers quickly and efficiently. With an intuitive, visually appealing interface, AmPower OrderIT offers flexible item viewing options tailored to different preferences, including catalog, grid, and list views. Each view is crafted to ensure easy navigation and enhance user experience, allowing representatives to effortlessly browse, select, and place orders on behalf of their customers.
+AmPower OrderIT is a powerful app designed to streamline sales order booking for customers quickly and efficiently. With an intuitive, visually appealing interface, AmPower OrderIT offers flexible item viewing options tailored to different preferences, including catalog, grid, and list views. Each view is crafted to ensure easy navigation and enhance user experience, allowing representatives to effortlessly browse, select, and place orders quickly.
 
 ### Why AmPower OrderIT?
 AmPower OrderIT is your ultimate solution for simplifying and accelerating the sales order booking process. With its user-friendly and visually appealing interface, OrderIT empowers you to efficiently handle customer orders with ease. Here's why it's the perfect choice for your business:
