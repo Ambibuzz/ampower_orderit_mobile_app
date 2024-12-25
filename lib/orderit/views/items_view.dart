@@ -114,36 +114,6 @@ class ItemsView extends StatelessWidget {
           model.setCategorySelected(itemGroup, '');
           await model.getItemGroupData(itemGroup!, context);
         } else if (itemGroup == null) {
-        } else {
-          //item is not null and search text true (search random text)
-          if (item != null && searchText == true) {
-            // if item == ''
-            if (item == '') {
-              await model.getAllItems();
-            }
-
-            // if type param = item_name
-            if (type == Strings.itemNameType) {
-              await model.getItemListFromItemName(item!, connectivityStatus);
-            }
-            // if type param = item_code
-            if (type == Strings.itemCodeType) {
-              await model.getItemListFromItemCode(item!, connectivityStatus);
-            }
-          }
-          //specific item is clicked
-          if (item != null && searchText == false) {
-            // if type param = item_name
-            if (type == Strings.itemNameType) {
-              await model.getSpecificItemFromItemName(
-                  item!, connectivityStatus);
-            }
-            // if type param = item_code
-            if (type == Strings.itemCodeType) {
-              await model.getSpecificItemFromItemCode(
-                  item!, connectivityStatus);
-            }
-          }
         }
         await model.getProducts();
         // if item group is clicked then fetch tags associated with that item group
