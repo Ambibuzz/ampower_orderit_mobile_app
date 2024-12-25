@@ -164,6 +164,7 @@ class OrderitApiService {
       List<dynamic> filters, BuildContext context) async {
     var list = [];
     var itemlist = <Product>[];
+    filters.add(['Item', 'is_stock_item', '=', 1]);
     var url = '/api/resource/Item';
     var queryParams = {
       'fields':
@@ -359,7 +360,7 @@ class OrderitApiService {
       List<dynamic> filters, ConnectivityStatus connectivityStatus) async {
     var list = [];
     var itemlist = <Product>[];
-
+    filters.add(['Item', 'is_stock_item', '=', 1]);
     var url = '/api/resource/Item';
     var queryParams = {
       'fields':
