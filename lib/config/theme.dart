@@ -248,8 +248,8 @@ class CustomTheme {
       primaryIconTheme: IconThemeData(
           color: primaryColor ?? primaryColorLight, size: iconSize),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: onBackgroundColorLight,
-        actionTextColor: backgroundColorLight,
+        backgroundColor: backgroundColorLight,
+        actionTextColor: onBackgroundColorLight,
       ),
       textButtonTheme: TextButtonThemeData(
         style: ButtonStyle(
