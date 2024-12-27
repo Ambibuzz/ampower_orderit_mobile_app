@@ -45,6 +45,7 @@ AmPower OrderIT is your ultimate solution for simplifying and accelerating the s
 - Stock Availability
 - Favorites
 - Role Based Access
+- Download and Share Sales Order
 
 ### To run code
 Clone the source code<br/>

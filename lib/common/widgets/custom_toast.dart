@@ -47,7 +47,10 @@ flutterStyledToast(BuildContext context, String message, Color backgroundColor,
   return showToast(message,
       backgroundColor: backgroundColor,
       context: context,
-      textStyle: textStyle,
+      textStyle: textStyle ??
+          Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
       animation: StyledToastAnimation.slideFromTop,
       // reverseAnimation: StyledToastAnimation.slideToTop,
       position: position ?? StyledToastPosition.bottom,
