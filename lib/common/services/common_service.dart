@@ -316,6 +316,45 @@ class CommonService {
     return '';
   }
 
+  Future<String> downloadSalesOrder(
+      String doctype, String docname, String printFormat) async {
+    var storagePermission = await [
+      Permission.storage,
+    ].request();
+    try {
+      String fullPath;
+      if (storagePermission.isNotEmpty) {
+        var downloadsDirectoryPath = '/storage/emulated/0/Download';
+        var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
+        var url = '/api/method/frappe.utils.weasyprint.download_pdf';
+        var queryParams = {
+          'doctype': doctype,
+          'name': docname,
+          'print_format': printFormat,
+          'letterhead': 'No Letterhead'
+        };
+        var fileName =
+            '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
+        fullPath = downpath + fileName;
+        await DioHelper.dio?.download(
+          url,
+          fullPath,
+          queryParameters: queryParams,
+          options: Options(
+              responseType: ResponseType.bytes,
+              followRedirects: false,
+              validateStatus: (status) {
+                return status! < 500;
+              }),
+        );
+        return fullPath;
+      }
+    } catch (e) {
+      exception(e, '', 'downloadSalesOrder');
+    }
+    return '';
+  }
+
   Future<PriceList> getPriceList(String p) async {
     final url = pricelistUrl(p);
 
