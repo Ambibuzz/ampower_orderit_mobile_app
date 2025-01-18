@@ -82,7 +82,7 @@ class EnterCustomerViewModel extends BaseViewModel {
 
   // get customer list
   Future getCustomer(String? fromRoute, BuildContext context) async {
-    setState(ViewState.busy);
+    setStateWithPostFrameCallback(ViewState.busy);
     var doctypeCachingService = locator.get<DoctypeCachingService>();
     var connectivityStatus =
         Provider.of<ConnectivityStatus>(context, listen: false);
@@ -95,6 +95,6 @@ class EnterCustomerViewModel extends BaseViewModel {
         .get<FetchCachedDoctypeService>()
         .getCachedCustomerList(connectivityStatus);
     notifyListeners();
-    setState(ViewState.idle);
+    setStateWithPostFrameCallback(ViewState.idle);
   }
 }

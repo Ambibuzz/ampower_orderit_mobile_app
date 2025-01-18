@@ -1,5 +1,6 @@
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
+import 'package:orderit/common/widgets/custom_snackbar.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/base_viewmodel.dart';
@@ -233,10 +234,17 @@ class LoginView extends StatelessWidget {
                       backgroundColor: WidgetStatePropertyAll(
                           Theme.of(context).colorScheme.secondary),
                     ),
-                    onPressed: () {
-                      locator.get<StorageService>().apiUrl =
-                          instanceUrlController.text;
-                      Navigator.of(context, rootNavigator: true).pop();
+                    onPressed: () async {
+                      // check url is active
+                      if (await model.isUrlActive(instanceUrlController.text)) {
+                        locator.get<StorageService>().apiUrl =
+                            instanceUrlController.text;
+                        Navigator.of(context, rootNavigator: true).pop();
+                      } else {
+                        showSnackBar(
+                            'The URL provided is invalid. Please check the URL and try again.',
+                            context);
+                      }
                     },
                     child: const Text(
                       'Confirm',
