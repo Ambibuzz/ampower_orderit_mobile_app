@@ -25,7 +25,8 @@ class DraftDetailViewModel extends BaseViewModel {
 
   Future createCart(BuildContext context) async {
     setState(ViewState.busy);
-    await create(draft?.cartItems, context);
+    await create(draft?.cartItems, context,
+        message: 'Sales Order added to your cart!');
     setState(ViewState.idle);
   }
 
@@ -59,14 +60,11 @@ class DraftDetailViewModel extends BaseViewModel {
 
         flutterStyledToast(
           context,
-          'Cart Cleared and Items Added to Cart',
-          CustomTheme.toastMessageBgColor,
-          textStyle: TextStyle(
-            color: Theme.of(context).primaryColor,
-            fontSize: displayWidth(context) < 600
-                ? Sizes.fontSizeMobile
-                : Sizes.fontSizeLargeDevice,
-          ),
+          'Cart Cleared and Added Sales Order to Cart',
+          CustomTheme.onPrimaryColorLight,
+          textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: CustomTheme.successColor,
+              ),
         );
 
         locator.get<CartPageViewModel>().clearAndAddAll(previousCart);
@@ -74,7 +72,8 @@ class DraftDetailViewModel extends BaseViewModel {
     }
   }
 
-  Future create(List<Cart>? draftItems, BuildContext context) async {
+  Future create(List<Cart>? draftItems, BuildContext context,
+      {String? message}) async {
     var di = draftItems
         ?.map((e) => Cart(
             id: e.itemCode,
@@ -104,14 +103,11 @@ class DraftDetailViewModel extends BaseViewModel {
     });
     flutterStyledToast(
       context,
-      'Items Added to Cart',
-      CustomTheme.toastMessageBgColor,
-      textStyle: TextStyle(
-        color: Theme.of(context).primaryColor,
-        fontSize: displayWidth(context) < 600
-            ? Sizes.fontSizeMobile
-            : Sizes.fontSizeLargeDevice,
-      ),
+      message ?? 'Items Added to Cart',
+      CustomTheme.onPrimaryColorLight,
+      textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: CustomTheme.successColor,
+          ),
     );
   }
 
