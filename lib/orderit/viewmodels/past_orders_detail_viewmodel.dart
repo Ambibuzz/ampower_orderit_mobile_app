@@ -46,13 +46,14 @@ class PastOrdersDetailViewModel extends BaseViewModel {
 
   Future createCart(SalesOrder? salesOrder, BuildContext context) async {
     setState(ViewState.busy);
-    await create(salesOrder?.salesOrderItems, context);
+    await create(salesOrder?.salesOrderItems, context,
+        message: 'Products successfully added to your cart!');
     setState(ViewState.idle);
   }
 
-  Future create(List<SalesOrderItems>? soItems, BuildContext context) async {
+  Future create(List<SalesOrderItems>? soItems, BuildContext context,
+      {String? message}) async {
     var di = <Cart>[];
-    var connectivityStatus = Provider.of<ConnectivityStatus>(context);
     if (soItems?.isNotEmpty == true) {
       for (var i = 0; i < soItems!.length; i++) {
         var e = soItems[i];
@@ -60,7 +61,7 @@ class PastOrdersDetailViewModel extends BaseViewModel {
             productsList.firstWhere((pro) => pro.itemName == e.itemname);
         var images = await locator
             .get<ItemsViewModel>()
-            .getImages(e.itemcode, connectivityStatus);
+            .getImages(e.itemcode, ConnectivityStatus.wifi);
         di.add(Cart(
             id: e.itemcode,
             itemName: e.itemname,
@@ -88,7 +89,7 @@ class PastOrdersDetailViewModel extends BaseViewModel {
       });
       flutterStyledToast(
         context,
-        'Items Added to Cart',
+        message ?? 'Items Added to Cart',
         CustomTheme.onPrimaryColorLight,
         textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: CustomTheme.successColor,
