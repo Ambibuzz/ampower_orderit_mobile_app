@@ -290,14 +290,14 @@ class CartPageViewModel extends BaseViewModel {
       String? customerName = locator.get<StorageService>().customerSelected;
       var draft = Draft(
         customer: customerName,
-        time: DateFormat('yyyy-MM-dd hh:mm:ss').format(DateTime.now()),
+        time: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
         // time: DateFormat('yyyy-MM-dd hh:mm:ss')
         //     .parse('2024-09-08 011:31:00')
         //     .toString(),
         // expiry: DateFormat('yyyy-MM-dd hh:mm:ss')
         //     .parse('2024-09-13 011:31:00')
         //     .toString(),
-        expiry: DateFormat('yyyy-MM-dd hh:mm:ss')
+        expiry: DateFormat('yyyy-MM-dd HH:mm:ss')
             .format(DateTime.now().add(const Duration(days: 5))),
         // expiry: DateFormat('yyyy-MM-dd hh:mm:ss')
         //     .format(DateTime.now().add(Duration(hours: 10))),

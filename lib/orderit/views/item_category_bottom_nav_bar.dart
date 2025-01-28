@@ -37,6 +37,7 @@ class ItemCategoryBottomNavBarView extends StatelessWidget {
       onModelReady: (model) async {
         await model.getItemGroupsList(context);
         model.loadPages();
+        model.setIndex(0);
       },
       builder: (context, model, child) {
         return Scaffold(
