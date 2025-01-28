@@ -1,3 +1,4 @@
+import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
@@ -333,89 +334,91 @@ class DraftDetailView extends StatelessWidget {
   Widget incDecBtn(Cart item, int index, double btnDimension, double iconSize,
       BuildContext context) {
     var model = locator.get<DraftDetailViewModel>();
-    return Container(
-      padding: EdgeInsets.symmetric(
-          vertical: Sizes.extraSmallPaddingWidget(context),
-          horizontal: Sizes.smallPaddingWidget(context) * 0.8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        borderRadius: Corners.xxlBorder,
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () async {
-              if (item.quantity == 1) {
-                await model.removeDraftItemDialog(index, context);
-              } else {
-                await model.decrement(index, context);
-              }
-            },
-            child: SizedBox(
-              width: btnDimension,
-              height: btnDimension,
-              child: Icon(
-                Icons.remove,
-                color: Theme.of(context).colorScheme.onSecondary,
-                size: iconSize,
-                key: Key('${Strings.decrementButtonKey}${item.itemCode}'),
-              ),
+    return model.quantityControllerList.isNotEmpty
+        ? Container(
+            padding: EdgeInsets.symmetric(
+                vertical: Sizes.extraSmallPaddingWidget(context),
+                horizontal: Sizes.smallPaddingWidget(context) * 0.8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: Corners.xxlBorder,
             ),
-          ),
-          //TextField
-          SizedBox(
-            width: displayWidth(context) < 600 ? 40 : 60,
-            child: TextFormField(
-              textAlign: TextAlign.center,
-              controller: model.quantityControllerList[index],
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: 0,
-                    vertical: Sizes.extraSmallPaddingWidget(context)),
-                fillColor: Colors.transparent,
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context).scaffoldBackgroundColor),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    if (item.quantity == 1) {
+                      await model.removeDraftItemDialog(index, context);
+                    } else {
+                      await model.decrement(index, context);
+                    }
+                  },
+                  child: SizedBox(
+                    width: btnDimension,
+                    height: btnDimension,
+                    child: Icon(
+                      Icons.remove,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      size: iconSize,
+                      key: Key('${Strings.decrementButtonKey}${item.itemCode}'),
+                    ),
+                  ),
                 ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context).scaffoldBackgroundColor),
+                //TextField
+                SizedBox(
+                  width: displayWidth(context) < 600 ? 40 : 60,
+                  child: TextFormField(
+                    textAlign: TextAlign.center,
+                    controller: model.quantityControllerList[index],
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 0,
+                          vertical: Sizes.extraSmallPaddingWidget(context)),
+                      fillColor: Colors.transparent,
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).scaffoldBackgroundColor),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).scaffoldBackgroundColor),
+                      ),
+                    ),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimary),
+                    onChanged: (String value) async {
+                      if (value.isEmpty) {
+                        // do nothing
+                      } else {
+                        if (value == '0') {
+                          await model.removeDraftItemDialog(index, context);
+                        } else {
+                          model.setQty(index, value, context);
+                        }
+                      }
+                    },
+                  ),
                 ),
-              ),
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onPrimary),
-              onChanged: (String value) async {
-                if (value.isEmpty) {
-                  // do nothing
-                } else {
-                  if (value == '0') {
-                    await model.removeDraftItemDialog(index, context);
-                  } else {
-                    model.setQty(index, value, context);
-                  }
-                }
-              },
+                GestureDetector(
+                  onTap: () => model.increment(index, context),
+                  child: SizedBox(
+                    width: btnDimension,
+                    height: btnDimension,
+                    child: Icon(
+                      Icons.add,
+                      size: iconSize,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      key: Key('${Strings.incrementButtonKey}${item.itemCode}'),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          GestureDetector(
-            onTap: () => model.increment(index, context),
-            child: SizedBox(
-              width: btnDimension,
-              height: btnDimension,
-              child: Icon(
-                Icons.add,
-                size: iconSize,
-                color: Theme.of(context).colorScheme.onSecondary,
-                key: Key('${Strings.incrementButtonKey}${item.itemCode}'),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+          )
+        : const SizedBox();
   }
 
   SizedBox verticalPaddingSmall(BuildContext context) {
@@ -451,6 +454,7 @@ class DraftDetailView extends StatelessWidget {
           ),
           onPressed: () async {
             await model.createCart(context);
+            locator.get<NavigationService>().pop(result: true);
           },
           child: Text(
             'Add to Cart',
@@ -479,6 +483,7 @@ class DraftDetailView extends StatelessWidget {
           ),
           onPressed: () async {
             await model.clearCartAndAppend(context);
+            locator.get<NavigationService>().pop(result: true);
           },
           child: Text(
             'Clear & Append',
