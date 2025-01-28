@@ -53,5 +53,6 @@ app.*.map.json
 coverage/*
 
 *.env
+*.jks
 
 

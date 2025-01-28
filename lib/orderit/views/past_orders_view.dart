@@ -112,9 +112,16 @@ class PastOrderListView extends StatelessWidget {
               var pastOrder = model.salesOrderList[index];
               return GestureDetector(
                 onTap: () async {
-                  await locator.get<NavigationService>().navigateTo(
-                      pastOrdersDetailViewRoute,
-                      arguments: pastOrder);
+                  var result = await locator
+                      .get<NavigationService>()
+                      .navigateTo(pastOrdersDetailViewRoute,
+                          arguments: pastOrder);
+                  if (result != null) {
+                    var res = result as List;
+                    if (res[0] == true) {
+                      model.refresh();
+                    }
+                  }
                 },
                 child: SizedBox(
                   height: displayWidth(context) < 600 ? 130 : 160,

@@ -152,7 +152,7 @@ class OrderitWidgets {
   // on Tap runs when screen is popped or back button is pressed
   static Widget floatingCartButton(BuildContext context, Function onTap) {
     return Positioned(
-      bottom: Sizes.extraSmallPaddingWidget(context),
+      bottom: Sizes.smallPaddingWidget(context),
       left: 0,
       right: 0,
       child: locator.get<CartPageViewModel>().items.isNotEmpty == true

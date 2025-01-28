@@ -1,4 +1,5 @@
 import 'package:orderit/common/models/product.dart';
+import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
@@ -35,11 +36,23 @@ class PastOrdersDetailView extends StatelessWidget {
       builder: (context, model, child) {
         return BaseView<PastOrdersDetailViewModel>(
           builder: (context, model, child) {
-            return Scaffold(
-              appBar: Common.commonAppBar(salesOrder?.name ?? '', [], context),
-              body: model.state == ViewState.busy
-                  ? WidgetsFactoryList.circularProgressIndicator()
-                  : pastOrdersDetail(model, context),
+            return WillPopScope(
+              onWillPop: () async {
+                // Set the result here when the back button is pressed
+                locator.get<NavigationService>().pop(result: true);
+                return false; // Prevents default back navigation
+              },
+              child: Scaffold(
+                appBar: Common.commonAppBar(
+                  salesOrder?.name ?? '',
+                  [],
+                  context,
+                  sendResultBack: true,
+                ),
+                body: model.state == ViewState.busy
+                    ? WidgetsFactoryList.circularProgressIndicator()
+                    : pastOrdersDetail(model, context),
+              ),
             );
           },
         );
@@ -51,95 +64,98 @@ class PastOrdersDetailView extends StatelessWidget {
       PastOrdersDetailViewModel model, BuildContext context) {
     var textStyle = Theme.of(context).textTheme.titleSmall;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: Sizes.paddingWidget(context)),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: Sizes.paddingWidget(context)),
-            Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      salesOrder?.customer ?? '',
-                      style: textStyle,
-                    ),
-                    verticalPaddingSmall(context),
-                    Text(
-                        'Transaction Date : ${defaultDateFormat(salesOrder!.transactiondate!)}',
-                        style: textStyle),
-                    verticalPaddingSmall(context),
-                    Text(
-                        'Delivery Date : ${defaultDateFormat(salesOrder!.deliverydate!)}',
-                        style: textStyle),
-                    verticalPaddingSmall(context),
-                    Text(
-                      'Total Quantity : ${salesOrder?.totalqty}',
-                      style: textStyle,
-                    ),
-                    verticalPaddingSmall(context),
-                    Text(
-                        'Grand Total ${Formatter.formatter.format(salesOrder!.grandtotal)}',
-                        style: textStyle),
-                    verticalPaddingSmall(context),
-                    Text(
-                      'Status : ${salesOrder?.status}',
-                      style: textStyle,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                verticalPaddingMedium(context),
-                Card(
-                  elevation: 0,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: Corners.xxlBorder),
-                  margin: EdgeInsets.zero,
-                  child: Column(
+    return Stack(
+      children: [
+        Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: Sizes.paddingWidget(context)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: Sizes.paddingWidget(context)),
+              Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      tableHeader(context),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: model.salesOrderItems.length,
-                        itemBuilder: (context, index) {
-                          if (index == model.salesOrderItems.length - 1) {
-                            return cartItem(index, model, context);
-                          }
-                          // return cartItem(index, model, context);
-                          return Column(
-                            children: [
-                              cartItem(index, model, context),
-                              const Divider(
-                                endIndent: 0,
-                                height: 0,
-                                indent: 0,
-                                thickness: 1,
-                              ),
-                            ],
-                          );
-                        },
+                      Text(
+                        salesOrder?.customer ?? '',
+                        style: textStyle,
+                      ),
+                      verticalPaddingSmall(context),
+                      Text(
+                          'Transaction Date : ${defaultDateFormat(salesOrder!.transactiondate!)}',
+                          style: textStyle),
+                      verticalPaddingSmall(context),
+                      Text(
+                          'Delivery Date : ${defaultDateFormat(salesOrder!.deliverydate!)}',
+                          style: textStyle),
+                      verticalPaddingSmall(context),
+                      Text(
+                        'Total Quantity : ${salesOrder?.totalqty}',
+                        style: textStyle,
+                      ),
+                      verticalPaddingSmall(context),
+                      Text(
+                          'Grand Total ${Formatter.formatter.format(salesOrder!.grandtotal)}',
+                          style: textStyle),
+                      verticalPaddingSmall(context),
+                      Text(
+                        'Status : ${salesOrder?.status}',
+                        style: textStyle,
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            verticalPaddingMedium(context),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                createCart(model, context),
-              ],
-            ),
-          ],
+                ],
+              ),
+              Column(
+                children: [
+                  verticalPaddingMedium(context),
+                  Card(
+                    elevation: 0,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: Corners.xxlBorder),
+                    margin: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        tableHeader(context),
+                        ListView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 0),
+                          shrinkWrap: true,
+                          itemCount: model.salesOrderItems.length,
+                          itemBuilder: (context, index) {
+                            if (index == model.salesOrderItems.length - 1) {
+                              return cartItem(index, model, context);
+                            }
+                            return Column(
+                              children: [
+                                cartItem(index, model, context),
+                                const Divider(
+                                  endIndent: 0,
+                                  height: 0,
+                                  indent: 0,
+                                  thickness: 1,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
+        Padding(
+          padding: EdgeInsets.only(bottom: Sizes.paddingWidget(context)),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: createCart(model, context),
+          ),
+        ),
+      ],
     );
   }
 
@@ -348,6 +364,7 @@ class PastOrdersDetailView extends StatelessWidget {
       'Add to Cart',
       () async {
         await model.createCart(salesOrder, context);
+        locator.get<NavigationService>().pop(result: true);
       },
       context,
     );
