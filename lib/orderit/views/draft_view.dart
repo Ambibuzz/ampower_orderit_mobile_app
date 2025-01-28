@@ -127,6 +127,13 @@ class DraftView extends StatelessWidget {
                                       model, draft, context);
                                   if (result == null) {
                                     await model.getDrafts();
+                                  } else {
+                                    if (result != null) {
+                                      var res = result as List;
+                                      if (res[0] == true) {
+                                        model.refresh();
+                                      }
+                                    }
                                   }
                                 },
                                 subtitle: Column(
@@ -177,24 +184,34 @@ class DraftView extends StatelessWidget {
               ),
             ],
           )
-        : Center(
-            child: SizedBox(
-              height: displayHeight(context) * 0.7,
-              child: OrderitWidgets.emptyCartWidget(
-                  'No items in wishlist!',
-                  'Let’s start adding items to fill it up which you can order later!',
-                  'Let’s Shop!', () {
-                locator.get<ItemCategoryBottomNavBarViewModel>().setIndex(0);
-                locator.get<ItemsViewModel>().updateCartItems();
-                locator.get<ItemsViewModel>().initQuantityController();
-              }, context),
+        : RefreshIndicator(
+            onRefresh: () async {
+              await model.getDrafts();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Center(
+                child: SizedBox(
+                  height: displayHeight(context) * 0.7,
+                  child: OrderitWidgets.emptyCartWidget(
+                      'No items in wishlist!',
+                      'Let’s start adding items to fill it up which you can order later!',
+                      'Let’s Shop!', () {
+                    locator
+                        .get<ItemCategoryBottomNavBarViewModel>()
+                        .setIndex(0);
+                    locator.get<ItemsViewModel>().updateCartItems();
+                    locator.get<ItemsViewModel>().initQuantityController();
+                  }, context),
+                ),
+              ),
             ),
           );
   }
 
   Widget timeLeft(Draft? draft, BuildContext context) {
     var dt1 = DateTime.now();
-    var dt2 = DateFormat('yyyy-MM-dd hh:mm:ss').parse(draft!.expiry!);
+    var dt2 = DateFormat('yyyy-MM-dd HH:mm:ss').parse(draft!.expiry!);
     // var dt2 = DateTime.now();
 
     var text = '';
