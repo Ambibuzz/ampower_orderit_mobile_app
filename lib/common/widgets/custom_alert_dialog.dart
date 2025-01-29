@@ -6,14 +6,18 @@ import 'dart:ui' as ui;
 
 class CustomAlertDialog {
   Future alertDialog(
-      String? heading,
-      String? content,
-      String? cancelButtonText,
-      String? okButtonText,
-      void Function()? cancelBtnOnPress,
-      void Function()? okBtnOnPress,
-      BuildContext context) async {
-    await showDialog(
+    String? heading,
+    String? content,
+    String? cancelButtonText,
+    String? okButtonText,
+    Function()? cancelBtnOnPress,
+    Function()? okBtnOnPress,
+    BuildContext context, {
+    Color? headingTextColor,
+    Color? okBtnBgColor,
+    Color? cancelColor,
+  }) async {
+    return await showDialog(
       context: context,
       barrierDismissible: true,
       builder: (context) => AlertDialog(
@@ -29,19 +33,21 @@ class CustomAlertDialog {
               child: Text(
                 heading ?? '',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: CustomTheme.dangerColor,
+                      color: headingTextColor ?? CustomTheme.dangerColor,
                       fontWeight: FontWeight.w700,
                     ),
               ),
             ),
           ],
         ),
-        content: Text(
-          content ?? '',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: CustomTheme.borderColor,
-              ),
-        ),
+        content: content?.isNotEmpty == true
+            ? Text(
+                content ?? '',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: CustomTheme.borderColor,
+                    ),
+              )
+            : null,
         actions: [
           Row(
             children: [
@@ -54,7 +60,8 @@ class CustomAlertDialog {
                           Theme.of(context).scaffoldBackgroundColor),
                       shape: WidgetStatePropertyAll(
                         RoundedRectangleBorder(
-                          side: BorderSide(color: CustomTheme.borderColor),
+                          side: BorderSide(
+                              color: cancelColor ?? CustomTheme.borderColor),
                           borderRadius: Corners.xxlBorder,
                         ),
                       ),
@@ -62,7 +69,8 @@ class CustomAlertDialog {
                     onPressed: cancelBtnOnPress,
                     child: Text(
                       cancelButtonText ?? '',
-                      style: TextStyle(color: CustomTheme.borderColor),
+                      style: TextStyle(
+                          color: cancelColor ?? CustomTheme.borderColor),
                     ),
                   ),
                 ),
@@ -78,7 +86,7 @@ class CustomAlertDialog {
                     child: TextButton.icon(
                       style: ButtonStyle(
                         backgroundColor: WidgetStatePropertyAll(
-                          CustomTheme.dangerColor,
+                          okBtnBgColor ?? CustomTheme.dangerColor,
                         ),
                       ),
                       onPressed: okBtnOnPress,

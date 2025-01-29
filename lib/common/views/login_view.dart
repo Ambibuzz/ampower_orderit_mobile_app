@@ -24,6 +24,7 @@ class LoginView extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController instanceUrlController = TextEditingController();
   final _formKey = GlobalKey<FormState>(debugLabel: 'login');
+  bool _isDialogOpen = false; // Flag to prevent multiple dialogs
 
   Future login(formkey, LoginViewModel model, BuildContext context) async {
     if (_formKey.currentState!.validate()) {
@@ -61,105 +62,114 @@ class LoginView extends StatelessWidget {
         await getPrefs(model, context);
       },
       builder: (context, model, child) {
-        return Scaffold(
-          body: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: <Color>[
-                      Color(0xFF006CB5), // Starting color
-                      Color(0xFF002D4C) // ending color
-                    ],
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: displayWidth(context),
-                      height: displayHeight(context) * 0.38,
-                      child: const Center(child: Logo()),
+        return WillPopScope(
+          onWillPop: () async {
+            if (_isDialogOpen) return false; // Prevent opening multiple dialogs
+            _isDialogOpen = true;
+            var exitApp = await Common.showExitConfirmationDialog(context);
+            _isDialogOpen = false;
+            return exitApp;
+          },
+          child: Scaffold(
+            body: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[
+                        Color(0xFF006CB5), // Starting color
+                        Color(0xFF002D4C) // ending color
+                      ],
                     ),
-                    Container(
-                      height: displayHeight(context) -
-                          (displayHeight(context) * 0.38),
-                      decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.vertical(
-                            top: Corners.xxlRadius,
-                          ),
-                          color: Colors.white),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: Sizes.paddingWidget(context)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: displayHeight(context) * 0.04,
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: displayWidth(context),
+                        height: displayHeight(context) * 0.38,
+                        child: const Center(child: Logo()),
+                      ),
+                      Container(
+                        height: displayHeight(context) -
+                            (displayHeight(context) * 0.38),
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.vertical(
+                              top: Corners.xxlRadius,
                             ),
-                            // const Logo(),
-                            Common.reusableTextWidget(
-                              'Ready to dive in?',
-                              28,
-                              context,
-                              color: Colors.black,
-                            ),
-                            verticalPadding(context,
-                                height: Sizes.smallPaddingWidget(context)),
-                            Common.reusableTextWidget(
-                                'Access your account with your login details.',
-                                14,
+                            color: Colors.white),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: Sizes.paddingWidget(context)),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: displayHeight(context) * 0.04,
+                              ),
+                              // const Logo(),
+                              Common.reusableTextWidget(
+                                'Ready to dive in?',
+                                28,
                                 context,
-                                color: Color(0xFF666666),
-                                fontWeight: FontWeight.w400),
-                            verticalPadding(context),
-                            verticalPadding(context,
-                                height: Sizes.smallPaddingWidget(context)),
-                            usernameTextField(context),
-                            verticalPadding(context),
-                            const PasswordField(),
-                            verticalPadding(context),
-                            loginButton(model, context),
-                            verticalPadding(context),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    await showDialogToEnterSiteUrl(
-                                        model, context);
-                                  },
-                                  child: Text(
-                                    'Update your site URL!',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize:
-                                          displayWidth(context) < 600 ? 16 : 28,
-                                      fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              verticalPadding(context,
+                                  height: Sizes.smallPaddingWidget(context)),
+                              Common.reusableTextWidget(
+                                  'Access your account with your login details.',
+                                  14,
+                                  context,
+                                  color: Color(0xFF666666),
+                                  fontWeight: FontWeight.w400),
+                              verticalPadding(context),
+                              verticalPadding(context,
+                                  height: Sizes.smallPaddingWidget(context)),
+                              usernameTextField(context),
+                              verticalPadding(context),
+                              const PasswordField(),
+                              verticalPadding(context),
+                              loginButton(model, context),
+                              verticalPadding(context),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await showDialogToEnterSiteUrl(
+                                          model, context);
+                                    },
+                                    child: Text(
+                                      'Update your site URL!',
+                                      style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize:
+                                            displayWidth(context) < 600 ? 16 : 28,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: displayHeight(context) * 0.02,
-                            ),
-                            const Center(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const PoweredByAmbibuzzLogo(),
                                 ],
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                height: displayHeight(context) * 0.02,
+                              ),
+                              const Center(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    const PoweredByAmbibuzzLogo(),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
