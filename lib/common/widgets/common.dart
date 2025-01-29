@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:orderit/common/models/user.dart';
 import 'package:orderit/common/services/storage_service.dart';
+import 'package:orderit/common/widgets/custom_alert_dialog.dart';
+import 'package:orderit/config/theme.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/viewmodels/cart_page_viewmodel.dart';
 import 'package:orderit/route/routing_constants.dart';
@@ -73,6 +75,22 @@ class Common {
         ),
       ),
     );
+  }
+
+  static Future<bool> showExitConfirmationDialog(BuildContext context) async {
+    return await CustomAlertDialog().alertDialog(
+          'Are you sure you want to exit?',
+          '',
+          'Stay',
+          'Exit',
+          () => Navigator.of(context, rootNavigator: true).pop(false),
+          () => Navigator.of(context, rootNavigator: true).pop(true),
+          context,
+          headingTextColor: CustomTheme.secondaryColorLight,
+          okBtnBgColor: CustomTheme.secondaryColorLight,
+          cancelColor: CustomTheme.secondaryColorLight,
+        ) ??
+        false;
   }
 
   static Widget appBarIcon(Color iconColor, String text, IconData icon,
