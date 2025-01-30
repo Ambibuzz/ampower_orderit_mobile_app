@@ -31,6 +31,7 @@ class EnterCustomerView extends StatelessWidget {
   });
   final String? fromRoute;
   final _formKey = GlobalKey<FormState>(debugLabel: 'enter_customer_key');
+  bool _isDialogOpen = false; // Flag to prevent multiple dialogs
 
   @override
   Widget build(BuildContext context) {
@@ -76,83 +77,100 @@ class EnterCustomerView extends StatelessWidget {
         }
       },
       builder: (context, model, child) {
-        return Scaffold(
-          appBar: Common.commonAppBar(
-            'Customer Selection',
-            [
-              Common.profileReusableWidget(model.user, context),
-              SizedBox(width: Sizes.paddingWidget(context)),
-            ],
-            context,
-            showBackBtn: false,
-          ),
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              : SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.all(Sizes.paddingWidget(context)),
-                    child: Form(
-                      key: _formKey,
-                      child: GestureDetector(
-                        onTap: () {
-                          model.unfocus(context);
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 25),
-                            Text(
-                              'Select a Customer from the list to Proceed',
-                              maxLines: 2,
-                              textAlign: TextAlign.center,
-                              style: displayWidth(context) < 600
-                                  ? Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      )
-                                  : Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                            ),
-                            const SizedBox(height: 25),
-                            customerField(model, context),
-                            SizedBox(
-                              height: Sizes.paddingWidget(context),
-                            ),
-                            nextButtonWidget(model, context),
-                            SizedBox(
-                              height: Sizes.paddingWidget(context),
-                            ),
-                            model.customerDoctype.docs?.isNotEmpty == true
-                                ? customerData(model, context)
-                                : const SizedBox(),
-                            model.accountsRecievable.result?.isNotEmpty == true
-                                ? Column(
-                                    children: [
-                                      Common.widgetSpacingVerticalLg(),
-                                      scrollToViewTableBelow(context),
-                                      Common.widgetSpacingVerticalLg(),
-                                    ],
-                                  )
-                                : const SizedBox(),
-                            model.accountsRecievable.result?.isNotEmpty == true
-                                ? displayWidth(context) < 600
-                                    ? table(model, displayWidth(context) * 0.5,
-                                        displayWidth(context) * 0.35, context)
-                                    : table(model, displayWidth(context) * 0.25,
-                                        displayWidth(context) * 0.2, context)
-                                : Container(),
-                          ],
+        return WillPopScope(
+          onWillPop: () async {
+            if (_isDialogOpen) return false; // Prevent opening multiple dialogs
+            _isDialogOpen = true;
+            var exitApp = await Common.showExitConfirmationDialog(context);
+            _isDialogOpen = false;
+            return exitApp;
+          },
+          child: Scaffold(
+            appBar: Common.commonAppBar(
+              'Customer Selection',
+              [
+                Common.profileReusableWidget(model.user, context),
+                SizedBox(width: Sizes.paddingWidget(context)),
+              ],
+              context,
+              showBackBtn: false,
+            ),
+            body: model.state == ViewState.busy
+                ? WidgetsFactoryList.circularProgressIndicator()
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.all(Sizes.paddingWidget(context)),
+                      child: Form(
+                        key: _formKey,
+                        child: GestureDetector(
+                          onTap: () {
+                            model.unfocus(context);
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 25),
+                              Text(
+                                'Select a Customer from the list to Proceed',
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                style: displayWidth(context) < 600
+                                    ? Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        )
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                              ),
+                              const SizedBox(height: 25),
+                              customerField(model, context),
+                              SizedBox(
+                                height: Sizes.paddingWidget(context),
+                              ),
+                              nextButtonWidget(model, context),
+                              SizedBox(
+                                height: Sizes.paddingWidget(context),
+                              ),
+                              model.customerDoctype.docs?.isNotEmpty == true
+                                  ? customerData(model, context)
+                                  : const SizedBox(),
+                              model.accountsRecievable.result?.isNotEmpty ==
+                                      true
+                                  ? Column(
+                                      children: [
+                                        Common.widgetSpacingVerticalLg(),
+                                        scrollToViewTableBelow(context),
+                                        Common.widgetSpacingVerticalLg(),
+                                      ],
+                                    )
+                                  : const SizedBox(),
+                              model.accountsRecievable.result?.isNotEmpty ==
+                                      true
+                                  ? displayWidth(context) < 600
+                                      ? table(
+                                          model,
+                                          displayWidth(context) * 0.5,
+                                          displayWidth(context) * 0.35,
+                                          context)
+                                      : table(
+                                          model,
+                                          displayWidth(context) * 0.25,
+                                          displayWidth(context) * 0.2,
+                                          context)
+                                  : Container(),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+          ),
         );
       },
     );
