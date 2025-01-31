@@ -3,7 +3,7 @@ description: "AmPower OrderIT - the B2B Catalogue and Order Booking system built
 
 publish_to: "none"
 
-version: 1.4.1+1
+version: 1.4.2+1
 
 environment:
   sdk: ">=2.17.0 <3.0.0"

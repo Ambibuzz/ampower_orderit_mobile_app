@@ -1,0 +1,72 @@
+name: Create Release on Master Merge
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-release:
+    name: Create GitHub Release and Attach APK
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository and decode base64 to get keystore
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+    - name: Decode Keystore
+      run: echo "${{ secrets.JKS_BASE64 }}" | base64 --decode > android/app/ampower-orderit.jks
+
+    
+    # Step 4: Create key.properties file
+    - name: Create key.properties
+      run: |
+        echo "storeFile=ampower-orderit.jks" > android/key.properties
+        echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
+        echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+
+    # Step 3: Set up Flutter
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.24.2"
+    
+    # Step 4: Install Dependencies
+    - name: Install Flutter Dependencies
+      run: flutter pub get
+
+    # Step 5: Build the APK
+    - name: Build APK
+      run: flutter build apk --release
+
+    # Step 6: Create GitHub Release
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: "v1.4.2" # Replace with your desired tag name
+        release_name: "v1.4.2" # Replace with your desired release name
+        body: |
+          This release includes:
+          - Release Automation
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    # Step 7: Upload APK to Release
+    - name: Upload APK to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: build/app/outputs/flutter-apk/app-release.apk
+        asset_name: app-release.apk
+        asset_content_type: application/vnd.android.package-archive
