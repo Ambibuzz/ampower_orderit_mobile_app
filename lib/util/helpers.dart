@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:html/parser.dart';
 
 Future initDb() async {
   await locator.get<StorageService>().initHiveStorage();
@@ -39,6 +40,15 @@ Future<bool> verifyOnline() async {
   }
 
   return isOnline;
+}
+
+String parseHtmlString(String htmlString) {
+  var parsedString = '';
+  final document = parse(htmlString);
+  if (document.body?.text.isNotEmpty == true) {
+    parsedString = parse(document.body?.text).documentElement?.text ?? '';
+  }
+  return parsedString;
 }
 
 //Split String by first occurance
