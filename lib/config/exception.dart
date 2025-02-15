@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:orderit/util/helpers.dart';
 
 //Exception handling code
 void exception(e, String url, String function, {bool showToast = true}) async {
@@ -41,13 +42,14 @@ void exception(e, String url, String function, {bool showToast = true}) async {
       if (e.response!.data['exception'] != null) {
         print('****');
         print(e.response!.data);
-        styledToast(e.response!.data['_server_messages']);
+        // styledToast(e.response!.data['_server_messages']);
+        styledToast(parseHtmlString(e.response!.data['exception']));
       }
     } else if (e.response!.data['exception'] != null) {
       await styledToast(e.response!.data['exception']);
     } else if (e.response!.data['exception'].split(" ")[0] ==
         'ModuleNotFoundError:') {
-      await styledToast(e.response!.data['exception']);
+      await styledToast(parseHtmlString(e.response!.data['exception']));
     } else {
       switch (e.response!.statusCode) {
         case 400:

@@ -50,11 +50,11 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v1.4.2" # Replace with your desired tag name
-        release_name: "v1.4.2" # Replace with your desired release name
+        tag_name: "v1.4.3" # Replace with your desired tag name
+        release_name: "v1.4.3" # Replace with your desired release name
         body: |
           This release includes:
-          - Release Automation
+          - Parsed html string in exception and removed html tags
         draft: false
         prerelease: false
       env:
