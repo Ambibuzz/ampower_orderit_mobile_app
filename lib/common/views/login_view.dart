@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/custom_snackbar.dart';
@@ -59,6 +60,7 @@ class LoginView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseView<LoginViewModel>(
       onModelReady: (model) async {
+        await model.init();
         await getPrefs(model, context);
       },
       builder: (context, model, child) {
@@ -92,81 +94,114 @@ class LoginView extends StatelessWidget {
                         height: displayHeight(context) * 0.38,
                         child: const Center(child: Logo()),
                       ),
-                      Container(
-                        height: displayHeight(context) -
-                            (displayHeight(context) * 0.38),
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.vertical(
-                              top: Corners.xxlRadius,
-                            ),
-                            color: Colors.white),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: Sizes.paddingWidget(context)),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height: displayHeight(context) * 0.04,
-                              ),
-                              // const Logo(),
-                              Common.reusableTextWidget(
-                                'Ready to dive in?',
-                                28,
-                                context,
-                                color: Colors.black,
-                              ),
-                              verticalPadding(context,
-                                  height: Sizes.smallPaddingWidget(context)),
-                              Common.reusableTextWidget(
-                                  'Access your account with your login details.',
-                                  14,
-                                  context,
-                                  color: Color(0xFF666666),
-                                  fontWeight: FontWeight.w400),
-                              verticalPadding(context),
-                              verticalPadding(context,
-                                  height: Sizes.smallPaddingWidget(context)),
-                              usernameTextField(context),
-                              verticalPadding(context),
-                              const PasswordField(),
-                              verticalPadding(context),
-                              loginButton(model, context),
-                              verticalPadding(context),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                      Stack(
+                        children: [
+                          Container(
+                            height: displayHeight(context) -
+                                (displayHeight(context) * 0.38),
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Corners.xxlRadius,
+                                ),
+                                color: Colors.white),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Sizes.paddingWidget(context)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () async {
-                                      await showDialogToEnterSiteUrl(
-                                          model, context);
-                                    },
-                                    child: Text(
-                                      'Update your site URL!',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                        fontSize:
-                                            displayWidth(context) < 600 ? 16 : 28,
-                                        fontWeight: FontWeight.bold,
+                                  SizedBox(
+                                    height: displayHeight(context) * 0.04,
+                                  ),
+                                  // const Logo(),
+                                  Common.reusableTextWidget(
+                                    'Ready to dive in?',
+                                    28,
+                                    context,
+                                    color: Colors.black,
+                                  ),
+                                  verticalPadding(context,
+                                      height:
+                                          Sizes.smallPaddingWidget(context)),
+                                  Common.reusableTextWidget(
+                                      'Access your account with your login details.',
+                                      14,
+                                      context,
+                                      color: Color(0xFF666666),
+                                      fontWeight: FontWeight.w400),
+                                  verticalPadding(context),
+                                  verticalPadding(context,
+                                      height:
+                                          Sizes.smallPaddingWidget(context)),
+                                  usernameTextField(context),
+                                  verticalPadding(context),
+                                  const PasswordField(),
+                                  verticalPadding(context),
+                                  loginButton(model, context),
+                                  verticalPadding(context),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          await showDialogToEnterSiteUrl(
+                                              model, context);
+                                        },
+                                        child: Text(
+                                          'Update your site URL!',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize:
+                                                displayWidth(context) < 600
+                                                    ? 16
+                                                    : 28,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const PoweredByAmbibuzzLogo(),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: defaultTargetPlatform ==
+                                                TargetPlatform.iOS
+                                            ? Sizes.paddingWidget(context)
+                                            : 0),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'v${model.version}',
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                height: displayHeight(context) * 0.02,
-                              ),
-                              const Center(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const PoweredByAmbibuzzLogo(),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
@@ -365,7 +400,7 @@ class PoweredByAmbibuzzLogo extends StatelessWidget {
     return Image.asset(
       Images.poweredByAmbibuzzLogo,
       width: 90,
-      height: 90,
+      height: 65,
       fit: BoxFit.cover,
     );
   }

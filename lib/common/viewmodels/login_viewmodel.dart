@@ -5,8 +5,17 @@ import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:orderit/base_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class LoginViewModel extends BaseViewModel {
+  var version = '';
+
+  Future<void> init() async {
+    var packageInfo = await PackageInfo.fromPlatform();
+    version = packageInfo.version;
+    notifyListeners();
+  }
+
   Future<String> getUsername() async {
     var username = locator.get<StorageService>().userName;
     return username;
