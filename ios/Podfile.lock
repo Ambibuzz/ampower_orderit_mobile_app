@@ -48,6 +48,8 @@ PODS:
     - Flutter
   - flutter_native_splash (0.0.1):
     - Flutter
+  - flutter_upgrade_version (1.1.7):
+    - Flutter
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
@@ -111,6 +113,7 @@ DEPENDENCIES:
   - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
+  - flutter_upgrade_version (from `.symlinks/plugins/flutter_upgrade_version/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
@@ -152,6 +155,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
   flutter_native_splash:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
+  flutter_upgrade_version:
+    :path: ".symlinks/plugins/flutter_upgrade_version/ios"
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
   image_picker_ios:
@@ -189,6 +194,7 @@ SPEC CHECKSUMS:
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_native_splash: edf599c81f74d093a4daf8e17bd7a018854bc778
+  flutter_upgrade_version: 92bd8b205af3cc91986c3578fcb6361bd4d68b5b
   fluttertoast: 31b00dabfa7fb7bacd9e7dbee580d7a2ff4bf265
   image_picker_ios: b545a5f16c0fa88e3ecbbce3ed4de45567a8ec18
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
