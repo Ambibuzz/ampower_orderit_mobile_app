@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:orderit/common/services/file_converter_service.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
@@ -9,6 +10,7 @@ import 'package:orderit/common/views/login_view.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_toast.dart';
+import 'package:orderit/config/theme.dart';
 import 'package:orderit/config/theme_model.dart';
 import 'package:orderit/common/models/custom_textformformfield.dart';
 import 'package:orderit/locators/locator.dart';
@@ -79,6 +81,8 @@ class ProfileView extends StatelessWidget {
             SizedBox(height: Sizes.paddingWidget(context)),
             mobileNoField(model, context),
             SizedBox(height: Sizes.paddingWidget(context)),
+            connectedToUrlField(model, context),
+            SizedBox(height: Sizes.paddingWidget(context)),
             SizedBox(
               width: displayWidth(context) < 600
                   ? displayWidth(context)
@@ -95,15 +99,21 @@ class ProfileView extends StatelessWidget {
             ),
             const Spacer(),
             const PoweredByAmbibuzzLogo(),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                'v${model.version}',
-                textAlign: TextAlign.right,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
-                    ),
+            Padding(
+              padding: EdgeInsets.only(
+                  bottom: defaultTargetPlatform == TargetPlatform.iOS
+                      ? Sizes.smallPaddingWidget(context)
+                      : 0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  'v${model.version}',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                ),
               ),
             ),
           ],
@@ -160,6 +170,20 @@ class ProfileView extends StatelessWidget {
       controller: model.fullNameController,
       decoration: Common.inputDecoration(),
       label: 'Full Name',
+      style: Theme.of(context).textTheme.bodyMedium,
+      readOnly: true,
+    );
+  }
+
+  Widget connectedToUrlField(ProfileViewModel model, BuildContext context) {
+    return CustomTextFormField(
+      initialValue: locator.get<StorageService>().apiUrl,
+      decoration: Common.inputDecoration().copyWith(
+          prefixIcon: Icon(
+        Icons.cast_connected,
+        color: CustomTheme.iconColor,
+      )),
+      label: 'Connected To',
       style: Theme.of(context).textTheme.bodyMedium,
       readOnly: true,
     );
