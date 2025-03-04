@@ -54,7 +54,7 @@ jobs:
         release_name: "v1.4.3" # Replace with your desired release name
         body: |
           This release includes:
-          - Parsed html string in exception and removed html tags
+          - Added Url to which app is connected to in profile screen
         draft: false
         prerelease: false
       env:
