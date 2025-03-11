@@ -49,36 +49,6 @@ class DraftView extends StatelessWidget {
     );
   }
 
-  Future<dynamic> showDraftDetailBottomSheet(
-      DraftViewModel model, Draft? draft, BuildContext context) async {
-    return await showModalBottomSheet(
-      constraints: BoxConstraints(
-        minWidth: displayWidth(context),
-      ),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Corners.xxlRadius,
-          topRight: Corners.xxlRadius,
-        ),
-      ),
-      isScrollControlled: true,
-      context: context,
-      builder: (ctx) {
-        return DraggableScrollableSheet(
-          expand: false,
-          builder: (context, controller) {
-            return SingleChildScrollView(
-              controller: controller,
-              child: DraftDetailView(
-                draft: draft,
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   Widget draftList(
       List<Draft>? drafts, DraftViewModel model, BuildContext context) {
     var titleTextStyle = const TextStyle(
@@ -123,8 +93,10 @@ class DraftView extends StatelessWidget {
                                   right: Sizes.paddingWidget(context),
                                 ),
                                 onTap: () async {
-                                  var result = await showDraftDetailBottomSheet(
-                                      model, draft, context);
+                                  var result = await locator
+                                      .get<NavigationService>()
+                                      .navigateTo(draftDetailViewRoute,
+                                          arguments: draft);
                                   if (result == null) {
                                     await model.getDrafts();
                                   } else {
@@ -192,7 +164,7 @@ class DraftView extends StatelessWidget {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Center(
                 child: SizedBox(
-                  height: displayHeight(context) * 0.7,
+                  height: displayHeight(context) * 0.8,
                   child: OrderitWidgets.emptyCartWidget(
                       'No items in wishlist!',
                       'Let’s start adding items to fill it up which you can order later!',

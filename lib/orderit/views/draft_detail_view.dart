@@ -3,6 +3,7 @@ import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_toast.dart';
+import 'package:orderit/common/widgets/sliver_common.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/base_view.dart';
@@ -35,9 +36,20 @@ class DraftDetailView extends StatelessWidget {
         await model.initQuantityController();
       },
       builder: (context, model, child) {
-        return model.state == ViewState.busy
-            ? WidgetsFactoryList.circularProgressIndicator()
-            : draftDetail(model, context);
+        return Scaffold(
+          appBar: Common.commonAppBar(
+              'Wishlist',
+              [
+                updateButton(model, context),
+                SizedBox(
+                  width: Sizes.paddingWidget(context),
+                ),
+              ],
+              context),
+          body: model.state == ViewState.busy
+              ? WidgetsFactoryList.circularProgressIndicator()
+              : draftDetail(model, context),
+        );
       },
     );
   }
@@ -48,139 +60,144 @@ class DraftDetailView extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Sizes.paddingWidget(context)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: Sizes.smallPaddingWidget(context) * 1.5),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Common.bottomSheetHeader(context),
-            ],
-          ),
-          SizedBox(height: Sizes.paddingWidget(context)),
-          verticalPaddingSmall(context),
-          Row(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    draft?.customer ?? '',
-                    style: textStyle,
-                  ),
-                  verticalPaddingSmall(context),
-                  Text(
-                      'Date : ${DateFormat('dd-MM-yyyy HH:MM:ss').format(DateTime.parse(draft!.time!))}',
-                      style: textStyle),
-                  verticalPaddingSmall(context),
-                  Text(
-                    draft.cartItems != null
-                        ? 'Total Items : ${draft.cartItems?.length.toString()}'
-                        : 'Total Items : 0',
-                    style: textStyle,
-                  ),
-                  verticalPaddingSmall(context),
-                  Text(
-                      Strings.totalPrice +
-                          Formatter.formatter.format(draft.totalPrice),
-                      style: textStyle),
-                ],
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () async {
-                  await model.updateDrafts();
-                  flutterStyledToast(context, 'Draft updated Successfully!',
-                      CustomTheme.toastMessageBgColor,
-                      textStyle:
-                          Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Theme.of(context).primaryColor,
-                              ));
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      borderRadius: Corners.xxlBorder),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Sizes.paddingWidget(context) * 1.5,
-                      vertical: Sizes.extraSmallPaddingWidget(context) * 1.5,
-                    ),
-                    child: Text(
-                      'Update',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          verticalPaddingMedium(context),
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  createCart(model, context),
-                  SizedBox(
-                    width: Sizes.smallPaddingWidget(context),
-                  ),
-                  clearCartAndAppend(model, context),
-                ],
-              ),
-              verticalPaddingMedium(context),
-              Card(
-                margin: EdgeInsets.zero,
-                child: Column(
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: Sizes.paddingWidget(context)),
+                verticalPaddingSmall(context),
+                Row(
                   children: [
-                    tableHeader(context),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: draft.cartItems?.length,
-                      itemBuilder: (context, index) {
-                        if (index == draft.cartItems!.length - 1) {
-                          return cartItem(index, model, context);
-                        }
-                        // return cartItem(index, model, context);
-                        return Column(
-                          children: [
-                            cartItem(index, model, context),
-                            const Divider(
-                              endIndent: 0,
-                              height: 0,
-                              indent: 0,
-                              thickness: 1,
-                            ),
-                          ],
-                        );
-                      },
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          draft?.customer ?? '',
+                          style: textStyle,
+                        ),
+                        verticalPaddingSmall(context),
+                        Text(
+                            'Date : ${DateFormat('dd-MM-yyyy HH:MM:ss').format(DateTime.parse(draft!.time!))}',
+                            style: textStyle),
+                        verticalPaddingSmall(context),
+                        Text(
+                          draft.cartItems != null
+                              ? 'Total Items : ${draft.cartItems?.length.toString()}'
+                              : 'Total Items : 0',
+                          style: textStyle,
+                        ),
+                        verticalPaddingSmall(context),
+                        Text(
+                            Strings.totalPrice +
+                                Formatter.formatter.format(draft.totalPrice),
+                            style: textStyle),
+                      ],
                     ),
                   ],
                 ),
-              ),
-            ],
+                verticalPaddingMedium(context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    createCart(model, context),
+                    SizedBox(
+                      width: Sizes.smallPaddingWidget(context),
+                    ),
+                    clearCartAndAppend(model, context),
+                  ],
+                ),
+                verticalPaddingMedium(context),
+                tableHeader(context),
+              ],
+            ),
           ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate((context, index) {
+              if (index == draft.cartItems!.length - 1) {
+                return ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Corners.xxlRadius,
+                    bottomRight: Corners.xxlRadius,
+                  ),
+                  child: cartItem(index, model, context),
+                );
+              }
+              // return cartItem(index, model, context);
+              return Column(
+                children: [
+                  cartItem(index, model, context),
+                  const Divider(
+                    endIndent: 0,
+                    height: 0,
+                    indent: 0,
+                    thickness: 1,
+                  ),
+                ],
+              );
+            }, childCount: draft.cartItems?.length),
+          ),
+          CustomSliverSizedBox(
+            height: Sizes.bottomPaddingWidget(context),
+          )
         ],
+      ),
+    );
+  }
+
+  Widget updateButton(DraftDetailViewModel model, BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        await model.updateDrafts();
+        flutterStyledToast(context, 'Draft updated Successfully!',
+            CustomTheme.toastMessageBgColor,
+            textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).primaryColor,
+                ));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: Corners.xxlBorder,
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: Sizes.paddingWidget(context) * 1.5,
+            vertical: Sizes.extraSmallPaddingWidget(context) * 1.5,
+          ),
+          child: Text(
+            'Update',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+        ),
       ),
     );
   }
 
   Widget tableHeader(BuildContext context) {
     return Container(
-      height: 50,
       decoration: BoxDecoration(
-          color: CustomTheme.tableHeaderColor, borderRadius: Corners.xxlBorder),
-      child: Row(
-        children: [
-          tableHeaderColumn('Item', 65),
-          tableHeaderColumn('Qty', displayWidth(context) < 600 ? 35 : 25),
-        ],
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Corners.xxlRadius,
+          topRight: Corners.xxlRadius,
+        ),
+      ),
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+            color: CustomTheme.tableHeaderColor,
+            borderRadius: Corners.xxlBorder),
+        child: Row(
+          children: [
+            tableHeaderColumn('Item', 65),
+            tableHeaderColumn('Qty', displayWidth(context) < 600 ? 35 : 25),
+          ],
+        ),
       ),
     );
   }
@@ -203,8 +220,9 @@ class DraftDetailView extends StatelessWidget {
     var btnDimension = displayWidth(context) < 600 ? 28.0 : 52.0;
     var iconSize = displayWidth(context) < 600 ? 20.0 : 32.0;
     var item = model.draft?.cartItems?[index];
-    return SizedBox(
+    return Container(
         height: 90,
+        color: Theme.of(context).cardColor,
         key: Key(item?.itemName ?? ''),
         child: cartItemData(
             item!, index, iconSize, imageDimension, btnDimension, context));
@@ -440,7 +458,7 @@ class DraftDetailView extends StatelessWidget {
   Widget createCart(DraftDetailViewModel model, BuildContext context) {
     return Expanded(
       child: SizedBox(
-        height: Sizes.buttonHeightWidget(context),
+        height: 55,
         child: TextButton(
           style: ButtonStyle(
             shape: WidgetStatePropertyAll(
@@ -460,6 +478,8 @@ class DraftDetailView extends StatelessWidget {
             'Add to Cart',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: Sizes.fontSizeTextButtonWidget(context),
                 ),
           ),
         ),
@@ -470,7 +490,7 @@ class DraftDetailView extends StatelessWidget {
   Widget clearCartAndAppend(DraftDetailViewModel model, BuildContext context) {
     return Expanded(
       child: SizedBox(
-        height: Sizes.buttonHeightWidget(context),
+        height: 55,
         child: TextButton(
           style: ButtonStyle(
             shape: const WidgetStatePropertyAll(
@@ -489,6 +509,8 @@ class DraftDetailView extends StatelessWidget {
             'Clear & Append',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: const Color(0xFFBE2527),
+                  fontWeight: FontWeight.w700,
+                  fontSize: Sizes.fontSizeTextButtonWidget(context),
                 ),
           ),
         ),

@@ -48,14 +48,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case splashViewRoute:
       return MaterialPageRoute(builder: (context) => const AmpowerAnimation());
     //Catalogue
-    case draftRoute:
+    case draftViewRoute:
       return MaterialPageRoute(builder: (context) => const DraftView());
-    case draftDetailRoute:
+    case draftDetailViewRoute:
       var draft = settings.arguments as Draft?;
       return MaterialPageRoute(
         builder: (context) => DraftDetailView(
           draft: draft,
-          key: const Key(draftDetailRoute),
+          key: const Key(draftDetailViewRoute),
         ),
       );
     case profileViewRoute:
