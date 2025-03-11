@@ -58,9 +58,13 @@ class ItemsViewModel extends BaseViewModel {
   // quantity controller
   List<QuantityControllerModel> quantityControllerList =
       <QuantityControllerModel>[];
+  // quantity focus node
+  List<QuantityFocusNodelModel> quantityFocusNodeList =
+      <QuantityFocusNodelModel>[];
   bool isQuantityControllerInitialized = false;
   // quantity controller catalogue view init
   var quantityControllerCatalogueView = TextEditingController();
+  var quantityControllerFocusNodeCatalogueView = FocusNode();
   bool isQuantityControllerCatalogueViewInitialized = false;
 
   String? categorySelected;
@@ -83,6 +87,20 @@ class ItemsViewModel extends BaseViewModel {
   User user = User();
   var stockActualQtyList = <StockActualQty>[];
   var favoritesList = <String>[];
+
+  void unfocus(BuildContext context) {
+    var currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+    quantityControllerFocusNodeCatalogueView.unfocus();
+    quantityFocusNodeList.forEach(
+      (element) {
+        element.focusNode?.unfocus();
+      },
+    );
+    notifyListeners();
+  }
 
   Future getFavorites() async {
     favoritesList = await locator
@@ -639,6 +657,8 @@ class ItemsViewModel extends BaseViewModel {
       for (var i = 0; i < itemList.length; i++) {
         quantityControllerList.add(QuantityControllerModel(
             itemList[i].itemCode, TextEditingController()));
+        quantityFocusNodeList
+            .add(QuantityFocusNodelModel(itemList[i].itemCode, FocusNode()));
       }
       //set text to quantity controller
       for (var i = 0; i < itemList.length; i++) {
@@ -1245,4 +1265,11 @@ class QuantityControllerModel {
   final TextEditingController? controller;
 
   QuantityControllerModel(this.id, this.controller);
+}
+
+class QuantityFocusNodelModel {
+  final String? id;
+  final FocusNode? focusNode;
+
+  QuantityFocusNodelModel(this.id, this.focusNode);
 }

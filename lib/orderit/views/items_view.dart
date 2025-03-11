@@ -113,8 +113,7 @@ class ItemsView extends StatelessWidget {
         if (itemGroup != null) {
           model.setCategorySelected(itemGroup, '');
           await model.getItemGroupData(itemGroup!, context);
-        } else if (itemGroup == null) {
-        }
+        } else if (itemGroup == null) {}
         await model.getProducts();
         // if item group is clicked then fetch tags associated with that item group
         if (itemGroup != null) {
@@ -172,39 +171,44 @@ class ItemsView extends StatelessWidget {
               model),
           body: model.state == ViewState.busy
               ? WidgetsFactoryList.circularProgressIndicator()
-              : Stack(
-                  children: [
-                    model.itemGroups.isEmpty
-                        ? EmptyWidget(
-                            onRefresh: () async {
-                              await model.reCacheData(model, context);
-                            },
-                          )
-                        : LayoutBuilder(
-                            builder: (context, constraints) {
-                              if (constraints.maxWidth <= 600) {
-                                return mobileView(
-                                    model,
-                                    itemNameListStyle,
-                                    itemNameCatalogStyle,
-                                    itemPriceListStyle,
-                                    context);
-                              } else {
-                                return largeDevice(
-                                    model,
-                                    itemNameListStyle,
-                                    itemNameCatalogStyle,
-                                    itemPriceListStyle,
-                                    context);
-                              }
-                            },
-                          ),
-                    OrderitWidgets.floatingCartButton(context, () {
-                      model.refresh();
-                      model.updateCartItems();
-                      model.initQuantityController();
-                    }),
-                  ],
+              : GestureDetector(
+                  onTap: () {
+                    model.unfocus(context);
+                  },
+                  child: Stack(
+                    children: [
+                      model.itemGroups.isEmpty
+                          ? EmptyWidget(
+                              onRefresh: () async {
+                                await model.reCacheData(model, context);
+                              },
+                            )
+                          : LayoutBuilder(
+                              builder: (context, constraints) {
+                                if (constraints.maxWidth <= 600) {
+                                  return mobileView(
+                                      model,
+                                      itemNameListStyle,
+                                      itemNameCatalogStyle,
+                                      itemPriceListStyle,
+                                      context);
+                                } else {
+                                  return largeDevice(
+                                      model,
+                                      itemNameListStyle,
+                                      itemNameCatalogStyle,
+                                      itemPriceListStyle,
+                                      context);
+                                }
+                              },
+                            ),
+                      OrderitWidgets.floatingCartButton(context, () {
+                        model.refresh();
+                        model.updateCartItems();
+                        model.initQuantityController();
+                      }),
+                    ],
+                  ),
                 ),
         );
       },
@@ -394,32 +398,37 @@ class ItemsView extends StatelessWidget {
   AppBar appBar(String? title, List<Widget>? actions, BuildContext context,
       ItemsViewModel model) {
     return AppBar(
-      title: Row(
-        children: [
-          model.categorySelectedImage == null ||
-                  model.categorySelectedImage == ''
-              ? const SizedBox()
-              : model.categorySelectedImage == null
-                  ? Container()
-                  : ClipRRect(
-                      borderRadius: Corners.xlBorder,
-                      child: image_widget.imageWidget(
-                          '${locator.get<StorageService>().apiUrl}${model.categorySelectedImage!}',
-                          40,
-                          40),
-                    ),
-          SizedBox(
-            width: Sizes.smallPaddingWidget(context),
-          ),
-          Expanded(
-            child: Text(
-              title ?? '',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                  ),
+      title: GestureDetector(
+        onTap: () {
+          model.unfocus(context);
+        },
+        child: Row(
+          children: [
+            model.categorySelectedImage == null ||
+                    model.categorySelectedImage == ''
+                ? const SizedBox()
+                : model.categorySelectedImage == null
+                    ? Container()
+                    : ClipRRect(
+                        borderRadius: Corners.xlBorder,
+                        child: image_widget.imageWidget(
+                            '${locator.get<StorageService>().apiUrl}${model.categorySelectedImage!}',
+                            40,
+                            40),
+                      ),
+            SizedBox(
+              width: Sizes.smallPaddingWidget(context),
             ),
-          ),
-        ],
+            Expanded(
+              child: Text(
+                title ?? '',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+            ),
+          ],
+        ),
       ),
       leadingWidth: 35,
       leading: locator.get<StorageService>().isUserCustomer
@@ -1006,7 +1015,7 @@ class ItemsList extends StatelessWidget {
             child: IconButton(
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : null,
+                color: isFavorite ? Colors.red : CustomTheme.iconColor,
               ),
               onPressed: () => model.toggleFavorite(item.itemCode!, context),
             ),
@@ -1197,7 +1206,7 @@ class ItemsList extends StatelessWidget {
             child: IconButton(
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : null,
+                color: isFavorite ? Colors.red : CustomTheme.iconColor,
               ),
               onPressed: () => model.toggleFavorite(item.itemCode!, context),
             ),
@@ -1315,6 +1324,8 @@ Widget incDecBtn(
                         : incDecController(
                             controller:
                                 model.quantityControllerList[index].controller,
+                            focusNode:
+                                model.quantityFocusNodeList[index].focusNode,
                             onChanged: (String value) async {
                               // value empty
                               if (value.isEmpty) {
@@ -1383,6 +1394,7 @@ Widget cartControllerButton(
 
 Widget incDecController(
     {required TextEditingController? controller,
+    required FocusNode? focusNode,
     required void Function(String)? onChanged,
     required Color underlineColor,
     required Color? fillColor,
@@ -1393,6 +1405,7 @@ Widget incDecController(
     child: TextFormField(
       textAlign: TextAlign.center,
       controller: controller,
+      focusNode: focusNode,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         isDense: true,
@@ -1538,6 +1551,7 @@ Widget incDecBtnCatalogView(
                   ),
                   incDecController(
                     controller: model.quantityControllerCatalogueView,
+                    focusNode: model.quantityControllerFocusNodeCatalogueView,
                     onChanged: (String value) async {
                       // value empty
                       if (value.isEmpty) {
@@ -1684,6 +1698,8 @@ class TableView extends StatelessWidget {
           Stack(
         children: [
           Container(
+            padding:
+                EdgeInsets.symmetric(vertical: Sizes.paddingWidget(context)),
             decoration: BoxDecoration(
               color: stockActualQty == 0.0
                   ? CustomTheme.imageBorderColor
@@ -1830,11 +1846,11 @@ class TableView extends StatelessWidget {
           ),
           Positioned(
             top: -Sizes.smallPaddingWidget(context),
-            right: -Sizes.extraSmallPaddingWidget(context),
+            right: -Sizes.extraSmallPaddingWidget(context) * 1.5,
             child: IconButton(
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : null,
+                color: isFavorite ? Colors.red : CustomTheme.iconColor,
               ),
               onPressed: () => model.toggleFavorite(item.itemCode!, context),
             ),
@@ -1848,9 +1864,14 @@ class TableView extends StatelessWidget {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-          color: CustomTheme.tableHeaderColor, borderRadius: Corners.xxlBorder),
+        color: CustomTheme.tableBorderColor,
+        borderRadius: Corners.xxlBorder,
+      ),
       child: Row(
-        children: [tableHeaderColumn('Item', 65), tableHeaderColumn('Qty', 35)],
+        children: [
+          tableHeaderColumn('Item', 65),
+          tableHeaderColumn('Qty', 35),
+        ],
       ),
     );
   }
@@ -2057,6 +2078,7 @@ class CatalogueView extends StatelessWidget {
                     ],
                   ),
                 ),
+                SizedBox(height: Sizes.paddingWidget(context) * 4),
               ],
             ),
             Positioned(
@@ -2065,7 +2087,7 @@ class CatalogueView extends StatelessWidget {
               child: IconButton(
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? Colors.red : null,
+                  color: isFavorite ? Colors.red : CustomTheme.iconColor,
                 ),
                 onPressed: () => model.toggleFavorite(item.itemCode!, context),
               ),
@@ -2162,7 +2184,7 @@ class CatalogueView extends StatelessWidget {
             child: IconButton(
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : null,
+                color: isFavorite ? Colors.red : CustomTheme.iconColor,
               ),
               onPressed: () => model.toggleFavorite(item.itemCode!, context),
             ),
@@ -2268,7 +2290,7 @@ class CatalogueView extends StatelessWidget {
             child: IconButton(
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : null,
+                color: isFavorite ? Colors.red : CustomTheme.iconColor,
               ),
               onPressed: () => model.toggleFavorite(item.itemCode!, context),
             ),
@@ -2611,115 +2633,123 @@ class FlexibleItemsGrid extends StatelessWidget {
         ),
         padding: EdgeInsets.symmetric(
           horizontal: Sizes.smallPaddingWidget(context),
-          vertical: Sizes.paddingWidget(context),
+          // vertical: Sizes.paddingWidget(context),
         ),
         child: Stack(
           children: [
-            Column(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: CustomTheme.imageBorderColor),
-                        borderRadius: Corners.xlBorder,
+            Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: Sizes.paddingWidget(context),
+              ),
+              child: Column(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          border:
+                              Border.all(color: CustomTheme.imageBorderColor),
+                          borderRadius: Corners.xlBorder,
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Sizes.extraSmallPaddingWidget(context),
+                          vertical: Sizes.extraSmallPaddingWidget(context),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: Corners.xlBorder,
+                          child: item.imageUrl == null
+                              ? ((item.images == null ||
+                                      item.images?.isEmpty == true)
+                                  ? Image.asset(
+                                      Images.imageNotFound,
+                                      width: width,
+                                      height: width,
+                                    )
+                                  : image_widget.imageWidget(
+                                      '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                      width,
+                                      width))
+                              : image_widget.imageWidget(
+                                  '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
+                                  width,
+                                  width),
+                        ),
                       ),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Sizes.extraSmallPaddingWidget(context),
-                        vertical: Sizes.extraSmallPaddingWidget(context),
+                      SizedBox(height: displayWidth(context) < 600 ? 5 : 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${item.itemName}\n',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: itemNameStyle,
+                          ),
+                          const Divider(),
+                          Text(
+                            'SKU : ${item.itemCode}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                  color: CustomTheme.borderColor,
+                                ),
+                          ),
+                          Text(
+                            Formatter.formatter.format(item.price),
+                            style: priceStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                          Text(
+                            stockActualQty == 0.0
+                                ? ''
+                                : 'Stock : $stockActualQty',
+                            style: stockActualQtyStyle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
-                      child: ClipRRect(
-                        borderRadius: Corners.xlBorder,
-                        child: item.imageUrl == null
-                            ? ((item.images == null ||
-                                    item.images?.isEmpty == true)
-                                ? Image.asset(
-                                    Images.imageNotFound,
-                                    width: width,
-                                    height: width,
-                                  )
-                                : image_widget.imageWidget(
-                                    '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
-                                    width,
-                                    width))
-                            : image_widget.imageWidget(
-                                '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                                width,
-                                width),
-                      ),
-                    ),
-                    SizedBox(height: displayWidth(context) < 600 ? 5 : 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${item.itemName}\n',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: itemNameStyle,
-                        ),
-                        const Divider(),
-                        Text(
-                          'SKU : ${item.itemCode}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: CustomTheme.borderColor,
-                                  ),
-                        ),
-                        Text(
-                          Formatter.formatter.format(item.price),
-                          style: priceStyle,
-                          textAlign: TextAlign.left,
-                        ),
-                        Text(
-                          stockActualQty == 0.0
-                              ? ''
-                              : 'Stock : $stockActualQty',
-                          style: stockActualQtyStyle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: Sizes.smallPaddingWidget(context)),
-                item.hasVariants == 1
-                    ? SelectVariantButton(
-                        model: model,
-                        item: item,
-                      )
-                    : const SizedBox(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    item.hasVariants == 1
-                        ? Container()
-                        : incDecBtn(
-                            model: model,
-                            width: width,
-                            buttonDimension: buttonDimension,
-                            priceStyle: priceStyle,
-                            itemNameStyle: itemNameStyle,
-                            item: item,
-                            context: context,
-                            itemQuantity: itemQuantity,
-                            stockActualQty: stockActualQty,
-                            index: index),
-                  ],
-                )
-              ],
+                    ],
+                  ),
+                  SizedBox(height: Sizes.smallPaddingWidget(context)),
+                  item.hasVariants == 1
+                      ? SelectVariantButton(
+                          model: model,
+                          item: item,
+                        )
+                      : const SizedBox(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      item.hasVariants == 1
+                          ? Container()
+                          : incDecBtn(
+                              model: model,
+                              width: width,
+                              buttonDimension: buttonDimension,
+                              priceStyle: priceStyle,
+                              itemNameStyle: itemNameStyle,
+                              item: item,
+                              context: context,
+                              itemQuantity: itemQuantity,
+                              stockActualQty: stockActualQty,
+                              index: index),
+                    ],
+                  )
+                ],
+              ),
             ),
             Positioned(
               top: -Sizes.extraSmallPaddingWidget(context),
-              right: -Sizes.extraSmallPaddingWidget(context),
+              right: -Sizes.smallPaddingWidget(context),
               child: IconButton(
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? Colors.red : null,
+                  color: isFavorite ? Colors.red : CustomTheme.iconColor,
                 ),
                 onPressed: () => model.toggleFavorite(item.itemCode!, context),
               ),
@@ -2879,7 +2909,7 @@ class FlexibleItemsGrid extends StatelessWidget {
                 child: IconButton(
                   icon: Icon(
                     isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : null,
+                    color: isFavorite ? Colors.red : CustomTheme.iconColor,
                   ),
                   onPressed: () =>
                       model.toggleFavorite(item.itemCode!, context),
