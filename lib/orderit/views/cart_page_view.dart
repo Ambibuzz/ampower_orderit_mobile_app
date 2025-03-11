@@ -102,17 +102,22 @@ class _CartPageViewState extends State<CartPageView>
             ),
             body: model.state == ViewState.busy
                 ? WidgetsFactoryList.circularProgressIndicator()
-                : Stack(
-                    children: [
-                      cartPageUi(model, connectivityStatus, context),
-                      model.items.isNotEmpty == true
-                          ? Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: totalStickyWidget(model, context))
-                          : const SizedBox()
-                    ],
+                : GestureDetector(
+                    onTap: () {
+                      model.unfocus(context);
+                    },
+                    child: Stack(
+                      children: [
+                        cartPageUi(model, connectivityStatus, context),
+                        model.items.isNotEmpty == true
+                            ? Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: totalStickyWidget(model, context))
+                            : const SizedBox()
+                      ],
+                    ),
                   ),
           ),
         );
@@ -309,8 +314,11 @@ class _CartPageViewState extends State<CartPageView>
                           var index = items.indexOf(item);
                           var isSelected = model.selectedItems.contains(index);
                           return GestureDetector(
-                            onTap: () {
-                              model.toggleSelected(isSelected, index);
+                            onTap: () async {
+                              // model.toggleSelected(isSelected, index);
+                              await locator.get<NavigationService>().navigateTo(
+                                  itemsDetailViewRoute,
+                                  arguments: item.itemCode);
                             },
                             child: Padding(
                               padding: EdgeInsets.symmetric(
@@ -552,9 +560,14 @@ class _CartPageViewState extends State<CartPageView>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          isSelected
-              ? const Icon(Icons.check_box, size: 20)
-              : const Icon(Icons.check_box_outline_blank, size: 20),
+          GestureDetector(
+            onTap: () {
+              model.toggleSelected(isSelected, index);
+            },
+            child: isSelected
+                ? const Icon(Icons.check_box, size: 20)
+                : const Icon(Icons.check_box_outline_blank, size: 20),
+          ),
           const SizedBox(width: Sizes.extraSmallPadding),
           ClipRRect(
             borderRadius: Corners.lgBorder,
@@ -580,16 +593,13 @@ class _CartPageViewState extends State<CartPageView>
                         imageDimension),
           ),
           // cart item name
-          Padding(
-            padding: displayWidth(context) < 600
-                ? EdgeInsets.only(left: Sizes.smallPaddingWidget(context))
-                : EdgeInsets.symmetric(
-                    horizontal: Sizes.paddingWidget(context),
-                  ),
-            child: SizedBox(
-              width: displayWidth(context) < 600
-                  ? displayWidth(context) * 0.38
-                  : displayWidth(context) * 0.5,
+          Expanded(
+            child: Padding(
+              padding: displayWidth(context) < 600
+                  ? EdgeInsets.only(left: Sizes.smallPaddingWidget(context))
+                  : EdgeInsets.symmetric(
+                      horizontal: Sizes.paddingWidget(context),
+                    ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -607,7 +617,6 @@ class _CartPageViewState extends State<CartPageView>
               ),
             ),
           ),
-          const Spacer(),
           incDecBtn(index, btnDimension, iconSize, model, context),
         ],
       ),
@@ -633,91 +642,98 @@ class _CartPageViewState extends State<CartPageView>
 
   Widget incDecBtn(int index, double btnDimension, double iconSize,
       CartPageViewModel model, BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-          vertical: Sizes.extraSmallPaddingWidget(context),
-          horizontal: Sizes.smallPaddingWidget(context) * 0.8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: Corners.xxlBorder,
-        border: Border.all(
-          color: Theme.of(context).colorScheme.secondary,
-        ),
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () async {
-              if (model.items[index].quantity == 1) {
-                await model.showDialogToRemoveSingleItem(index, context);
-              } else {
-                await model.decrement(index, context);
-              }
-            },
-            child: SizedBox(
-              width: btnDimension,
-              height: btnDimension,
-              child: Icon(
-                Icons.remove,
-                color: Theme.of(context).colorScheme.secondary,
-                size: iconSize,
-              ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(
+              vertical: Sizes.extraSmallPaddingWidget(context),
+              horizontal: Sizes.smallPaddingWidget(context) * 0.8),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: Corners.xxlBorder,
+            border: Border.all(
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ),
-          //TextField
-          SizedBox(
-            width: displayWidth(context) < 600 ? 40 : 60,
-            child: TextFormField(
-              textAlign: TextAlign.center,
-              controller: model.quantityControllerList[index],
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                    horizontal: 0,
-                    vertical: Sizes.extraSmallPaddingWidget(context)),
-                fillColor: Colors.transparent,
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.secondary),
-                ),
-              ),
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.secondary),
-              onChanged: (String value) async {
-                if (value.isEmpty) {
-                  // do nothing
-                } else {
-                  if (value == '0') {
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  if (model.items[index].quantity == 1) {
                     await model.showDialogToRemoveSingleItem(index, context);
                   } else {
-                    model.setQty(index, value, context);
+                    await model.decrement(index, context);
                   }
-                }
-              },
-            ),
-          ),
-          GestureDetector(
-            onTap: () async {
-              await model.increment(index, context);
-            },
-            child: SizedBox(
-              width: btnDimension,
-              height: btnDimension,
-              child: Icon(
-                Icons.add,
-                color: Theme.of(context).colorScheme.secondary,
-                size: iconSize,
+                },
+                child: SizedBox(
+                  width: btnDimension,
+                  height: btnDimension,
+                  child: Icon(
+                    Icons.remove,
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: iconSize,
+                  ),
+                ),
               ),
-            ),
+              //TextField
+              SizedBox(
+                width: displayWidth(context) < 600 ? 40 : 60,
+                child: TextFormField(
+                  textAlign: TextAlign.center,
+                  controller: model.quantityControllerList[index],
+                  focusNode: model.quantityControllerFocusNodeList[index],
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(
+                        horizontal: 0,
+                        vertical: Sizes.extraSmallPaddingWidget(context)),
+                    fillColor: Colors.transparent,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                  ),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary),
+                  onChanged: (String value) async {
+                    if (value.isEmpty) {
+                      // do nothing
+                    } else {
+                      if (value == '0') {
+                        await model.showDialogToRemoveSingleItem(
+                            index, context);
+                      } else {
+                        model.setQty(index, value, context);
+                      }
+                    }
+                  },
+                ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  await model.increment(index, context);
+                },
+                child: SizedBox(
+                  width: btnDimension,
+                  height: btnDimension,
+                  child: Icon(
+                    Icons.add,
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: iconSize,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -35,6 +35,8 @@ class CartPageViewModel extends BaseViewModel {
   bool isVideo = false;
   List<TextEditingController> quantityControllerList =
       <TextEditingController>[];
+  List<FocusNode> quantityControllerFocusNodeList =
+      <FocusNode>[];
   List<TextEditingController> quantityControllerListRec =
       <TextEditingController>[];
   String? customer;
@@ -45,6 +47,19 @@ class CartPageViewModel extends BaseViewModel {
   Set<int> selectedItems = Set();
   bool selectAll = false;
   List<ItemPrice> itemPriceList = [];
+
+  void unfocus(BuildContext context) {
+    var currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
+    quantityControllerFocusNodeList.forEach(
+      (element) {
+        element.unfocus();
+      },
+    );
+    notifyListeners();
+  }
 
   Future getItemPrices() async {
     itemPriceList = await locator
@@ -236,6 +251,7 @@ class CartPageViewModel extends BaseViewModel {
       //init controller and increment and decrement btn value to false
       for (var i = 0; i < items.length; i++) {
         quantityControllerList.add(TextEditingController());
+        quantityControllerFocusNodeList.add(FocusNode());
         incBtnPressed.add(false);
         decBtnPressed.add(false);
       }
@@ -247,11 +263,6 @@ class CartPageViewModel extends BaseViewModel {
 
     notifyListeners();
     setState(ViewState.idle);
-  }
-
-  Future addQuantityController() async {
-    quantityControllerList.add(TextEditingController());
-    notifyListeners();
   }
 
   // set quantity at index
