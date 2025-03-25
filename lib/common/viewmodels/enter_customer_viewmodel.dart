@@ -26,7 +26,7 @@ class EnterCustomerViewModel extends BaseViewModel {
   final TextEditingController customerController = TextEditingController();
   User user = User();
 
-  Future<int> checkSessionExpired() async {
+  Future<int?> checkSessionExpired() async {
     setState(ViewState.busy);
     var statusCode = await locator.get<CommonService>().checkSessionExpired();
     setState(ViewState.idle);
