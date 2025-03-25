@@ -29,5 +29,6 @@ const enterCustomerRoute = '/enter_customer';
 const itemGroupSearchRoute = '/items/itemgroup';
 const itemSearchRoute = '/items/search';
 const particularItemSearchRoute = '/items/item';
+const noInternetConnectionViewRoute = 'no_internet_connection';
 
 

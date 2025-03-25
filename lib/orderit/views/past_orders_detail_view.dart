@@ -3,6 +3,7 @@ import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
+import 'package:orderit/common/widgets/sliver_common.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/base_view.dart';
@@ -44,7 +45,7 @@ class PastOrdersDetailView extends StatelessWidget {
               },
               child: Scaffold(
                 appBar: Common.commonAppBar(
-                  salesOrder?.name ?? '',
+                  'Order No. ${salesOrder?.name}',
                   [],
                   context,
                   sendResultBack: true,
@@ -62,89 +63,84 @@ class PastOrdersDetailView extends StatelessWidget {
 
   Widget pastOrdersDetail(
       PastOrdersDetailViewModel model, BuildContext context) {
-    var textStyle = Theme.of(context).textTheme.titleSmall;
+    var textStyle =
+        Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 16);
 
     return Stack(
       children: [
         Padding(
           padding:
               EdgeInsets.symmetric(horizontal: Sizes.paddingWidget(context)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: Sizes.paddingWidget(context)),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        salesOrder?.customer ?? '',
-                        style: textStyle,
-                      ),
-                      verticalPaddingSmall(context),
-                      Text(
-                          'Transaction Date : ${defaultDateFormat(salesOrder!.transactiondate!)}',
-                          style: textStyle),
-                      verticalPaddingSmall(context),
-                      Text(
-                          'Delivery Date : ${defaultDateFormat(salesOrder!.deliverydate!)}',
-                          style: textStyle),
-                      verticalPaddingSmall(context),
-                      Text(
-                        'Total Quantity : ${salesOrder?.totalqty}',
-                        style: textStyle,
-                      ),
-                      verticalPaddingSmall(context),
-                      Text(
-                          'Grand Total ${Formatter.formatter.format(salesOrder!.grandtotal)}',
-                          style: textStyle),
-                      verticalPaddingSmall(context),
-                      Text(
-                        'Status : ${salesOrder?.status}',
-                        style: textStyle,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  verticalPaddingMedium(context),
-                  Card(
-                    elevation: 0,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: Corners.xxlBorder),
-                    margin: EdgeInsets.zero,
-                    child: Column(
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // SizedBox(height: Sizes.paddingWidget(context)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        tableHeader(context),
-                        ListView.builder(
-                          padding: const EdgeInsets.symmetric(vertical: 0),
-                          shrinkWrap: true,
-                          itemCount: model.salesOrderItems.length,
-                          itemBuilder: (context, index) {
-                            if (index == model.salesOrderItems.length - 1) {
-                              return cartItem(index, model, context);
-                            }
-                            return Column(
-                              children: [
-                                cartItem(index, model, context),
-                                const Divider(
-                                  endIndent: 0,
-                                  height: 0,
-                                  indent: 0,
-                                  thickness: 1,
-                                ),
-                              ],
-                            );
-                          },
+                        SizedBox(height: Sizes.paddingWidget(context)),
+                        Text(
+                          salesOrder?.customer ?? '',
+                          style: textStyle,
                         ),
+                        verticalPaddingSmall(context),
+                        Text(
+                            'Transaction Date : ${defaultDateFormat(salesOrder!.transactiondate!)}',
+                            style: textStyle),
+                        verticalPaddingSmall(context),
+                        Text(
+                            'Delivery Date : ${defaultDateFormat(salesOrder!.deliverydate!)}',
+                            style: textStyle),
+                        verticalPaddingSmall(context),
+                        Text(
+                          'Total Quantity : ${salesOrder?.totalqty}',
+                          style: textStyle,
+                        ),
+                        verticalPaddingSmall(context),
+                        Text(
+                            'Grand Total ${Formatter.formatter.format(salesOrder!.grandtotal)}',
+                            style: textStyle),
+                        verticalPaddingSmall(context),
+                        Text(
+                          'Status : ${salesOrder?.status}',
+                          style: textStyle,
+                        ),
+                        verticalPaddingMedium(context),
+                        tableHeader(context),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                if (index == model.salesOrderItems.length - 1) {
+                  return ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Corners.xxlRadius,
+                      bottomRight: Corners.xxlRadius,
+                    ),
+                    child: cartItem(index, model, context),
+                  );
+                }
+                return Column(
+                  children: [
+                    cartItem(index, model, context),
+                    const Divider(
+                      endIndent: 0,
+                      height: 0,
+                      indent: 0,
+                      thickness: 1,
+                    ),
+                  ],
+                );
+              }, childCount: model.salesOrderItems.length)),
+              CustomSliverSizedBox(
+                height: Sizes.paddingWidget(context) * 1.5 * 3,
+              )
             ],
           ),
         ),
@@ -161,14 +157,24 @@ class PastOrdersDetailView extends StatelessWidget {
 
   Widget tableHeader(BuildContext context) {
     return Container(
-      height: 50,
       decoration: BoxDecoration(
-          color: CustomTheme.tableHeaderColor, borderRadius: Corners.xxlBorder),
-      child: Row(
-        children: [
-          tableHeaderColumn('Item', 65),
-          tableHeaderColumn('Qty', displayWidth(context) < 600 ? 35 : 25),
-        ],
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Corners.xxlRadius,
+          topRight: Corners.xxlRadius,
+        ),
+      ),
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+            color: CustomTheme.tableBorderColor,
+            borderRadius: Corners.xxlBorder),
+        child: Row(
+          children: [
+            tableHeaderColumn('Item', 65),
+            tableHeaderColumn('Qty', displayWidth(context) < 600 ? 35 : 25),
+          ],
+        ),
       ),
     );
   }
@@ -193,8 +199,11 @@ class PastOrdersDetailView extends StatelessWidget {
     var iconSize = displayWidth(context) < 600 ? 20.0 : 32.0;
     var item = model.salesOrderItems[index];
     var soItem = salesOrder?.salesOrderItems?[index];
-    return SizedBox(
-        height: 90,
+    return Container(
+        padding: EdgeInsets.symmetric(
+          vertical: Sizes.smallPaddingWidget(context),
+        ),
+        color: Theme.of(context).cardColor,
         key: Key(item.itemName ?? ''),
         child: cartItemData(item, soItem, index, iconSize, imageDimension,
             btnDimension, context));
@@ -207,6 +216,10 @@ class PastOrdersDetailView extends StatelessWidget {
       children: [
         Text(
           'Price : ${Formatter.formatter.format((item?.rate ?? 0))} ',
+          style: textStyle,
+        ),
+        Text(
+          'Qty : ${item?.qty ?? 0} ',
           style: textStyle,
         ),
         Text(

@@ -29,13 +29,15 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CommonService {
   //for fetching username
-  Future<int> checkSessionExpired() async {
+  Future<int?> checkSessionExpired() async {
     final url = usernameUrl();
     try {
       final response = await DioHelper.dio?.get(url);
       return response?.statusCode ?? 400;
     } catch (e) {
-      exception(e, url, 'checkSessionExpired');
+      if (e is DioException) {
+        return e.response?.statusCode;
+      }
     }
     return 0;
   }
@@ -326,7 +328,7 @@ class CommonService {
       if (storagePermission.isNotEmpty) {
         var downloadsDirectoryPath = '/storage/emulated/0/Download';
         var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
-        var url = '/api/method/frappe.utils.weasyprint.download_pdf';
+        var url = '/api/method/frappe.utils.print_format.download_pdf';
         var queryParams = {
           'doctype': doctype,
           'name': docname,

@@ -1,3 +1,4 @@
+import 'package:orderit/common/views/no_internet_connection_view.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/models/draft.dart';
 import 'package:orderit/orderit/models/sales_order.dart';
@@ -36,6 +37,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case loginViewRoute:
       return MaterialPageRoute(
           builder: (context) => LoginView(key: const Key(loginRoute)));
+    case noInternetConnectionViewRoute:
+      return MaterialPageRoute(
+          builder: (context) => NoInternetConnectionView());
     case favoritesViewRoute:
       var args = settings.arguments as String?;
       return MaterialPageRoute(builder: (context) => const FavoritesView());
