@@ -10,6 +10,7 @@ class Images {
   static const draftsIcon = 'assets/icon/drafts_icon.png';
   static const gridViewIcon = 'assets/icon/grid_view_icon.png';
   static const listViewIcon = 'assets/icon/list_view_icon.png';
+  static const noInternetIcon = 'assets/icon/no_internet_icon.png';
   static const pastOrdersIcon = 'assets/icon/past_orders_icon.png';
   static const saveAsDraftIcon = 'assets/icon/save_as_draft_icon.png';
   static const tableViewIcon = 'assets/icon/table_view_icon.png';

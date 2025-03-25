@@ -43,7 +43,7 @@ class EnterCustomerView extends StatelessWidget {
         if (connectivityStatus == ConnectivityStatus.wifi ||
             connectivityStatus == ConnectivityStatus.cellular) {
           var statusCode = await model.checkSessionExpired();
-          if (statusCode != 200) {
+          if (statusCode == 403) {
             // logout
             locator.get<StorageService>().loggedIn = false;
             await locator
