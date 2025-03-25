@@ -76,29 +76,32 @@ class UserService extends BaseViewModel {
     } catch (e) {
       exception(e, '/api/resource/User', 'getUserData');
     }
-
     return false;
   }
 
   Future<bool> checkIfUserIsCustomer() async {
     var isUserCustomer = false;
-    var storedUser = locator.get<OfflineStorage>().getItem('user');
-    var userData = User.fromJson(storedUser['data']);
-    final url = userUrl(userData.email ?? '');
-    final response = await DioHelper.dio?.get(url);
-    var user = UserModel.fromJson(response?.data['data']);
-    user = await locator.get<UserService>().getUserData();
-    // get customer with reference to user
-    if (user.email != null) {
-      // if customer data is not empty set isUserCustomer to true
-      var userExists = await checkIfCustomerExistsForUser(userData.email);
-      if (userExists) {
-        return true;
+    try {
+      var storedUser = locator.get<OfflineStorage>().getItem('user');
+      var userData = User.fromJson(storedUser['data']);
+      final url = userUrl(userData.email ?? '');
+      final response = await DioHelper.dio?.get(url);
+      var user = UserModel.fromJson(response?.data['data']);
+      user = await locator.get<UserService>().getUserData();
+      // get customer with reference to user
+      if (user.email != null) {
+        // if customer data is not empty set isUserCustomer to true
+        var userExists = await checkIfCustomerExistsForUser(userData.email);
+        if (userExists) {
+          return true;
+        }
+        // else set isUserCustomer to false
+        else {
+          return false;
+        }
       }
-      // else set isUserCustomer to false
-      else {
-        return false;
-      }
+    } catch (e) {
+      exception(e, '', 'checkIfUserIsCustomer');
     }
     return isUserCustomer;
   }
