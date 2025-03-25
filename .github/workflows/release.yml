@@ -50,18 +50,14 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v1.5.0" # Replace with your desired tag name
-        release_name: "v1.5.0" # Replace with your desired release name
+        tag_name: "v1.5.1" # Replace with your desired tag name
+        release_name: "v1.5.1" # Replace with your desired release name
         body: |
           This release includes:
-          - After entering qty by keyboard, no option to close the keyboard 
-          - Favourites icon should be placed better
-          - Previous button in catalog view is overlapping by cart button 
-          - Draft scroll not working.
-          - Tables Padding is not correct. 
-          - Cart Product should jump to Product details page 
-          - Alignment for cart product and qty button should align 
-          - add Wishlist info to a new screen
+          - To show qty in past orders for specific item
+          - Fix spacing in past order detail its hiding item behind add to cart button
+          - Image not showing in catalogue view
+          - Changed app logo
         draft: false
         prerelease: false
       env:
