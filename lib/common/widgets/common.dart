@@ -28,6 +28,7 @@ class Common {
               color: Colors.white,
             ),
       ),
+      centerTitle: false,
       leadingWidth: 36,
       leading: showBackBtn == true
           ? Navigator.of(context).canPop()
