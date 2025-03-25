@@ -2,6 +2,9 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:orderit/common/services/navigation_service.dart';
+import 'package:orderit/locators/locator.dart';
+import 'package:orderit/route/routing_constants.dart';
 import 'package:orderit/util/helpers.dart';
 
 //Exception handling code
@@ -10,15 +13,20 @@ void exception(e, String url, String function, {bool showToast = true}) async {
       '*************Exception occured at url : $url and function named : $function   **********************');
   var contactSupport = 'Please contact support@ambibuzz.com';
 
-  print(e.response.data);
-  printWrapped(e.response.data.toString());
-
-  // print(url);
+  print(e);
+  if (e is DioException) {
+    if (e.error is SocketException) {
+      await locator
+          .get<NavigationService>()
+          .navigateTo(noInternetConnectionViewRoute);
+    }
+  }
   if (e.response != null) {
-    if (e is SocketException) {
-      styledToast(
-          'No Internet Connection. Please Connect to Wifi or Mobile Network.');
-    } else if (e.response!.data['exc_type'] == 'PermissionError' ||
+    // print(e.response.data);
+    printWrapped(e.response.data.toString());
+    // print(e.response);
+
+    if (e.response!.data['exc_type'] == 'PermissionError' ||
         e.response!.data['exc_type'] == 'ValidationError' ||
         e.response!.data['exc_type'] == 'TimestampMismatchError' ||
         e.response!.data['exc_type'] == 'MissingDocumentError' ||
