@@ -328,7 +328,7 @@ class CommonService {
       if (storagePermission.isNotEmpty) {
         var downloadsDirectoryPath = '/storage/emulated/0/Download';
         var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
-        var url = '/api/method/frappe.utils.weasyprint.download_pdf';
+        var url = '/api/method/frappe.utils.print_format.download_pdf';
         var queryParams = {
           'doctype': doctype,
           'name': docname,
