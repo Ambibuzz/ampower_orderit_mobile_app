@@ -577,19 +577,27 @@ class CustomCarousel extends StatelessWidget {
     var images = item.images;
     var itemsViewModel = locator.get<ItemsViewModel>();
     return (item.images == null || item.images?.isEmpty == true)
-        ? Container(
-            width: width,
-            height: height,
-            decoration: const BoxDecoration(
-              // borderRadius: Corners.lgBorder,
-              image: DecorationImage(
-                image: AssetImage(
-                  Images.imageNotFound,
+        ? item.imageUrl == null
+            ? Container(
+                width: width,
+                height: height,
+                decoration: const BoxDecoration(
+                  // borderRadius: Corners.lgBorder,
+                  image: DecorationImage(
+                    image: AssetImage(
+                      Images.imageNotFound,
+                    ),
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                fit: BoxFit.cover,
-              ),
-            ),
-          )
+              )
+            : ClipRRect(
+                borderRadius: Corners.xlBorder,
+                child: image_widget.imageWidget(
+                    '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
+                    width,
+                    width),
+              )
         : Column(
             children: [
               CarouselSlider.builder(
