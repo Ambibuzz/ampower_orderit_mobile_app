@@ -3,7 +3,7 @@ description: "AmPower OrderIT - the B2B Catalogue and Order Booking system built
 
 publish_to: "none"
 
-version: 1.5.1+2
+version: 1.5.2+3
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
@@ -79,20 +79,20 @@ dependency_overrides:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/ampower_orderit_logo.png"
+  image_path: "assets/ampower_orderit_logo_with_bg.jpg"
   min_sdk_android: 21 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "assets/ampower_orderit_logo.png"
+    image_path: "assets/ampower_orderit_logo_with_bg.jpg"
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/ampower_orderit_logo.png"
+    image_path: "assets/ampower_orderit_logo_with_bg.jpg"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: true
-    image_path: "assets/ampower_orderit_logo.png"
+    image_path: "assets/ampower_orderit_logo_with_bg.jpg"
 
 flutter:
   uses-material-design: true
