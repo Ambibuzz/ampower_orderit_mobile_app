@@ -46,7 +46,6 @@ dependencies:
   share_plus: ^10.1.2
   image_picker: ^1.0.1
   camera: ^0.10.5+2
-  # flutter_image_compress: ^2.4.0
   flutter_layout_grid: ^2.0.5
   flutter_styled_toast: ^2.2.1
   html: ^0.15.4
