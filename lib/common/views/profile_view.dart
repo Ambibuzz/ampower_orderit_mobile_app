@@ -341,17 +341,15 @@ class UserImage extends StatelessWidget {
                       final picker = ImagePicker();
                       // Capture a photo.
                       var image =
-                          await picker.pickImage(source: ImageSource.gallery);
+                          await picker.pickImage(source: ImageSource.gallery,imageQuality: 50);
                       model.setImage(image);
                       if (image != null) {
-                        // compress image
-                        var finalImg = await compressFile(model.file, 50);
                         var img64 =
-                            FileConverter.getBase64FormateFile(finalImg!.path);
+                            FileConverter.getBase64FormateFile(image.path);
                         // upload image
                         await locator
                             .get<CameraService>()
-                            .uploadImage(context, img64, File(finalImg.path), 0,
+                            .uploadImage(context, img64, File(image.path), 0,
                                 'User', model.user.email)
                             .then(
                               (value) => {
@@ -388,17 +386,15 @@ class UserImage extends StatelessWidget {
                       final picker = ImagePicker();
                       // Pick an image.
                       final image =
-                          await picker.pickImage(source: ImageSource.camera);
+                          await picker.pickImage(source: ImageSource.camera,imageQuality: 50);
                       model.setImage(image);
                       if (image != null) {
-                        // compress image
-                        var finalImg = await compressFile(model.file, 50);
                         var img64 =
-                            FileConverter.getBase64FormateFile(finalImg!.path);
+                            FileConverter.getBase64FormateFile(image.path);
                         // upload image
                         await locator
                             .get<CameraService>()
-                            .uploadImage(context, img64, File(finalImg.path), 0,
+                            .uploadImage(context, img64, File(image.path), 0,
                                 'User', model.user.email)
                             .then(
                               (value) => {
