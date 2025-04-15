@@ -26,6 +26,7 @@ const successRoute = '/success';
 const searchRoute = '/search';
 const loginRoute = '/login';
 const enterCustomerRoute = '/enter_customer';
+const errorLogListViewRoute = 'error_log_list';
 const itemGroupSearchRoute = '/items/itemgroup';
 const itemSearchRoute = '/items/search';
 const particularItemSearchRoute = '/items/item';
