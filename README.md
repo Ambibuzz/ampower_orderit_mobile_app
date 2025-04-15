@@ -14,6 +14,14 @@ AmPower OrderIT is your ultimate solution for simplifying and accelerating the s
 - **Flutter** : 3.24.2
 - **ERPNext** : v15.39.3
 
+### Min OS Version on Which App is Tested
+- **Android** : 13
+- **IOS** : 15.5.0
+
+### Max OS Version on Which App is Tested
+- **Android** : 15
+- **IOS** : 18.1
+
 ### Tech Stack
 - Frontend: Flutter
 - Backend: ERPNext

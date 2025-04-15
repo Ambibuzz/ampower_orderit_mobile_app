@@ -1,7 +1,9 @@
 import 'package:orderit/app_viewmodel.dart';
+import 'package:orderit/common/services/error_log_service.dart';
 import 'package:orderit/common/services/stock_actual_qty_service.dart';
 import 'package:orderit/common/services/doctype_caching_service.dart';
 import 'package:orderit/common/services/fetch_cached_doctype_service.dart';
+import 'package:orderit/common/viewmodels/error_log_list_viewmodel.dart';
 import 'package:orderit/common/viewmodels/profile_viewmodel.dart';
 import 'package:orderit/common/views/login_view.dart';
 import 'package:orderit/orderit/services/cart_service.dart';
@@ -99,4 +101,7 @@ Future setUpLocator() async {
   locator.registerLazySingleton<StockActualQtyService>(
       () => StockActualQtyService());
   locator.registerLazySingleton<FavoritesViewModel>(() => FavoritesViewModel());
+  locator.registerLazySingleton<ErrorLogService>(() => ErrorLogService());
+  locator.registerLazySingleton<ErrorLogListViewModel>(
+      () => ErrorLogListViewModel());
 }

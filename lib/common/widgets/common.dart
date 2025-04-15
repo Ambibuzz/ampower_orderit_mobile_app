@@ -78,6 +78,14 @@ class Common {
     );
   }
 
+  static double convertToDouble(dynamic data) {
+    if (data is int) {
+      return (data).toDouble();
+    } else {
+      return data;
+    }
+  }
+
   static Future<bool> showExitConfirmationDialog(BuildContext context) async {
     return await CustomAlertDialog().alertDialog(
           'Are you sure you want to exit?',

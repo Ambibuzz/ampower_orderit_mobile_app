@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:orderit/common/services/error_log_service.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/route/routing_constants.dart';
@@ -22,6 +23,10 @@ void exception(e, String url, String function, {bool showToast = true}) async {
     }
   }
   if (e.response != null) {
+    
+    await locator
+        .get<ErrorLogService>()
+        .saveErrorLog(e.response.data.toString(),e);
     // print(e.response.data);
     printWrapped(e.response.data.toString());
     // print(e.response);

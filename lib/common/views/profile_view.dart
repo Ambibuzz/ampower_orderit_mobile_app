@@ -43,7 +43,34 @@ class ProfileView extends StatelessWidget {
       },
       builder: (context, model, child) {
         return Scaffold(
-          appBar: Common.commonAppBar('Profile', [], context),
+          appBar: Common.commonAppBar(
+              'Profile',
+              [
+                TextButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        Theme.of(context).colorScheme.onSecondary),
+                  ),
+                  onPressed: () async {
+                    await locator
+                        .get<NavigationService>()
+                        .navigateTo(errorLogListViewRoute);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: Sizes.smallPaddingWidget(context)),
+                    child: Text(
+                      'Error Log',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: Sizes.paddingWidget(context)),
+              ],
+              context),
           body: model.state == ViewState.busy
               ? WidgetsFactoryList.circularProgressIndicator()
               : Consumer(builder: (context, ThemeModel themeModel, child) {

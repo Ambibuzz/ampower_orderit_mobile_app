@@ -1,3 +1,4 @@
+import 'package:orderit/common/views/error_log_list_view.dart';
 import 'package:orderit/common/views/no_internet_connection_view.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/models/draft.dart';
@@ -43,6 +44,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case favoritesViewRoute:
       var args = settings.arguments as String?;
       return MaterialPageRoute(builder: (context) => const FavoritesView());
+    case errorLogListViewRoute:
+      return MaterialPageRoute(builder: (context) => const ErrorLogListView());
     case pastOrdersViewRoute:
       return MaterialPageRoute(builder: (context) => const PastOrdersView());
     case pastOrdersDetailViewRoute:
