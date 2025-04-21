@@ -83,10 +83,10 @@ class PastOrdersViewModel extends BaseViewModel {
     }
   }
 
-  Future getPastOrders(BuildContext context) async {
+  Future getPastOrders(BuildContext context,List<dynamic> filters) async {
     setState(ViewState.busy);
     salesOrderList =
-        await locator.get<OrderitApiService>().getSalesOrderList([], context);
+        await locator.get<OrderitApiService>().getSalesOrderList(filters, context);
 
     if (statusTextSO == '') {
       salesOrderList = salesOrderList

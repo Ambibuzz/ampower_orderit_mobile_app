@@ -418,7 +418,7 @@ class OrderitApiService {
           connectivityStatus == ConnectivityStatus.wifi) {
         var data = locator.get<OfflineStorage>().getItem(Strings.salesOrder);
         // contains cached sales order display cached data
-        if (data['data'] != null) {
+        if (data['data'] != null && (filters.isEmpty==true)) {
           return await locator
               .get<FetchCachedDoctypeService>()
               .fetchCachedSalesOrderData();

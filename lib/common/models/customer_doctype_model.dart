@@ -1,3 +1,5 @@
+import 'package:orderit/common/widgets/common.dart';
+
 class CustomerDoctype {
   List<Docs>? docs;
 
@@ -162,7 +164,7 @@ class CreditLimits {
     docstatus = json['docstatus'];
     idx = json['idx'];
     company = json['company'];
-    creditLimit = json['credit_limit'];
+    creditLimit = Common.convertToDouble(json['credit_limit']);
     bypassCreditLimitCheck = json['bypass_credit_limit_check'];
     parent = json['parent'];
     parentfield = json['parentfield'];
@@ -224,9 +226,9 @@ class DashboardInfo {
       {this.billingThisYear, this.currency, this.totalUnpaid, this.company});
 
   DashboardInfo.fromJson(Map<String, dynamic> json) {
-    billingThisYear = json['billing_this_year'];
+    billingThisYear = Common.convertToDouble(json['billing_this_year']);
     currency = json['currency'];
-    totalUnpaid = json['total_unpaid'];
+    totalUnpaid = Common.convertToDouble(json['total_unpaid']);
     company = json['company'];
   }
 

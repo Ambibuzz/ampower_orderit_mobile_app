@@ -50,11 +50,12 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v1.6.0" # Replace with your desired tag name
-        release_name: "v1.6.0" # Replace with your desired release name
+        tag_name: "v1.7.0" # Replace with your desired tag name
+        release_name: "v1.7.0" # Replace with your desired release name
         body: |
           This release includes:
-          - updated sdk to support android 15 and 16
+          - added from and to date filter in past orders
+          - added error log
         draft: false
         prerelease: false
       env:
