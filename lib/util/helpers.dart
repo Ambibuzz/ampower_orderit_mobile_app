@@ -80,6 +80,13 @@ Future fileShare(String path, String title, String text) async {
   );
 }
 
+Future shareText(String title, String text) async {
+  await Share.share(
+    text,
+    subject: title,
+  );
+}
+
 String defaultDateFormat(String date) {
   return DateFormat('dd-MM-yyyy').format(DateTime.parse(date));
 }

@@ -8,6 +8,7 @@ import 'package:orderit/config/styles.dart';
 import 'package:orderit/base_view.dart';
 import 'package:orderit/orderit/models/sales_order.dart';
 import 'package:orderit/locators/locator.dart';
+import 'package:orderit/orderit/viewmodels/filters/past_orders_filter_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/past_orders_viewmodel.dart';
 import 'package:orderit/orderit/views/filters/past_orders_filter_view.dart';
 import 'package:orderit/orderit/views/past_orders_detail_view.dart';
@@ -30,8 +31,9 @@ class PastOrdersView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseView<PastOrdersViewModel>(
       onModelReady: (model) async {
-        await model.getPastOrders(context);
+        await model.getPastOrders(context,[]);
         await model.getItems(context);
+        locator.get<PastOrdersFilterViewModel>().clearData();
       },
       builder: (context, model, child) {
         return Scaffold(
@@ -41,12 +43,14 @@ class PastOrdersView extends StatelessWidget {
                 GestureDetector(
                     onTap: () async {
                       var result = await openPastOrderFilter(context);
-                      if (result != null) {
-                        var status = result as List;
-                        print(status[0]);
-                        model.setStatusSO(status[0]);
-                        await model.getPastOrders(context);
-                      }
+                      var filters = result as List;
+                        if (result[0] is! List) {
+                          model.setStatusSO(result[0]);
+                          await model.getPastOrders(context, []);
+                        } else {
+                          var filters = result[0] as List;
+                          await model.getPastOrders(context, filters);
+                        }
                     },
                     child: const Icon(Icons.filter_alt)),
                 SizedBox(
