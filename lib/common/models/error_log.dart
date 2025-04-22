@@ -26,6 +26,7 @@ class ErrorLog {
   String? version;
   String? error;
   String? exception;
+  int? statusCode;
 
   ErrorLog({
     this.id,
@@ -33,6 +34,7 @@ class ErrorLog {
     this.version,
     this.error,
     this.exception,
+    this.statusCode,
   });
 
   ErrorLog.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class ErrorLog {
     version = json['version'];
     error = json['error'];
     exception = json['exception'];
+    statusCode = json['status_code'];
   }
 
   Map<String, dynamic> toJson() {
@@ -50,6 +53,7 @@ class ErrorLog {
     data['version'] = version;
     data['error'] = error;
     data['exception'] = exception;
+    data['status_code'] = statusCode;
     return data;
   }
 }
