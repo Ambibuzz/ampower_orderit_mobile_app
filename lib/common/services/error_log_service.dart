@@ -10,19 +10,20 @@ import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class ErrorLogService {
-  Future<void> saveErrorLog(String error, dynamic errorResponse) async {
+  Future<void> saveErrorLog(
+      String error, int? statusCode, dynamic errorResponse) async {
     var dateTimeObj = DateTime.now();
     var exception = errorResponse.response!.data['exception'] ?? '';
 
     var packageInfo = await PackageInfo.fromPlatform();
 
     var errorLog = ErrorLog(
-      id: dateTimeObj.millisecondsSinceEpoch,
-      time: DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTimeObj),
-      error: error,
-      version: packageInfo.version,
-      exception: exception ?? '',
-    );
+        id: dateTimeObj.millisecondsSinceEpoch,
+        time: DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTimeObj),
+        error: error,
+        version: packageInfo.version,
+        exception: exception ?? '',
+        statusCode: statusCode ?? 0);
 
     //get errorlogMap
     var data = locator.get<OfflineStorage>().getItem('errorlog');
