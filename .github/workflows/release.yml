@@ -35,15 +35,17 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: "3.24.2"
+        flutter-version: "3.27.4"
     
     # Step 4: Install Dependencies
     - name: Install Flutter Dependencies
       run: flutter pub get
 
     # Step 5: Build the APK
-    - name: Build APK
-      run: flutter build apk --release
+    # - name: Build APK
+    #   run: flutter build apk --release
+    - name: Build APK (Split ABI)
+      run: flutter build apk --release --split-per-abi --obfuscate --split-debug-info=debug-info
 
     # Step 6: Create GitHub Release
     - name: Create Release
@@ -54,8 +56,7 @@ jobs:
         release_name: "v1.7.0" # Replace with your desired release name
         body: |
           This release includes:
-          - added from and to date filter in past orders
-          - added error log
+          - Fixed Compilation and build issues after upgrading flutter
         draft: false
         prerelease: false
       env:
@@ -68,6 +69,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: build/app/outputs/flutter-apk/app-release.apk
-        asset_name: app-release.apk
+        # asset_path: build/app/outputs/flutter-apk/app-release.apk
+        asset_path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+        # asset_name: app-release.apk
+        asset_name: app-arm64-v8a-release.apk
         asset_content_type: application/vnd.android.package-archive
