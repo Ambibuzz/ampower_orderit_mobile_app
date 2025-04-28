@@ -52,11 +52,12 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v1.7.0" # Replace with your desired tag name
-        release_name: "v1.7.0" # Replace with your desired release name
+        tag_name: "v1.8.1" # Replace with your desired tag name
+        release_name: "v1.8.1" # Replace with your desired release name
         body: |
           This release includes:
           - Fixed Compilation and build issues after upgrading flutter
+          - Fixed app crash while downloading pdf after placing sales order
         draft: false
         prerelease: false
       env:
