@@ -1,0 +1,2 @@
+-keep class com.example.openfilex.** { *; }
+-keep class io.github.ponnamkarthik.** { *; }

@@ -11,6 +11,7 @@
     <uses-feature android:name="android.hardware.camera" />
    <application
         android:label="AmPower OrderIT"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
