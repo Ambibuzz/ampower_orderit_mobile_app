@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/config/theme.dart';
@@ -12,6 +13,7 @@ import 'package:orderit/orderit/viewmodels/cart_page_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/items_detail_viewmodel.dart';
 import 'package:orderit/common/widgets/custom_snackbar.dart';
 import 'package:orderit/orderit/viewmodels/items_viewmodel.dart';
+import 'package:orderit/route/routing_constants.dart';
 import 'package:orderit/util/constants/images.dart';
 import 'package:orderit/util/constants/formatter.dart';
 import 'package:orderit/util/constants/sizes.dart';
@@ -27,6 +29,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:provider/provider.dart';
+import '../../orderit/views/image_widget_native.dart'
+    if (dart.library.html) 'image_widget_web.dart' as image_widget;
 
 class ItemsDetailView extends StatelessWidget {
   final String? itemCode;
@@ -295,17 +299,17 @@ class CustomCarousel extends StatelessWidget {
                       (BuildContext context, int index, int pageViewIndex) =>
                           ClipRRect(
                     borderRadius: Corners.xlBorder,
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          '${locator.get<StorageService>().apiUrl}${images[index].fileUrl}',
-                      httpHeaders: {
-                        HttpHeaders.cookieHeader: DioHelper.cookies ?? ''
+                    child: GestureDetector(
+                      onTap: () {
+                        locator.get<NavigationService>().navigateTo(
+                            imageViewerViewRoute,
+                            arguments: [images, index]);
                       },
-                      width: displayWidth(context),
-                      height: displayHeight(context) * 0.4,
-                      placeholder: (context, url) => const Icon(Icons.error),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
+                      child: image_widget.imageWidget(
+                        '${locator.get<StorageService>().apiUrl}${images[index].fileUrl}',
+                        displayWidth(context),
+                        displayHeight(context) * 0.4,
+                      ),
                     ),
                   ),
                 ),

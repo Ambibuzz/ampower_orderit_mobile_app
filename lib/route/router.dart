@@ -4,6 +4,7 @@ import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/models/draft.dart';
 import 'package:orderit/orderit/models/sales_order.dart';
 import 'package:orderit/orderit/views/favorites_view.dart';
+import 'package:orderit/orderit/views/image_viewer_view.dart';
 import 'package:orderit/orderit/views/item_category_bottom_nav_bar.dart';
 import 'package:orderit/orderit/views/cart_page_view.dart';
 import 'package:orderit/orderit/views/draft_detail_view.dart';
@@ -76,6 +77,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) =>
               SearchPageView(fromView: args, key: const Key(searchRoute)));
+    case imageViewerViewRoute:
+      var args = settings.arguments as List<dynamic>;
+      return MaterialPageRoute(
+          builder: (context) => ImageViewerView(
+                images: args[0] ?? [],
+                initialIndex: args[1] ?? 0,
+              ));
     case itemsViewRoute:
       var args = settings.arguments as List<dynamic>;
       Key key;

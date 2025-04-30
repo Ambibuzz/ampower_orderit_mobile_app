@@ -7,6 +7,7 @@ import 'package:orderit/common/widgets/empty_widget.dart';
 import 'package:orderit/common/widgets/popup_menu_item.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/locators/locator.dart';
+import 'package:orderit/orderit/models/file_model.dart';
 import 'package:orderit/orderit/models/item_group.dart';
 import 'package:orderit/orderit/models/items_model.dart';
 import 'package:orderit/orderit/services/user_service.dart';
@@ -409,13 +410,10 @@ class ItemsView extends StatelessWidget {
                 ? const SizedBox()
                 : model.categorySelectedImage == null
                     ? Container()
-                    : ClipRRect(
-                        borderRadius: Corners.xlBorder,
-                        child: image_widget.imageWidget(
-                            '${locator.get<StorageService>().apiUrl}${model.categorySelectedImage!}',
-                            40,
-                            40),
-                      ),
+                    : image_widget.imageWidget(
+                        '${locator.get<StorageService>().apiUrl}${model.categorySelectedImage!}',
+                        40,
+                        40),
             SizedBox(
               width: Sizes.smallPaddingWidget(context),
             ),
@@ -593,10 +591,20 @@ class CustomCarousel extends StatelessWidget {
               )
             : ClipRRect(
                 borderRadius: Corners.xlBorder,
-                child: image_widget.imageWidget(
-                    '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                    width,
-                    width),
+                child: GestureDetector(
+                  onTap: () {
+                    locator
+                        .get<NavigationService>()
+                        .navigateTo(imageViewerViewRoute, arguments: [
+                      FileModelOrderIT(fileUrl: item.imageUrl),
+                      0
+                    ]);
+                  },
+                  child: image_widget.imageWidget(
+                      '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
+                      width,
+                      width),
+                ),
               )
         : Column(
             children: [
@@ -636,10 +644,17 @@ class CustomCarousel extends StatelessWidget {
                   borderRadius: Corners.lgBorder,
                   child: ClipRRect(
                     borderRadius: Corners.lgBorder,
-                    child: image_widget.imageWidget(
-                        '${locator.get<StorageService>().apiUrl}${images?[index].fileUrl}',
-                        width,
-                        height),
+                    child: GestureDetector(
+                      onTap: () {
+                        locator.get<NavigationService>().navigateTo(
+                            imageViewerViewRoute,
+                            arguments: [images, index]);
+                      },
+                      child: image_widget.imageWidget(
+                          '${locator.get<StorageService>().apiUrl}${images?[index].fileUrl}',
+                          width,
+                          height),
+                    ),
                   ),
                 ),
               ),
@@ -919,14 +934,39 @@ class ItemsList extends StatelessWidget {
                                             ),
                                           ),
                                         )
-                                      : image_widget.imageWidget(
-                                          '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                      : GestureDetector(
+                                          onTap: () {
+                                            locator
+                                                .get<NavigationService>()
+                                                .navigateTo(
+                                                    imageViewerViewRoute,
+                                                    arguments: [
+                                                  item.images,
+                                                  0
+                                                ]);
+                                          },
+                                          child: image_widget.imageWidget(
+                                              '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                              width,
+                                              width),
+                                        ))
+                                  : GestureDetector(
+                                      onTap: () {
+                                        locator
+                                            .get<NavigationService>()
+                                            .navigateTo(
+                                                imageViewerViewRoute,
+                                                arguments: [
+                                              FileModelOrderIT(
+                                                  fileUrl: item.imageUrl),
+                                              0
+                                            ]);
+                                      },
+                                      child: image_widget.imageWidget(
+                                          '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
                                           width,
-                                          width))
-                                  : image_widget.imageWidget(
-                                      '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                                      width,
-                                      width),
+                                          width),
+                                    ),
                             ),
                           ),
                           const SizedBox(width: 5),
@@ -1114,14 +1154,39 @@ class ItemsList extends StatelessWidget {
                                             ),
                                           ),
                                         )
-                                      : image_widget.imageWidget(
-                                          '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                      : GestureDetector(
+                                          onTap: () {
+                                            locator
+                                                .get<NavigationService>()
+                                                .navigateTo(
+                                                    imageViewerViewRoute,
+                                                    arguments: [
+                                                  item.images,
+                                                  0
+                                                ]);
+                                          },
+                                          child: image_widget.imageWidget(
+                                              '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                              width,
+                                              width),
+                                        ))
+                                  : GestureDetector(
+                                      onTap: () {
+                                        locator
+                                            .get<NavigationService>()
+                                            .navigateTo(
+                                                imageViewerViewRoute,
+                                                arguments: [
+                                              FileModelOrderIT(
+                                                  fileUrl: item.imageUrl),
+                                              0
+                                            ]);
+                                      },
+                                      child: image_widget.imageWidget(
+                                          '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
                                           width,
-                                          width))
-                                  : image_widget.imageWidget(
-                                      '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                                      width,
-                                      width),
+                                          width),
+                                    ),
                             ),
                           ),
                           const SizedBox(width: 5),
@@ -1760,14 +1825,34 @@ class TableView extends StatelessWidget {
                                               ),
                                             ),
                                           )
-                                        : image_widget.imageWidget(
-                                            '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                        : GestureDetector(
+                                            onTap: () {
+                                              locator
+                                                  .get<NavigationService>()
+                                                  .navigateTo(
+                                                      imageViewerViewRoute,
+                                                      arguments: [
+                                                    item.images,
+                                                    0
+                                                  ]);
+                                            },
+                                            child: image_widget.imageWidget(
+                                                '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                                width,
+                                                width),
+                                          ))
+                                    : GestureDetector(
+                                        onTap: () {
+                                          locator
+                                              .get<NavigationService>()
+                                              .navigateTo(imageViewerViewRoute,
+                                                  arguments: [FileModelOrderIT(fileUrl: item.imageUrl), 0]);
+                                        },
+                                        child: image_widget.imageWidget(
+                                            '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
                                             width,
-                                            width))
-                                    : image_widget.imageWidget(
-                                        '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                                        width,
-                                        width),
+                                            width),
+                                      ),
                               ),
                             ),
                             // CustomCarousel(item: item,width: width,height: width),
@@ -2674,14 +2759,29 @@ class FlexibleItemsGrid extends StatelessWidget {
                                       width: width,
                                       height: width,
                                     )
-                                  : image_widget.imageWidget(
-                                      '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                  : GestureDetector(
+                                      onTap: () {
+                                        locator
+                                            .get<NavigationService>()
+                                            .navigateTo(imageViewerViewRoute,
+                                                arguments: [item.images, 0]);
+                                      },
+                                      child: image_widget.imageWidget(
+                                          '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                                          width,
+                                          width),
+                                    ))
+                              : GestureDetector(
+                                  onTap: () {
+                                    locator.get<NavigationService>().navigateTo(
+                                        imageViewerViewRoute,
+                                        arguments: [FileModelOrderIT(fileUrl: item.imageUrl), 0]);
+                                  },
+                                  child: image_widget.imageWidget(
+                                      '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
                                       width,
-                                      width))
-                              : image_widget.imageWidget(
-                                  '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                                  width,
-                                  width),
+                                      width),
+                                ),
                         ),
                       ),
                       SizedBox(height: displayWidth(context) < 600 ? 5 : 10),

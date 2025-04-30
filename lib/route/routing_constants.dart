@@ -19,6 +19,7 @@ const customerDashboardRoute = '/customer_dashboard';
 const draftViewRoute = '/draft';
 const draftDetailViewRoute = '/draft/detail';
 const profileRoute = '/profile';
+const imageViewerViewRoute = '/image_viewer';
 const itemsRoute = '/items';
 const itemDetailRoute = '/detail';
 const itemCategoryNavBarRoute = '/item_category_nav_bar';
