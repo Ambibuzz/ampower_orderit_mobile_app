@@ -13,6 +13,7 @@ import 'package:orderit/orderit/viewmodels/draft_detail_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/draft_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/favorites_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/filters/past_orders_filter_viewmodel.dart';
+import 'package:orderit/orderit/viewmodels/image_viewer_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/item_attributes_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/item_category_bottom_nav_bar_viewmodel.dart';
 import 'package:orderit/orderit/services/items_api_service.dart';
@@ -104,4 +105,6 @@ Future setUpLocator() async {
   locator.registerLazySingleton<ErrorLogService>(() => ErrorLogService());
   locator.registerLazySingleton<ErrorLogListViewModel>(
       () => ErrorLogListViewModel());
+  locator.registerLazySingleton<ImageViewerViewModel>(
+      () => ImageViewerViewModel());
 }

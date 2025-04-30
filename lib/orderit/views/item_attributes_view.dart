@@ -16,6 +16,8 @@ import 'package:orderit/util/constants/strings.dart';
 import 'package:orderit/util/dio_helper.dart';
 import 'package:orderit/util/display_helper.dart';
 import 'package:flutter/material.dart';
+import '../../orderit/views/image_widget_native.dart'
+    if (dart.library.html) 'image_widget_web.dart' as image_widget;
 
 class ItemAttributesView extends StatelessWidget {
   ItemAttributesView({super.key, required this.item});
@@ -162,19 +164,11 @@ class ItemVariants extends StatelessWidget {
                               ),
                             ),
                           )
-                        : CachedNetworkImage(
-                            imageUrl: locator.get<StorageService>().apiUrl +
-                                item.imageUrl!,
-                            httpHeaders: {
-                              HttpHeaders.cookieHeader: DioHelper.cookies ?? ''
-                            },
-                            width: width,
-                            height: width,
-                            placeholder: (context, url) =>
-                                const Icon(Icons.error),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                          ),
+                        : image_widget.imageWidget(
+                            '${locator.get<StorageService>().apiUrl}${item.images![0].fileUrl}',
+                            width,
+                            width,
+                            fit: BoxFit.cover),
                     SizedBox(height: displayWidth(context) < 600 ? 5 : 10),
                     Row(
                       children: [

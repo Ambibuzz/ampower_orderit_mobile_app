@@ -28,6 +28,8 @@ import 'package:orderit/util/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import '../../orderit/views/image_widget_native.dart'
+    if (dart.library.html) 'image_widget_web.dart' as image_widget;
 
 class ProfileView extends StatelessWidget {
   ProfileView({super.key});
@@ -466,18 +468,10 @@ class UserImage extends StatelessWidget {
       child: model.user.userImage != null
           ? ClipOval(
               clipBehavior: Clip.antiAlias,
-              child: CachedNetworkImage(
-                imageUrl:
-                    '${locator.get<StorageService>().apiUrl}${model.user.userImage}',
-                httpHeaders: {
-                  HttpHeaders.cookieHeader: DioHelper.cookies ?? ''
-                },
-                width: imageDimension,
-                height: imageDimension,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Icon(Icons.error),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              ),
+              child: image_widget.imageWidget(
+                  '${locator.get<StorageService>().apiUrl}${model.user.userImage}',
+                  imageDimension,
+                  imageDimension),
             )
           : Container(
               width: imageDimension,

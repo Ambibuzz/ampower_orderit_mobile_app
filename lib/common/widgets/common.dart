@@ -16,6 +16,8 @@ import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../orderit/views/image_widget_native.dart'
+    if (dart.library.html) 'image_widget_web.dart' as image_widget;
 
 class Common {
   static AppBar commonAppBar(
@@ -324,15 +326,11 @@ class Common {
     return user.userImage != null
         ? ClipOval(
             clipBehavior: Clip.antiAlias,
-            child: CachedNetworkImage(
-              imageUrl:
-                  '${locator.get<StorageService>().apiUrl}${user.userImage}',
-              httpHeaders: {HttpHeaders.cookieHeader: DioHelper.cookies ?? ''},
-              width: imageDimension,
-              height: imageDimension,
+            child: image_widget.imageWidget(
+              '${locator.get<StorageService>().apiUrl}${user.userImage}',
+              imageDimension,
+              imageDimension,
               fit: BoxFit.cover,
-              placeholder: (context, url) => const Icon(Icons.error),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
           )
         : Container(
