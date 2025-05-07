@@ -541,4 +541,8 @@ class CommonService {
     }
     return max;
   }
+
+  static void unfocus() {
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
 }

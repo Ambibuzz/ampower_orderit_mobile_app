@@ -31,11 +31,17 @@ jobs:
         echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
         echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
 
+    - name: Install Android SDK tools
+      uses: android-actions/setup-android@v3
+
+    - name: Accept Android Licenses
+      run: yes | sdkmanager --licenses
+
     # Step 3: Set up Flutter
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: "3.27.4"
+        flutter-version: "3.29.0"
     
     # Step 4: Install Dependencies
     - name: Install Flutter Dependencies
@@ -52,12 +58,12 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v1.9.0" # Replace with your desired tag name
-        release_name: "v1.9.0" # Replace with your desired release name
+        tag_name: "v1.9.1" # Replace with your desired tag name
+        release_name: "v1.9.1" # Replace with your desired release name
         body: |
           This release includes:
-          - Added image zoom in & out feature
-          - Used Reusable image widget instead of cached network image
+          - improved ui of customer selection
+          - fixed issue of focus when tapped outside for hiding keyboard
         draft: false
         prerelease: false
       env:
