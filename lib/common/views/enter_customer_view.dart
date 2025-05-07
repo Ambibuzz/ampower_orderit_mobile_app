@@ -4,6 +4,7 @@ import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
+import 'package:orderit/common/widgets/custom_snackbar.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/common/services/offline_storage_service.dart';
@@ -109,7 +110,6 @@ class EnterCustomerView extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 25),
                               Text(
                                 'Select a Customer from the list to Proceed',
                                 maxLines: 2,
@@ -117,18 +117,20 @@ class EnterCustomerView extends StatelessWidget {
                                 style: displayWidth(context) < 600
                                     ? Theme.of(context)
                                         .textTheme
-                                        .titleLarge
+                                        .titleMedium
                                         ?.copyWith(
                                           fontWeight: FontWeight.bold,
+                                          color: CustomTheme.borderColor,
                                         )
                                     : Theme.of(context)
                                         .textTheme
                                         .headlineSmall
                                         ?.copyWith(
                                           fontWeight: FontWeight.bold,
+                                          color: CustomTheme.borderColor,
                                         ),
                               ),
-                              const SizedBox(height: 25),
+                              SizedBox(height: Sizes.paddingWidget(context)),
                               customerField(model, context),
                               SizedBox(
                                 height: Sizes.paddingWidget(context),
@@ -671,7 +673,8 @@ class EnterCustomerView extends StatelessWidget {
       height: 50,
       child: TextButton(
         onPressed: () async {
-          if (_formKey.currentState!.validate()) {
+          if (_formKey.currentState!.validate() &&
+              model.customer.contains(model.customerController.text)) {
             var storageService = locator.get<StorageService>();
             // clear customer cart so that if customer cart contains some item and user switches customer
             var data = locator.get<OfflineStorage>().getItem('cart');
@@ -701,6 +704,8 @@ class EnterCustomerView extends StatelessWidget {
             await locator
                 .get<NavigationService>()
                 .navigateTo(itemCategoryNavBarRoute);
+          } else {
+            showSnackBar('Please Select Customer From Customer List', context);
           }
         },
         child: Text(

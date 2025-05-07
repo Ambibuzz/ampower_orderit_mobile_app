@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:orderit/common/services/common_service.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
@@ -76,11 +77,14 @@ class ItemsDetailView extends StatelessWidget {
         var baseurl = storageService.apiUrl;
         return Scaffold(
           appBar: Common.commonAppBar('${model.product.itemName}', [], context),
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              : SingleChildScrollView(
-                  child: itemDetailWidget(model, context, baseurl),
-                ),
+          body: GestureDetector(
+            onTap: () => CommonService.unfocus(),
+            child: model.state == ViewState.busy
+                ? WidgetsFactoryList.circularProgressIndicator()
+                : SingleChildScrollView(
+                    child: itemDetailWidget(model, context, baseurl),
+                  ),
+          ),
         );
       },
     );
@@ -638,7 +642,6 @@ class IncDecButton extends StatelessWidget {
                             }
                             itemsmodel.updateCartItems();
                           }
-                          itemsmodel.updateQuantityController();
                           await itemsmodel.refresh();
                         },
                       ),
