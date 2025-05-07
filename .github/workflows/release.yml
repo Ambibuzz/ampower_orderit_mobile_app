@@ -58,12 +58,12 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v1.9.0" # Replace with your desired tag name
-        release_name: "v1.9.0" # Replace with your desired release name
+        tag_name: "v1.9.1" # Replace with your desired tag name
+        release_name: "v1.9.1" # Replace with your desired release name
         body: |
           This release includes:
-          - Added image zoom in & out feature
-          - Used Reusable image widget instead of cached network image
+          - improved ui of customer selection
+          - fixed issue of focus when tapped outside for hiding keyboard
         draft: false
         prerelease: false
       env:
