@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/doctype_caching_service.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
@@ -120,7 +121,6 @@ class EnterCustomerView extends StatelessWidget {
                                         .titleMedium
                                         ?.copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: CustomTheme.borderColor,
                                         )
                                     : Theme.of(context)
                                         .textTheme
@@ -237,10 +237,11 @@ class EnterCustomerView extends StatelessWidget {
             children: [
               Text(
                 'Credit Limit : ${Formatter.formatter.format(creditLimit)}',
-                style: const TextStyle(
+                style: GoogleFonts.inter(
+                    textStyle: const TextStyle(
                   color: Color(0xFF189333),
                   fontWeight: FontWeight.w500,
-                ),
+                )),
                 textAlign: TextAlign.left,
               ),
               SizedBox(
@@ -248,20 +249,22 @@ class EnterCustomerView extends StatelessWidget {
               ),
               Text(
                 'Outstanding : ${Formatter.formatter.format(outstanding)}',
-                style: const TextStyle(
+                style: GoogleFonts.inter(
+                    textStyle: const TextStyle(
                   color: Color(0xFFBE2527),
                   fontWeight: FontWeight.w500,
-                ),
+                )),
               ),
               SizedBox(
                 height: Sizes.extraSmallPaddingWidget(context),
               ),
               Text(
                 'Billing as on date : ${Formatter.formatter.format(billingAsOnDate)}',
-                style: const TextStyle(
+                style: GoogleFonts.inter(
+                    textStyle: const TextStyle(
                   color: Color(0xFF84292A),
                   fontWeight: FontWeight.w500,
-                ),
+                )),
               ),
             ],
           ),
@@ -501,10 +504,11 @@ class EnterCustomerView extends StatelessWidget {
             color: Colors.white,
             child: Text(
               text,
-              style: TextStyle(
+              style: GoogleFonts.inter(
+                  textStyle: TextStyle(
                 fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                 fontSize: fontSize,
-              ),
+              )),
             ),
           ),
           VerticalDivider(
@@ -723,7 +727,7 @@ class EnterCustomerView extends StatelessWidget {
       key: const Key(Strings.customerField),
       controller: model.customerController,
       decoration: Common.inputDecoration(),
-      label: 'Select Customer Name',
+      label: 'Customer',
       required: true,
       focusNode: model.customerFocusNode,
       style: Sizes.textAndLabelStyle(context),
