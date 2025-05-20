@@ -1,3 +1,4 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
@@ -21,6 +22,7 @@ import 'package:orderit/util/display_helper.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class DraftView extends StatelessWidget {
   const DraftView({super.key});
@@ -34,16 +36,14 @@ class DraftView extends StatelessWidget {
       builder: (context, model, child) {
         return Scaffold(
           appBar: Common.commonAppBar('Wishlist', [], context),
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              : Stack(
-                  children: [
-                    draftList(model.drafts, model, context),
-                    OrderitWidgets.floatingCartButton(context, () {
-                      model.refresh();
-                    }),
-                  ],
-                ),
+          body: Stack(
+            children: [
+              draftList(model.drafts, model, context),
+              OrderitWidgets.floatingCartButton(context, () {
+                model.refresh();
+              }),
+            ],
+          ),
         );
       },
     );
@@ -68,89 +68,95 @@ class DraftView extends StatelessWidget {
                   onRefresh: () async {
                     await model.getDrafts();
                   },
-                  child: ListView.builder(
-                    itemCount: drafts?.length,
-                    padding: EdgeInsets.symmetric(
-                        vertical: Sizes.paddingWidget(context),
-                        horizontal: Sizes.paddingWidget(context)),
-                    itemBuilder: (context, index) {
-                      final draft = drafts?[index];
-                      return Card(
-                        margin: EdgeInsets.only(
-                          bottom: Sizes.paddingWidget(context),
-                        ),
-                        child: Container(
-                          key: Key(draft?.id ?? ''),
-                          padding: EdgeInsets.symmetric(
-                              horizontal:
-                                  Sizes.smallPaddingWidget(context) * 1.5),
-                          child: Stack(
-                            children: [
-                              ListTile(
-                                contentPadding: EdgeInsets.only(
-                                  top: Sizes.paddingWidget(context),
-                                  bottom: Sizes.paddingWidget(context),
-                                  right: Sizes.paddingWidget(context),
-                                ),
-                                onTap: () async {
-                                  var result = await locator
-                                      .get<NavigationService>()
-                                      .navigateTo(draftDetailViewRoute,
-                                          arguments: draft);
-                                  if (result == null) {
-                                    await model.getDrafts();
-                                  } else {
-                                    if (result != null) {
-                                      var res = result as List;
-                                      if (res[0] == true) {
-                                        model.refresh();
+                  child: Skeletonizer(
+                    enabled: model.isDraftsLoading,
+                    child: ListView.builder(
+                      itemCount: drafts?.length,
+                      padding: EdgeInsets.symmetric(
+                          vertical: Sizes.paddingWidget(context),
+                          horizontal: Sizes.paddingWidget(context)),
+                      itemBuilder: (context, index) {
+                        final draft = drafts?[index];
+                        return Card(
+                          margin: EdgeInsets.only(
+                            bottom: Sizes.paddingWidget(context),
+                          ),
+                          child: Container(
+                            key: Key(draft?.id ?? ''),
+                            padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    Sizes.smallPaddingWidget(context) * 1.5),
+                            child: Stack(
+                              children: [
+                                ListTile(
+                                  contentPadding: EdgeInsets.only(
+                                    top: Sizes.paddingWidget(context),
+                                    bottom: Sizes.paddingWidget(context),
+                                    right: Sizes.paddingWidget(context),
+                                  ),
+                                  onTap: () async {
+                                    var result = await locator
+                                        .get<NavigationService>()
+                                        .navigateTo(draftDetailViewRoute,
+                                            arguments: draft);
+                                    if (result == null) {
+                                      await model.getDrafts();
+                                    } else {
+                                      if (result != null) {
+                                        var res = result as List;
+                                        if (res[0] == true) {
+                                          model.refresh();
+                                        }
                                       }
                                     }
-                                  }
-                                },
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(draft?.customer ?? '',
-                                        style: titleTextStyle),
-                                    SizedBox(
-                                        height:
-                                            Sizes.smallPaddingWidget(context)),
-                                    Text(
-                                        'Date : ${DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.parse(draft!.time!))} ',
-                                        style: subTitleTextStyle),
-                                    SizedBox(
-                                        height:
-                                            Sizes.smallPaddingWidget(context)),
-                                    Text(
-                                        Formatter.formatter
-                                            .format(draft.totalPrice),
-                                        style: priceTextStyle),
-                                  ],
+                                  },
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(draft?.customer ?? '',
+                                          style: titleTextStyle),
+                                      SizedBox(
+                                          height: Sizes.smallPaddingWidget(
+                                              context)),
+                                      Text(
+                                          'Date : ${DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.parse(draft!.time!))} ',
+                                          style: subTitleTextStyle),
+                                      SizedBox(
+                                          height: Sizes.smallPaddingWidget(
+                                              context)),
+                                      Text(
+                                          Formatter.formatter
+                                              .format(draft.totalPrice),
+                                          style: GoogleFonts.inter(
+                                              textStyle: priceTextStyle)),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                bottom: 0,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    removeDraft(model, index, context),
-                                    SizedBox(
-                                        height:
-                                            Sizes.smallPaddingWidget(context) *
-                                                2),
-                                    timeLeft(draft, context),
-                                  ],
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      removeDraft(model, index, context),
+                                      SizedBox(
+                                          height: Sizes.smallPaddingWidget(
+                                                  context) *
+                                              2),
+                                      timeLeft(draft, context),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -204,7 +210,7 @@ class DraftView extends StatelessWidget {
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           border: Border.all(color: CustomTheme.dangerColor),
-          borderRadius: Corners.xxlBorder),
+          borderRadius: Corners.lgBorder),
       child: Text(text,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,

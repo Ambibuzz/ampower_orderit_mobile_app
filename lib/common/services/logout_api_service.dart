@@ -22,6 +22,9 @@ class LogoutService {
         storageService.removeUserName = PreferenceVariables.userName;
         storageService.isUserCustomer = false;
         locator.get<StorageService>().isLoginChanged = true;
+        // clear hive box
+        var box = locator.get<StorageService>().getHiveBox('offline');
+        await box.clear();
         await locator
             .get<NavigationService>()
             .pushNamedAndRemoveUntil(loginViewRoute, (_) => false);

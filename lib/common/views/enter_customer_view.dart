@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/doctype_caching_service.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
@@ -24,6 +25,7 @@ import 'package:orderit/util/display_helper.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class EnterCustomerView extends StatelessWidget {
   EnterCustomerView({
@@ -101,72 +103,74 @@ class EnterCustomerView extends StatelessWidget {
                 : SingleChildScrollView(
                     child: Padding(
                       padding: EdgeInsets.all(Sizes.paddingWidget(context)),
-                      child: Form(
-                        key: _formKey,
-                        child: GestureDetector(
-                          onTap: () {
-                            model.unfocus(context);
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Select a Customer from the list to Proceed',
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                style: displayWidth(context) < 600
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: CustomTheme.borderColor,
-                                        )
-                                    : Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: CustomTheme.borderColor,
-                                        ),
-                              ),
-                              SizedBox(height: Sizes.paddingWidget(context)),
-                              customerField(model, context),
-                              SizedBox(
-                                height: Sizes.paddingWidget(context),
-                              ),
-                              nextButtonWidget(model, context),
-                              SizedBox(
-                                height: Sizes.paddingWidget(context),
-                              ),
-                              model.customerDoctype.docs?.isNotEmpty == true
-                                  ? customerData(model, context)
-                                  : const SizedBox(),
-                              model.accountsRecievable.result?.isNotEmpty ==
-                                      true
-                                  ? Column(
-                                      children: [
-                                        Common.widgetSpacingVerticalLg(),
-                                        scrollToViewTableBelow(context),
-                                        Common.widgetSpacingVerticalLg(),
-                                      ],
-                                    )
-                                  : const SizedBox(),
-                              model.accountsRecievable.result?.isNotEmpty ==
-                                      true
-                                  ? displayWidth(context) < 600
-                                      ? table(
-                                          model,
-                                          displayWidth(context) * 0.5,
-                                          displayWidth(context) * 0.35,
-                                          context)
-                                      : table(
-                                          model,
-                                          displayWidth(context) * 0.25,
-                                          displayWidth(context) * 0.2,
-                                          context)
-                                  : Container(),
-                            ],
+                      child: Skeletonizer(
+                        enabled: model.isCustomersLoading,
+                        child: Form(
+                          key: _formKey,
+                          child: GestureDetector(
+                            onTap: () {
+                              model.unfocus(context);
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Select a Customer from the list to Proceed',
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                  style: displayWidth(context) < 600
+                                      ? Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          )
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: CustomTheme.borderColor,
+                                          ),
+                                ),
+                                SizedBox(height: Sizes.paddingWidget(context)),
+                                customerField(model, context),
+                                SizedBox(
+                                  height: Sizes.paddingWidget(context),
+                                ),
+                                nextButtonWidget(model, context),
+                                SizedBox(
+                                  height: Sizes.paddingWidget(context),
+                                ),
+                                model.customerDoctype.docs?.isNotEmpty == true
+                                    ? customerData(model, context)
+                                    : const SizedBox(),
+                                model.accountsRecievable.result?.isNotEmpty ==
+                                        true
+                                    ? Column(
+                                        children: [
+                                          Common.widgetSpacingVerticalLg(),
+                                          scrollToViewTableBelow(context),
+                                          Common.widgetSpacingVerticalLg(),
+                                        ],
+                                      )
+                                    : const SizedBox(),
+                                model.accountsRecievable.result?.isNotEmpty ==
+                                        true
+                                    ? displayWidth(context) < 600
+                                        ? table(
+                                            model,
+                                            displayWidth(context) * 0.5,
+                                            displayWidth(context) * 0.35,
+                                            context)
+                                        : table(
+                                            model,
+                                            displayWidth(context) * 0.25,
+                                            displayWidth(context) * 0.2,
+                                            context)
+                                    : Container(),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -237,10 +241,11 @@ class EnterCustomerView extends StatelessWidget {
             children: [
               Text(
                 'Credit Limit : ${Formatter.formatter.format(creditLimit)}',
-                style: const TextStyle(
+                style: GoogleFonts.inter(
+                    textStyle: const TextStyle(
                   color: Color(0xFF189333),
                   fontWeight: FontWeight.w500,
-                ),
+                )),
                 textAlign: TextAlign.left,
               ),
               SizedBox(
@@ -248,20 +253,22 @@ class EnterCustomerView extends StatelessWidget {
               ),
               Text(
                 'Outstanding : ${Formatter.formatter.format(outstanding)}',
-                style: const TextStyle(
+                style: GoogleFonts.inter(
+                    textStyle: const TextStyle(
                   color: Color(0xFFBE2527),
                   fontWeight: FontWeight.w500,
-                ),
+                )),
               ),
               SizedBox(
                 height: Sizes.extraSmallPaddingWidget(context),
               ),
               Text(
                 'Billing as on date : ${Formatter.formatter.format(billingAsOnDate)}',
-                style: const TextStyle(
+                style: GoogleFonts.inter(
+                    textStyle: const TextStyle(
                   color: Color(0xFF84292A),
                   fontWeight: FontWeight.w500,
-                ),
+                )),
               ),
             ],
           ),
@@ -501,10 +508,11 @@ class EnterCustomerView extends StatelessWidget {
             color: Colors.white,
             child: Text(
               text,
-              style: TextStyle(
+              style: GoogleFonts.inter(
+                  textStyle: TextStyle(
                 fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                 fontSize: fontSize,
-              ),
+              )),
             ),
           ),
           VerticalDivider(
@@ -723,7 +731,7 @@ class EnterCustomerView extends StatelessWidget {
       key: const Key(Strings.customerField),
       controller: model.customerController,
       decoration: Common.inputDecoration(),
-      label: 'Select Customer Name',
+      label: 'Customer',
       required: true,
       focusNode: model.customerFocusNode,
       style: Sizes.textAndLabelStyle(context),

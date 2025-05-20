@@ -9,7 +9,9 @@ class Images {
   static const clearCartIcon = 'assets/icon/clear_cart_icon.png';
   static const draftsIcon = 'assets/icon/drafts_icon.png';
   static const gridViewIcon = 'assets/icon/grid_view_icon.png';
+  static const homeIcon = 'assets/icon/home_icon.png';
   static const listViewIcon = 'assets/icon/list_view_icon.png';
+  static const loginScreenImage = 'assets/login_screen_image.png';
   static const noInternetIcon = 'assets/icon/no_internet_icon.png';
   static const pastOrdersIcon = 'assets/icon/past_orders_icon.png';
   static const saveAsDraftIcon = 'assets/icon/save_as_draft_icon.png';
@@ -17,6 +19,7 @@ class Images {
 
   // illustrations
   static const emptyCartImage = 'assets/illustrations/empty_cart.png';
+  static const removeShoppingCartImage = 'assets/remove_shopping_cart.png';
 
   // assets
   static const ampowerLogo = 'assets/ampower_logo.png';
@@ -25,4 +28,10 @@ class Images {
 
   //Rive Check Animation
   static const checkAmination = 'assets/rive_assets/check.riv';
+
+  // Onboarding
+  static const onboarding1 = 'assets/Onboarding_1.png';
+  static const onboarding2 = 'assets/Onboarding_2.png';
+  static const onboarding3 = 'assets/Onboarding_3.png';
+  static const onboarding4 = 'assets/Onboarding_4.png';
 }

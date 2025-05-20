@@ -101,9 +101,9 @@ class OrderitWidgets {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              Images.emptyCartImage,
-              width: imgDimension ?? 300,
-              height: imgDimension ?? 300,
+              Images.removeShoppingCartImage,
+              width: imgDimension ?? 250,
+              height: imgDimension ?? 250,
             ),
             SizedBox(
               height: Sizes.paddingWidget(context),
@@ -116,30 +116,37 @@ class OrderitWidgets {
                   ),
             ),
             Common.widgetSpacingVerticalMd(),
-            Text(
-              subtitleText ?? '',
-              style: TextStyle(color: CustomTheme.borderColor),
-              textAlign: TextAlign.center,
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: Sizes.paddingWidget(context)),
+              child: Text(
+                subtitleText ?? '',
+                style: TextStyle(color: CustomTheme.borderColor),
+                textAlign: TextAlign.center,
+              ),
             ),
             Common.widgetSpacingVerticalMd(),
-            ElevatedButton(
-              onPressed: onButtonPress,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Sizes.paddingWidget(context),
-                  vertical: Sizes.smallPaddingWidget(context),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      buttonText ?? '',
-                    ),
-                    SizedBox(
-                      width: Sizes.smallPaddingWidget(context),
-                    ),
-                    const Icon(Icons.arrow_forward)
-                  ],
+            SizedBox(
+              height: Sizes.buttonHeightWidget(context),
+              child: ElevatedButton(
+                onPressed: onButtonPress,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Sizes.paddingWidget(context),
+                    vertical: Sizes.smallPaddingWidget(context),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        buttonText ?? '',
+                      ),
+                      SizedBox(
+                        width: Sizes.smallPaddingWidget(context),
+                      ),
+                      const Icon(Icons.arrow_forward)
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -174,7 +181,7 @@ class OrderitWidgets {
                   width: 140,
                   decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: Corners.xxlBorder),
+                      borderRadius: Corners.xlBorder),
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: Sizes.extraSmallPaddingWidget(context),

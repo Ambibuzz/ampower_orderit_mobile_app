@@ -48,10 +48,10 @@ class ProfileView extends StatelessWidget {
           appBar: Common.commonAppBar(
               'Profile',
               [
-                TextButton(
+                ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(
-                        Theme.of(context).colorScheme.onSecondary),
+                        Theme.of(context).colorScheme.secondary),
                   ),
                   onPressed: () async {
                     await locator
@@ -64,7 +64,7 @@ class ProfileView extends StatelessWidget {
                     child: Text(
                       'Error Log',
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.onSecondary,
                         fontSize: 16,
                       ),
                     ),
@@ -93,8 +93,8 @@ class ProfileView extends StatelessWidget {
       ThemeModel themeNotifier, bool isDark) {
     return Padding(
       padding: EdgeInsets.only(
-        left: Sizes.smallPaddingWidget(context),
-        right: Sizes.smallPaddingWidget(context),
+        left: Sizes.paddingWidget(context),
+        right: Sizes.paddingWidget(context),
         top: Sizes.paddingWidget(context),
         bottom: Sizes.smallPaddingWidget(context),
       ),
@@ -104,46 +104,84 @@ class ProfileView extends StatelessWidget {
           children: [
             UserImage(model: model),
             SizedBox(height: Sizes.paddingWidget(context)),
-            fullNameField(model, context),
+            Card(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Sizes.paddingWidget(context),
+                  vertical: Sizes.paddingWidget(context),
+                ),
+                child: Column(
+                  children: [
+                    Common.reusableRowWidget(
+                        'Full Name', model.fullNameController.text, context),
+                    SizedBox(height: Sizes.smallPaddingWidget(context)),
+                    Common.reusableRowWidget(
+                        'E-mail', model.emailController.text, context),
+                    SizedBox(height: Sizes.smallPaddingWidget(context)),
+                    Common.reusableRowWidget(
+                        'Mobile No', model.mobileNoController.text, context),
+                    SizedBox(height: Sizes.smallPaddingWidget(context)),
+                    Common.reusableRowWidget('Connected To',
+                        locator.get<StorageService>().apiUrl, context),
+                  ],
+                ),
+              ),
+            ),
             SizedBox(height: Sizes.paddingWidget(context)),
-            emailAddressField(model, context),
-            SizedBox(height: Sizes.paddingWidget(context)),
-            mobileNoField(model, context),
-            SizedBox(height: Sizes.paddingWidget(context)),
-            connectedToUrlField(model, context),
-            SizedBox(height: Sizes.paddingWidget(context)),
+            // Card(
+            //   child: Padding(
+            //     padding: EdgeInsets.symmetric(
+            //       horizontal: Sizes.paddingWidget(context),
+            //       vertical: Sizes.smallPaddingWidget(context),
+            //     ),
+            //     child: Row(
+            //       children: [
+            //         const Text('Light Theme'),
+            //         const Spacer(),
+            //         Switch.adaptive(
+            //           value: false,
+            //           onChanged: (value) {},
+            //         )
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            // SizedBox(height: Sizes.paddingWidget(context)),
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Premium v${model.version}',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColor,
+                    ),
+              ),
+            ),
+            const Spacer(),
             SizedBox(
               width: displayWidth(context) < 600
                   ? displayWidth(context)
                   : displayWidth(context) * 0.5,
               height: Sizes.buttonHeightWidget(context),
-              child: ElevatedButton(
-                onPressed: () async {
-                  await model.logout(context);
-                },
-                child: Text('Logout',
-                    style: TextStyle(
-                        fontSize: Sizes.fontSizeTextButtonWidget(context))),
+              child: TextButton(
+                style: ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(
+                        model.state == ViewState.busy
+                            ? CustomTheme.fillColorGrey
+                            : Theme.of(context).colorScheme.secondary)),
+                onPressed: model.state == ViewState.busy
+                    ? null
+                    : () async {
+                        await model.logout(context);
+                      },
+                child: Text(model.state == ViewState.busy
+                    ? 'Please Wait...'
+                    : 'Logout'),
               ),
             ),
-            const Spacer(),
-            const PoweredByAmbibuzzLogo(),
-            Padding(
-              padding: EdgeInsets.only(
-                  bottom: defaultTargetPlatform == TargetPlatform.iOS
-                      ? Sizes.smallPaddingWidget(context)
-                      : 0),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'v${model.version}',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                ),
-              ),
+            SizedBox(
+              height: Sizes.paddingWidget(context),
             ),
           ],
         ),
@@ -345,7 +383,7 @@ class UserImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var imageDimension = displayWidth(context) < 600 ? 140.0 : 240.0;
+    var imageDimension = displayWidth(context) < 600 ? 130.0 : 220.0;
     String finalFilePath;
 
     return GestureDetector(

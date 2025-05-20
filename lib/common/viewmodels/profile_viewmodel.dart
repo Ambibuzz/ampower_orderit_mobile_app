@@ -27,8 +27,11 @@ class ProfileViewModel extends BaseViewModel {
   String version = '';
 
   Future logout(BuildContext context) async {
+    setState(ViewState.busy);
     await locator.get<LogoutService>().logOut(context);
     await DioHelper().signOut();
+    setState(ViewState.idle);
+    notifyListeners();
   }
 
   void parseDateTime() {
