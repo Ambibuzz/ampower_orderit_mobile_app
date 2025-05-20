@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:orderit/common/models/user.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/custom_alert_dialog.dart';
@@ -22,7 +23,10 @@ import '../../orderit/views/image_widget_native.dart'
 class Common {
   static AppBar commonAppBar(
       String? title, List<Widget>? actions, BuildContext context,
-      {bool? sendResultBack, bool? showBackBtn = true, String? heading, TextStyle? headingStyle}) {
+      {bool? sendResultBack,
+      bool? showBackBtn = true,
+      String? heading,
+      TextStyle? headingStyle}) {
     return AppBar(
       title: Text(
         title ?? '',
@@ -32,6 +36,7 @@ class Common {
       ),
       centerTitle: false,
       leadingWidth: 36,
+      shadowColor: Colors.black.withOpacity(0.4),
       leading: showBackBtn == true
           ? Navigator.of(context).canPop()
               ? Row(
@@ -45,10 +50,12 @@ class Common {
                         onTap: () => sendResultBack == true
                             ? locator.get<NavigationService>().pop(result: true)
                             : Navigator.of(context).pop(),
-                        child: Image.asset(
-                          Images.backButtonIcon,
-                          width: 24,
-                          height: 24,
+                        child: Icon(
+                          defaultTargetPlatform == TargetPlatform.iOS
+                              ? Icons.arrow_back_ios
+                              : Icons.arrow_back,
+                          size: 24,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -57,26 +64,8 @@ class Common {
               : null
           : null,
       titleSpacing: Sizes.smallPaddingWidget(context) * 1.5,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(bottom: Corners.xlRadius),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[
-              Color(0xFF006CB5), // Starting color
-              Color(0xFF002D4C) // ending color
-            ],
-          ),
-        ),
-      ),
       systemOverlayStyle: SystemUiOverlayStyle.light,
       actions: actions,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Corners.xlRadius,
-        ),
-      ),
     );
   }
 
