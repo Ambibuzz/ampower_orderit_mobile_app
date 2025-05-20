@@ -38,42 +38,40 @@ class FavoritesView extends StatelessWidget {
       },
       builder: (context, model, child) {
         return Scaffold(
+          backgroundColor: CustomTheme.scaffoldBackgroundColorLight,
           appBar: Common.commonAppBar(
             'Favorites',
             [],
             context,
           ),
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              : Stack(
-                  children: [
-                    model.favoriteItems.isNotEmpty
-                        ? favoritesList(model, context)
-                        : Center(
-                            child: SizedBox(
-                              height: displayHeight(context) * 0.7,
-                              child: OrderitWidgets.emptyCartWidget(
-                                  'No items in Favorites!', '', 'Let’s Shop!',
-                                  () {
-                                locator
-                                    .get<ItemCategoryBottomNavBarViewModel>()
-                                    .setIndex(0);
-                                locator.get<ItemsViewModel>().updateCartItems();
-                                locator
-                                    .get<ItemsViewModel>()
-                                    .initQuantityController();
-                              }, context),
-                            ),
-                          ),
-                    OrderitWidgets.floatingCartButton(context, () async {
-                      await model.getFavoritesItems();
-                      await model.initQuantityController();
-                      await model.updateCartItems();
-                      await model.getCartItems();
-                      await model.refresh();
-                    }),
-                  ],
-                ),
+          body: Stack(
+            children: [
+              model.favoriteItems.isNotEmpty
+                  ? favoritesList(model, context)
+                  : Center(
+                      child: SizedBox(
+                        height: displayHeight(context) * 0.7,
+                        child: OrderitWidgets.emptyCartWidget(
+                            'No items in Favorites!', '', 'Let’s Shop!', () {
+                          locator
+                              .get<ItemCategoryBottomNavBarViewModel>()
+                              .setIndex(0);
+                          locator.get<ItemsViewModel>().updateCartItems();
+                          locator
+                              .get<ItemsViewModel>()
+                              .initQuantityController();
+                        }, context),
+                      ),
+                    ),
+              OrderitWidgets.floatingCartButton(context, () async {
+                await model.getFavoritesItems();
+                await model.initQuantityController();
+                await model.updateCartItems();
+                await model.getCartItems();
+                await model.refresh();
+              }),
+            ],
+          ),
         );
       },
     );
@@ -118,7 +116,7 @@ class FavoritesView extends StatelessWidget {
                               side: BorderSide(
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
-                              borderRadius: Corners.xxlBorder),
+                              borderRadius: Corners.lgBorder),
                         ),
                       ),
                       onPressed: () async {
@@ -169,7 +167,7 @@ class FavoritesView extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.secondary,
-                        borderRadius: Corners.xxlBorder,
+                        borderRadius: Corners.lgBorder,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -384,29 +382,42 @@ class FavoritesView extends StatelessWidget {
       child: ListTile(
         contentPadding:
             EdgeInsets.symmetric(horizontal: Sizes.smallPaddingWidget(context)),
-        leading: ClipRRect(
-          borderRadius: Corners.lgBorder,
-          child: item.imageUrl == null || item.imageUrl == ''
-              ? Container(
-                  width: imgDimension,
-                  height: imgDimension,
-                  decoration: const BoxDecoration(
-                    borderRadius: Corners.xxlBorder,
-                    image: DecorationImage(
-                      image: AssetImage(
-                        Images.imageNotFound,
+        leading: Row(
+          children: [
+            SizedBox(width: Sizes.smallPaddingWidget(context)),
+            GestureDetector(
+              child: Icon(
+                isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: isFavorite ? Colors.red : null,
+              ),
+              onTap: () => model.toggleFavorite(item.itemCode!, context),
+            ),
+            SizedBox(width: Sizes.smallPaddingWidget(context)),
+            ClipRRect(
+              borderRadius: Corners.lgBorder,
+              child: item.imageUrl == null || item.imageUrl == ''
+                  ? Container(
+                      width: imgDimension,
+                      height: imgDimension,
+                      decoration: const BoxDecoration(
+                        borderRadius: Corners.xxlBorder,
+                        image: DecorationImage(
+                          image: AssetImage(
+                            Images.imageNotFound,
+                          ),
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                )
-              : item.imageUrl == null
-                  ? Container()
-                  : image_widget.imageWidget(
-                      '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                      imgDimension,
-                      imgDimension,
-                      fit: BoxFit.fill),
+                    )
+                  : item.imageUrl == null
+                      ? Container()
+                      : image_widget.imageWidget(
+                          '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
+                          imgDimension,
+                          imgDimension,
+                          fit: BoxFit.fill),
+            ),
+          ],
         ),
         title: Text(item.itemName ?? ''),
         subtitle: Column(
@@ -422,32 +433,17 @@ class FavoritesView extends StatelessWidget {
               .navigateTo(itemsDetailViewRoute, arguments: item.itemCode);
         },
         horizontalTitleGap: Sizes.smallPaddingWidget(context),
-        trailing: SizedBox(
-          width: displayWidth(context) < 600 ? 150 : 180,
-          child: Row(
-            children: [
-              incDecBtn(
-                  model: model,
-                  width: width,
-                  buttonDimension: buttonDimension,
-                  priceStyle: priceStyle,
-                  itemNameStyle: itemNameStyle,
-                  item: item,
-                  context: context,
-                  itemQuantity: itemQuantity,
-                  stockActualQty: stockActualQty,
-                  index: index),
-              SizedBox(width: Sizes.smallPaddingWidget(context)),
-              GestureDetector(
-                child: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? Colors.red : null,
-                ),
-                onTap: () => model.toggleFavorite(item.itemCode!, context),
-              ),
-            ],
-          ),
-        ),
+        trailing: incDecBtn(
+            model: model,
+            width: width,
+            buttonDimension: buttonDimension,
+            priceStyle: priceStyle,
+            itemNameStyle: itemNameStyle,
+            item: item,
+            context: context,
+            itemQuantity: itemQuantity,
+            stockActualQty: stockActualQty,
+            index: index),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/models/product.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
@@ -82,34 +83,59 @@ class PastOrdersDetailView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: Sizes.paddingWidget(context)),
-                        Text(
-                          salesOrder?.customer ?? '',
-                          style: textStyle,
-                        ),
-                        verticalPaddingSmall(context),
-                        Text(
-                            'Transaction Date : ${defaultDateFormat(salesOrder!.transactiondate!)}',
-                            style: textStyle),
-                        verticalPaddingSmall(context),
-                        Text(
-                            'Delivery Date : ${defaultDateFormat(salesOrder!.deliverydate!)}',
-                            style: textStyle),
-                        verticalPaddingSmall(context),
-                        Text(
-                          'Total Quantity : ${salesOrder?.totalqty}',
-                          style: textStyle,
-                        ),
-                        verticalPaddingSmall(context),
-                        Text(
-                            'Grand Total ${Formatter.formatter.format(salesOrder!.grandtotal)}',
-                            style: textStyle),
-                        verticalPaddingSmall(context),
-                        Text(
-                          'Status : ${salesOrder?.status}',
-                          style: textStyle,
+                        Card(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: Sizes.paddingWidget(context),
+                              vertical: Sizes.paddingWidget(context),
+                            ),
+                            child: Column(
+                              children: [
+                                Common.reusableRowWidget('Customer',
+                                    salesOrder?.customer ?? '', context),
+                                SizedBox(
+                                    height: Sizes.smallPaddingWidget(context)),
+                                Common.reusableRowWidget(
+                                    'Transaction Date',
+                                    defaultDateFormat(
+                                        salesOrder!.transactiondate!),
+                                    context),
+                                SizedBox(
+                                    height: Sizes.smallPaddingWidget(context)),
+                                Common.reusableRowWidget(
+                                    'Delivery Date',
+                                    defaultDateFormat(
+                                        salesOrder!.deliverydate!),
+                                    context),
+                                SizedBox(
+                                    height: Sizes.smallPaddingWidget(context)),
+                                Common.reusableRowWidget(
+                                    'Total Quantity',
+                                    (salesOrder?.totalqty ?? 0).toString(),
+                                    context),
+                                SizedBox(
+                                    height: Sizes.smallPaddingWidget(context)),
+                                Common.reusableRowWidget(
+                                    'Grand Total',
+                                    Formatter.formatter
+                                        .format(salesOrder!.grandtotal),
+                                    context,
+                                    textStyle: GoogleFonts.inter(
+                                        textStyle: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                      fontSize: 16,
+                                    ))),
+                                SizedBox(
+                                    height: Sizes.smallPaddingWidget(context)),
+                                Common.reusableRowWidget(
+                                    'Status', salesOrder?.status, context),
+                              ],
+                            ),
+                          ),
                         ),
                         verticalPaddingMedium(context),
-                        tableHeader(context),
                       ],
                     ),
                   ],
@@ -155,43 +181,6 @@ class PastOrdersDetailView extends StatelessWidget {
     );
   }
 
-  Widget tableHeader(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Corners.xxlRadius,
-          topRight: Corners.xxlRadius,
-        ),
-      ),
-      child: Container(
-        height: 50,
-        decoration: BoxDecoration(
-            color: CustomTheme.tableBorderColor,
-            borderRadius: Corners.xxlBorder),
-        child: Row(
-          children: [
-            tableHeaderColumn('Item', 65),
-            tableHeaderColumn('Qty', displayWidth(context) < 600 ? 35 : 25),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget tableHeaderColumn(String? text, int flex) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text ?? '',
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
   Widget cartItem(
       int index, PastOrdersDetailViewModel model, BuildContext context) {
     var imageDimension = displayWidth(context) < 600 ? 38.0 : 62.0;
@@ -216,7 +205,7 @@ class PastOrdersDetailView extends StatelessWidget {
       children: [
         Text(
           'Price : ${Formatter.formatter.format((item?.rate ?? 0))} ',
-          style: textStyle,
+          style: GoogleFonts.inter(textStyle: textStyle),
         ),
         Text(
           'Qty : ${item?.qty ?? 0} ',
@@ -224,9 +213,10 @@ class PastOrdersDetailView extends StatelessWidget {
         ),
         Text(
           'Total : ${Formatter.formatter.format((item?.rate ?? 0) * (item?.qty ?? 0))} ',
-          style: textStyle?.copyWith(
+          style: GoogleFonts.inter(
+              textStyle: textStyle?.copyWith(
             fontWeight: FontWeight.bold,
-          ),
+          )),
         ),
       ],
     );
@@ -242,7 +232,7 @@ class PastOrdersDetailView extends StatelessWidget {
       BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: Sizes.extraSmallPaddingWidget(context), vertical: 0),
+          horizontal: Sizes.smallPaddingWidget(context), vertical: 0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -349,7 +339,7 @@ class PastOrdersDetailView extends StatelessWidget {
         style: ButtonStyle(
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
-                borderRadius: Corners.xxlBorder,
+                borderRadius: Corners.lgBorder,
                 side: BorderSide(
                   color: Theme.of(context).colorScheme.secondary,
                 )),

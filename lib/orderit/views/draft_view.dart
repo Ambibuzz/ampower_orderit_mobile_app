@@ -1,3 +1,4 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
@@ -127,7 +128,8 @@ class DraftView extends StatelessWidget {
                                       Text(
                                           Formatter.formatter
                                               .format(draft.totalPrice),
-                                          style: priceTextStyle),
+                                          style: GoogleFonts.inter(
+                                              textStyle: priceTextStyle)),
                                     ],
                                   ),
                                 ),
@@ -208,7 +210,7 @@ class DraftView extends StatelessWidget {
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           border: Border.all(color: CustomTheme.dangerColor),
-          borderRadius: Corners.xxlBorder),
+          borderRadius: Corners.lgBorder),
       child: Text(text,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
