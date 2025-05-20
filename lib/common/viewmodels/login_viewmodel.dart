@@ -5,12 +5,14 @@ import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:orderit/base_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:orderit/util/helpers.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class LoginViewModel extends BaseViewModel {
   var version = '';
 
   Future<void> init() async {
+    await initDb();
     var packageInfo = await PackageInfo.fromPlatform();
     version = packageInfo.version;
     notifyListeners();
@@ -24,6 +26,7 @@ class LoginViewModel extends BaseViewModel {
   Future login(String baseurl, String username, String password,
       BuildContext context) async {
     setState(ViewState.busy);
+    notifyListeners();
     await locator.get<LoginService>().login(
           baseUrl: baseurl,
           password: password,
@@ -31,6 +34,7 @@ class LoginViewModel extends BaseViewModel {
           context: context,
         );
     setState(ViewState.idle);
+    notifyListeners();
   }
 
   Future<String> getInstanceUrl() async {

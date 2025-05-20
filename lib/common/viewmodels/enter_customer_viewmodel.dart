@@ -25,6 +25,7 @@ class EnterCustomerViewModel extends BaseViewModel {
   var customerFocusNode = FocusNode();
   final TextEditingController customerController = TextEditingController();
   User user = User();
+  bool isCustomersLoading = false;
 
   Future<int?> checkSessionExpired() async {
     setState(ViewState.busy);
@@ -83,6 +84,9 @@ class EnterCustomerViewModel extends BaseViewModel {
   // get customer list
   Future getCustomer(String? fromRoute, BuildContext context) async {
     setStateWithPostFrameCallback(ViewState.busy);
+    isCustomersLoading = true;
+    await Future.delayed(const Duration(milliseconds: 200));
+    notifyListeners();
     var doctypeCachingService = locator.get<DoctypeCachingService>();
     var connectivityStatus =
         Provider.of<ConnectivityStatus>(context, listen: false);
@@ -94,6 +98,7 @@ class EnterCustomerViewModel extends BaseViewModel {
     customer = await locator
         .get<FetchCachedDoctypeService>()
         .getCachedCustomerList(connectivityStatus);
+    isCustomersLoading = false;
     notifyListeners();
     setStateWithPostFrameCallback(ViewState.idle);
   }

@@ -1,4 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
@@ -32,6 +34,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'image_widget_native.dart' if (dart.library.html) 'image_widget_web.dart'
     as image_widget;
 
@@ -60,9 +63,10 @@ class ItemsView extends StatelessWidget {
         Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             );
-    var itemPriceListStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-        );
+    var itemPriceListStyle = GoogleFonts.inter(
+        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ));
     return BaseView<ItemsViewModel>(
       onModelReady: (model) async {
         // get user
@@ -163,55 +167,68 @@ class ItemsView extends StatelessWidget {
                         }
                       }
                     },
-                    child: const Icon(Icons.search)),
+                    child: Icon(
+                      Icons.search,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    )),
                 SizedBox(width: Sizes.smallPaddingWidget(context)),
                 Common.profileReusableWidget(model.user, context),
                 popUpMenu(model, context),
               ],
               context,
               model),
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              : GestureDetector(
-                  onTap: () {
-                    model.unfocus(context);
-                  },
-                  child: Stack(
-                    children: [
-                      model.itemGroups.isEmpty
-                          ? EmptyWidget(
+          body: GestureDetector(
+            onTap: () {
+              model.unfocus(context);
+            },
+            child: Stack(
+              children: [
+                model.isItemGroupsLoading
+                    ? itemsViewLayoutBuilder(model, context)
+                    : model.itemGroups.isEmpty
+                        ? Skeletonizer(
+                            enabled: model.isItemListLoading,
+                            child: EmptyWidget(
                               onRefresh: () async {
                                 await model.reCacheData(model, context);
                               },
-                            )
-                          : LayoutBuilder(
-                              builder: (context, constraints) {
-                                if (constraints.maxWidth <= 600) {
-                                  return mobileView(
-                                      model,
-                                      itemNameListStyle,
-                                      itemNameCatalogStyle,
-                                      itemPriceListStyle,
-                                      context);
-                                } else {
-                                  return largeDevice(
-                                      model,
-                                      itemNameListStyle,
-                                      itemNameCatalogStyle,
-                                      itemPriceListStyle,
-                                      context);
-                                }
-                              },
                             ),
-                      OrderitWidgets.floatingCartButton(context, () {
-                        model.refresh();
-                        model.updateCartItems();
-                        model.initQuantityController();
-                      }),
-                    ],
-                  ),
-                ),
+                          )
+                        : itemsViewLayoutBuilder(model, context),
+                OrderitWidgets.floatingCartButton(context, () {
+                  model.refresh();
+                  model.updateCartItems();
+                  model.initQuantityController();
+                }),
+              ],
+            ),
+          ),
         );
+      },
+    );
+  }
+
+  Widget itemsViewLayoutBuilder(ItemsViewModel model, BuildContext context) {
+    var itemNameListStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.bold,
+        );
+    var itemNameCatalogStyle =
+        Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            );
+    var itemPriceListStyle = GoogleFonts.inter(
+        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ));
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= 600) {
+          return mobileView(model, itemNameListStyle, itemNameCatalogStyle,
+              itemPriceListStyle, context);
+        } else {
+          return largeDevice(model, itemNameListStyle, itemNameCatalogStyle,
+              itemPriceListStyle, context);
+        }
       },
     );
   }
@@ -421,13 +438,14 @@ class ItemsView extends StatelessWidget {
               child: Text(
                 title ?? '',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
               ),
             ),
           ],
         ),
       ),
+      shadowColor: Colors.black.withOpacity(0.4),
       leadingWidth: 35,
       leading: locator.get<StorageService>().isUserCustomer
           ? null
@@ -441,10 +459,12 @@ class ItemsView extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: GestureDetector(
                         onTap: () => Navigator.of(context).pop(),
-                        child: Image.asset(
-                          Images.backButtonIcon,
-                          width: 24,
-                          height: 24,
+                        child: Icon(
+                          defaultTargetPlatform == TargetPlatform.iOS
+                              ? Icons.arrow_back_ios
+                              : Icons.arrow_back,
+                          size: 24,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -452,19 +472,6 @@ class ItemsView extends StatelessWidget {
                 )
               : null,
       titleSpacing: Sizes.smallPaddingWidget(context) * 1.5,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(bottom: Corners.xlRadius),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[
-              Color(0xFF006CB5), // Starting color
-              Color(0xFF002D4C) // ending color
-            ],
-          ),
-        ),
-      ),
       systemOverlayStyle: SystemUiOverlayStyle.light,
       actions: actions,
       shape: const RoundedRectangleBorder(
@@ -503,9 +510,13 @@ class ItemsView extends StatelessWidget {
   Widget popUpMenu(ItemsViewModel model, BuildContext context) {
     return PopupMenuButton<ViewTypes>(
       // Callback that sets the selected popup menu item.
-      color: Theme.of(context).colorScheme.onPrimary,
+      color: Theme.of(context).colorScheme.surface,
       padding: EdgeInsets.zero,
-      icon: Icon(Icons.more_vert, size: Sizes.iconSizeWidget(context)),
+      icon: Icon(
+        Icons.more_vert,
+        size: Sizes.iconSizeWidget(context),
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
       onSelected: (ViewTypes viewType) {
         if (viewType == ViewTypes.listView) {
           model.setViewType(ViewTypes.listView);
@@ -773,41 +784,59 @@ class ItemsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var stockActualQtyStyle = Theme.of(context).textTheme.titleSmall;
-    return model.itemList.isEmpty == true
-        ? EmptyWidget(
-            onRefresh: () async {
-              await model.reCacheData(model, context);
-            },
-          )
-        : RefreshIndicator.adaptive(
-            onRefresh: () async {
-              await model.reCacheData(model, context);
-            },
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: displayWidth(context) < 600
-                  ? EdgeInsets.symmetric(
-                      vertical: Sizes.smallPaddingWidget(context))
-                  : EdgeInsets.symmetric(
-                      horizontal: Sizes.smallPaddingWidget(context),
-                    ),
-              itemCount: model.itemList.length,
-              itemBuilder: (context, index) {
-                var item = model.itemList[index];
-                var isFavorite = model.isFavorite(item.itemCode!);
-                var itemQuantity = 0;
-                // set item quantity
-                if (model.cartItems != null) {
-                  for (var i = 0; i < model.cartItems!.length; i++) {
-                    if (model.cartItems?[i].itemCode == item.itemCode) {
-                      itemQuantity = model.cartItems![i].quantity;
-                    }
-                  }
+    return model.isItemListLoading
+        ? itemListWidget(stockActualQtyStyle, context)
+        : model.itemList.isEmpty == true
+            ? EmptyWidget(
+                onRefresh: () async {
+                  await model.reCacheData(model, context);
+                },
+              )
+            : itemListWidget(stockActualQtyStyle, context);
+  }
+
+  Widget itemListWidget(TextStyle? stockActualQtyStyle, BuildContext context) {
+    return RefreshIndicator.adaptive(
+      onRefresh: () async {
+        await model.reCacheData(model, context);
+      },
+      child: Skeletonizer(
+        enabled: model.isItemListLoading,
+        child: ListView.builder(
+          shrinkWrap: true,
+          padding: displayWidth(context) < 600
+              ? EdgeInsets.symmetric(
+                  vertical: Sizes.smallPaddingWidget(context))
+              : EdgeInsets.symmetric(
+                  horizontal: Sizes.smallPaddingWidget(context),
+                ),
+          itemCount: model.itemList.length,
+          itemBuilder: (context, index) {
+            var item = model.itemList[index];
+            var isFavorite = model.isFavorite(item.itemCode!);
+            var itemQuantity = 0;
+            // set item quantity
+            if (model.cartItems != null) {
+              for (var i = 0; i < model.cartItems!.length; i++) {
+                if (model.cartItems?[i].itemCode == item.itemCode) {
+                  itemQuantity = model.cartItems![i].quantity;
                 }
-                var stockActualQty = model.getStockActualQty(item.itemCode);
-                return displayWidth(context) < 600
-                    ? listTileMobile(item, index, itemQuantity, isFavorite,
-                        stockActualQty, stockActualQtyStyle, context)
+              }
+            }
+            var stockActualQty = model.getStockActualQty(item.itemCode);
+            return displayWidth(context) < 600
+                ? listTileMobile(item, index, itemQuantity, isFavorite,
+                    stockActualQty, stockActualQtyStyle, context)
+                : (displayWidth(context) >= 600 && displayWidth(context) <= 960)
+                    ? listTileTablet(
+                        item,
+                        index,
+                        itemQuantity,
+                        isFavorite,
+                        stockActualQty,
+                        stockActualQtyStyle,
+                        displayWidth(context) * 0.16,
+                        context)
                     : (displayWidth(context) >= 600 &&
                             displayWidth(context) <= 960)
                         ? listTileTablet(
@@ -819,8 +848,8 @@ class ItemsList extends StatelessWidget {
                             stockActualQtyStyle,
                             displayWidth(context) * 0.16,
                             context)
-                        : (displayWidth(context) >= 600 &&
-                                displayWidth(context) <= 960)
+                        : (displayWidth(context) > 960 &&
+                                displayWidth(context) <= 1280)
                             ? listTileTablet(
                                 item,
                                 index,
@@ -828,31 +857,21 @@ class ItemsList extends StatelessWidget {
                                 isFavorite,
                                 stockActualQty,
                                 stockActualQtyStyle,
-                                displayWidth(context) * 0.16,
+                                displayWidth(context) * 0.19,
                                 context)
-                            : (displayWidth(context) > 960 &&
-                                    displayWidth(context) <= 1280)
-                                ? listTileTablet(
-                                    item,
-                                    index,
-                                    itemQuantity,
-                                    isFavorite,
-                                    stockActualQty,
-                                    stockActualQtyStyle,
-                                    displayWidth(context) * 0.19,
-                                    context)
-                                : listTileTablet(
-                                    item,
-                                    index,
-                                    itemQuantity,
-                                    isFavorite,
-                                    stockActualQty,
-                                    stockActualQtyStyle,
-                                    displayWidth(context) * 0.2,
-                                    context);
-              },
-            ),
-          );
+                            : listTileTablet(
+                                item,
+                                index,
+                                itemQuantity,
+                                isFavorite,
+                                stockActualQty,
+                                stockActualQtyStyle,
+                                displayWidth(context) * 0.2,
+                                context);
+          },
+        ),
+      ),
+    );
   }
 
   Widget listTileMobile(
@@ -1303,143 +1322,149 @@ Widget incDecBtn(
     required int index}) {
   var cartPageViewModel = locator.get<CartPageViewModel>();
   var iconSize = displayWidth(context) < 600 ? 20.0 : 32.0;
-  return SizedBox(
-    width: displayWidth(context) < 600 ? 115 : 150,
-    child: itemQuantity == 0
-        ? SizedBox(
-            height: displayWidth(context) < 600 ? 37 : 42,
-            child: stockActualQty == 0.0
-                ? Center(
-                    child: Text(
-                      'Out of Stock',
-                      style: TextStyle(
-                        color: CustomTheme.dangerColor,
-                      ),
-                    ),
-                  )
-                : TextButton(
-                    key: Key('${Strings.addToCart}${item.itemCode}'),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                          Theme.of(context).colorScheme.surface),
-                      shape: WidgetStatePropertyAll(
-                        RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            borderRadius: Corners.xxlBorder),
-                      ),
-                    ),
-                    onPressed: () async {
-                      await model.add(item, context);
-                      await Future.delayed(const Duration(milliseconds: 200));
-                      var controllerIndex = -1;
-                      for (var i = 0;
-                          i < model.quantityControllerList.length;
-                          i++) {
-                        if (model.quantityControllerList[i].id ==
-                            item.itemCode) {
-                          controllerIndex = i;
-                        }
-                      }
-                      if (controllerIndex != -1) {
-                        if (model.quantityControllerList[controllerIndex]
-                                .controller !=
-                            null) {
-                          model.incrementQuantityControllerText(
-                              controllerIndex,
-                              model.quantityControllerList[controllerIndex]
-                                  .controller!.text);
-                        }
-                        await model.refresh();
-                      }
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: displayWidth(context) < 600
-                              ? Sizes.paddingWidget(context) * 2
-                              : Sizes.paddingWidget(context)),
+  return Skeleton.ignore(
+    child: SizedBox(
+      width: displayWidth(context) < 600 ? 115 : 150,
+      child: itemQuantity == 0
+          ? SizedBox(
+              height: displayWidth(context) < 600 ? 37 : 42,
+              child: stockActualQty == 0.0
+                  ? Center(
                       child: Text(
-                        Strings.add,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
+                        'Out of Stock',
+                        style: TextStyle(
+                          color: CustomTheme.dangerColor,
+                        ),
+                      ),
+                    )
+                  : TextButton(
+                      key: Key('${Strings.addToCart}${item.itemCode}'),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.surface),
+                        shape: WidgetStatePropertyAll(
+                          RoundedRectangleBorder(
+                              side: BorderSide(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              borderRadius: Corners.lgBorder),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await model.add(item, context);
+                        await Future.delayed(const Duration(milliseconds: 200));
+                        var controllerIndex = -1;
+                        for (var i = 0;
+                            i < model.quantityControllerList.length;
+                            i++) {
+                          if (model.quantityControllerList[i].id ==
+                              item.itemCode) {
+                            controllerIndex = i;
+                          }
+                        }
+                        if (controllerIndex != -1) {
+                          if (model.quantityControllerList[controllerIndex]
+                                  .controller !=
+                              null) {
+                            model.incrementQuantityControllerText(
+                                controllerIndex,
+                                model.quantityControllerList[controllerIndex]
+                                    .controller!.text);
+                          }
+                          await model.refresh();
+                        }
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: displayWidth(context) < 600
+                                ? Sizes.paddingWidget(context) * 2
+                                : Sizes.paddingWidget(context)),
+                        child: Text(
+                          Strings.add,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                        ),
                       ),
                     ),
+            )
+          : (model.isQuantityControllerInitialized
+              ? Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Sizes.extraSmallPaddingWidget(context),
+                    vertical: Sizes.extraSmallPaddingWidget(context),
                   ),
-          )
-        : (model.isQuantityControllerInitialized
-            ? Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Sizes.extraSmallPaddingWidget(context),
-                  vertical: Sizes.extraSmallPaddingWidget(context),
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  borderRadius: Corners.xxlBorder,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    cartControllerButton(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: Corners.lgBorder,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      cartControllerButton(
+                          iconColor: Theme.of(context).colorScheme.onSecondary,
+                          iconSize: iconSize,
+                          buttonDimension: buttonDimension,
+                          icon: Icons.remove,
+                          onPressed: () async {
+                            await decrementController(
+                                item, itemQuantity, model, context);
+                          },
+                          key: Key(
+                              '${Strings.decrementButtonKey}${item.itemCode}')),
+                      model.quantityControllerList.isEmpty
+                          ? const SizedBox()
+                          : incDecController(
+                              controller: model
+                                  .quantityControllerList[index].controller,
+                              focusNode:
+                                  model.quantityFocusNodeList[index].focusNode,
+                              onChanged: (String value) async {
+                                // value empty
+                                if (value.isEmpty) {
+                                }
+                                // not empty
+                                else {
+                                  if (int.parse(value) != 0) {
+                                    await model.setQty(index, value, context);
+                                  }
+                                  // if set to 0 then remove from cart
+                                  if (int.parse(value) == 0) {
+                                    var cartItemObj = cartPageViewModel.items
+                                        .firstWhere(
+                                            (e) => e.itemCode == item.itemCode);
+                                    var index = cartPageViewModel.items
+                                        .indexOf(cartItemObj);
+                                    await cartPageViewModel.remove(
+                                        index, context);
+                                  }
+                                }
+                                await model.refresh();
+                              },
+                              underlineColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
+                              fillColor: Colors.transparent,
+                              context: context,
+                            ),
+                      cartControllerButton(
                         iconColor: Theme.of(context).colorScheme.onSecondary,
                         iconSize: iconSize,
                         buttonDimension: buttonDimension,
-                        icon: Icons.remove,
+                        icon: Icons.add,
                         onPressed: () async {
-                          await decrementController(
-                              item, itemQuantity, model, context);
+                          await incrementController(item, model, context);
                         },
                         key: Key(
-                            '${Strings.decrementButtonKey}${item.itemCode}')),
-                    model.quantityControllerList.isEmpty
-                        ? const SizedBox()
-                        : incDecController(
-                            controller:
-                                model.quantityControllerList[index].controller,
-                            focusNode:
-                                model.quantityFocusNodeList[index].focusNode,
-                            onChanged: (String value) async {
-                              // value empty
-                              if (value.isEmpty) {
-                              }
-                              // not empty
-                              else {
-                                if (int.parse(value) != 0) {
-                                  await model.setQty(index, value, context);
-                                }
-                                // if set to 0 then remove from cart
-                                if (int.parse(value) == 0) {
-                                  var cartItemObj = cartPageViewModel.items
-                                      .firstWhere(
-                                          (e) => e.itemCode == item.itemCode);
-                                  var index = cartPageViewModel.items
-                                      .indexOf(cartItemObj);
-                                  await cartPageViewModel.remove(
-                                      index, context);
-                                }
-                              }
-                              await model.refresh();
-                            },
-                            underlineColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                            fillColor: Colors.transparent,
-                            context: context,
-                          ),
-                    cartControllerButton(
-                      iconColor: Theme.of(context).colorScheme.onSecondary,
-                      iconSize: iconSize,
-                      buttonDimension: buttonDimension,
-                      icon: Icons.add,
-                      onPressed: () async {
-                        await incrementController(item, model, context);
-                      },
-                      key: Key('${Strings.incrementButtonKey}${item.itemCode}'),
-                    ),
-                  ],
-                ),
-              )
-            : const SizedBox()),
+                            '${Strings.incrementButtonKey}${item.itemCode}'),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox()),
+    ),
   );
 }
 
@@ -1572,7 +1597,7 @@ Widget incDecBtnCatalogView(
                         side: BorderSide(
                           color: Theme.of(context).colorScheme.secondary,
                         ),
-                        borderRadius: Corners.xxlBorder,
+                        borderRadius: Corners.lgBorder,
                       ),
                     )),
                 onPressed: () async {
@@ -1602,7 +1627,7 @@ Widget incDecBtnCatalogView(
                   horizontal: Sizes.smallPaddingWidget(context) * 0.8),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.secondary,
-                borderRadius: Corners.xxlBorder,
+                borderRadius: Corners.lgBorder,
               ),
               child: Row(
                 children: [
@@ -1702,42 +1727,46 @@ class TableView extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: Corners.xxlBorder,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: displayWidth(context) < 600
-                      ? EdgeInsets.zero
-                      : EdgeInsets.symmetric(
-                          horizontal: Sizes.smallPaddingWidget(context)),
-                  itemCount: model.itemList.length,
-                  itemBuilder: (context, index) {
-                    var item = model.itemList[index];
-                    var isFavorite = model.isFavorite(item.itemCode!);
-                    var itemQuantity = 0;
-                    // set item quantity
-                    if (model.cartItems != null) {
-                      for (var i = 0; i < model.cartItems!.length; i++) {
-                        if (model.cartItems?[i].itemCode == item.itemCode) {
-                          itemQuantity = model.cartItems![i].quantity;
+                child: Skeletonizer(
+                  enabled: model.isItemListLoading,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    padding: displayWidth(context) < 600
+                        ? EdgeInsets.zero
+                        : EdgeInsets.symmetric(
+                            horizontal: Sizes.smallPaddingWidget(context)),
+                    itemCount: model.itemList.length,
+                    itemBuilder: (context, index) {
+                      var item = model.itemList[index];
+                      var isFavorite = model.isFavorite(item.itemCode!);
+                      var itemQuantity = 0;
+                      // set item quantity
+                      if (model.cartItems != null) {
+                        for (var i = 0; i < model.cartItems!.length; i++) {
+                          if (model.cartItems?[i].itemCode == item.itemCode) {
+                            itemQuantity = model.cartItems![i].quantity;
+                          }
                         }
                       }
-                    }
-                    var stockActualQty = model.getStockActualQty(item.itemCode);
-                    if (index == 0) {
-                      return tableView(item, index, itemQuantity, isFavorite,
-                          stockActualQty, stockActualQtyStyle, context);
-                    }
-                    return Column(
-                      children: [
-                        const Divider(
-                          endIndent: 0,
-                          indent: 0,
-                          height: 1,
-                        ),
-                        tableView(item, index, itemQuantity, isFavorite,
-                            stockActualQty, stockActualQtyStyle, context)
-                      ],
-                    );
-                  },
+                      var stockActualQty =
+                          model.getStockActualQty(item.itemCode);
+                      if (index == 0) {
+                        return tableView(item, index, itemQuantity, isFavorite,
+                            stockActualQty, stockActualQtyStyle, context);
+                      }
+                      return Column(
+                        children: [
+                          const Divider(
+                            endIndent: 0,
+                            indent: 0,
+                            height: 1,
+                          ),
+                          tableView(item, index, itemQuantity, isFavorite,
+                              stockActualQty, stockActualQtyStyle, context)
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -1846,7 +1875,11 @@ class TableView extends StatelessWidget {
                                           locator
                                               .get<NavigationService>()
                                               .navigateTo(imageViewerViewRoute,
-                                                  arguments: [FileModelOrderIT(fileUrl: item.imageUrl), 0]);
+                                                  arguments: [
+                                                FileModelOrderIT(
+                                                    fileUrl: item.imageUrl),
+                                                0
+                                              ]);
                                         },
                                         child: image_widget.imageWidget(
                                             '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
@@ -1949,35 +1982,6 @@ class TableView extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget tableHeader() {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: CustomTheme.tableBorderColor,
-        borderRadius: Corners.xxlBorder,
-      ),
-      child: Row(
-        children: [
-          tableHeaderColumn('Item', 65),
-          tableHeaderColumn('Qty', 35),
-        ],
-      ),
-    );
-  }
-
-  Widget tableHeaderColumn(String? text, int flex) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text ?? '',
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
       ),
     );
   }
@@ -2641,59 +2645,62 @@ class FlexibleItemsGrid extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: Corners.xlBorder,
-          child: LayoutGrid(
-            // set some flexible track sizes based on the crossAxisCount
-            columnSizes: [1.fr, 1.fr],
-            // set all the row sizes to auto (self-sizing height)
-            rowSizes: List<IntrinsicContentTrackSize>.generate(
-                (model.itemList.length / 2).round(), (int index) => auto),
-            rowGap: 1, // equivalent to mainAxisSpacing
-            columnGap: 1, // equivalent to crossAxisSpacing
-            // note: there's no childAspectRatio
-            children:
-                // render all the cards with *automatic child placement*
-                model.itemList.map((e) {
-              var item = e;
-              var itemQuantity = 0;
-              var isFavorite = model.isFavorite(item.itemCode!);
-              // set item quantity
-              if (model.cartItems != null) {
-                for (var i = 0; i < model.cartItems!.length; i++) {
-                  if (model.cartItems?[i].itemCode == item.itemCode) {
-                    itemQuantity = model.cartItems![i].quantity;
+          child: Skeletonizer(
+            enabled: model.isItemListLoading,
+            child: LayoutGrid(
+              // set some flexible track sizes based on the crossAxisCount
+              columnSizes: [1.fr, 1.fr],
+              // set all the row sizes to auto (self-sizing height)
+              rowSizes: List<IntrinsicContentTrackSize>.generate(
+                  (model.itemList.length / 2).round(), (int index) => auto),
+              rowGap: 1, // equivalent to mainAxisSpacing
+              columnGap: 1, // equivalent to crossAxisSpacing
+              // note: there's no childAspectRatio
+              children:
+                  // render all the cards with *automatic child placement*
+                  model.itemList.map((e) {
+                var item = e;
+                var itemQuantity = 0;
+                var isFavorite = model.isFavorite(item.itemCode!);
+                // set item quantity
+                if (model.cartItems != null) {
+                  for (var i = 0; i < model.cartItems!.length; i++) {
+                    if (model.cartItems?[i].itemCode == item.itemCode) {
+                      itemQuantity = model.cartItems![i].quantity;
+                    }
                   }
                 }
-              }
-              var stockActualQty = model.getStockActualQty(item.itemCode);
-              return displayWidth(context) < 600
-                  ? gridTile(
-                      item,
-                      itemQuantity,
-                      isFavorite,
-                      stockActualQty,
-                      stockActualQtyStyle,
-                      model.itemList.indexOf(item),
-                      context)
-                  : ((displayWidth(context) >= 600 &&
-                          displayWidth(context) <= 1280)
-                      ? gridTile(
-                          item,
-                          itemQuantity,
-                          isFavorite,
-                          stockActualQty,
-                          stockActualQtyStyle,
-                          model.itemList.indexOf(item),
-                          context)
-                      : gridTileLargeTablet(
-                          item,
-                          itemQuantity,
-                          isFavorite,
-                          stockActualQty,
-                          stockActualQtyStyle,
-                          model.itemList.indexOf(item),
-                          displayWidth(context) * 0.13,
-                          context));
-            }).toList(),
+                var stockActualQty = model.getStockActualQty(item.itemCode);
+                return displayWidth(context) < 600
+                    ? gridTile(
+                        item,
+                        itemQuantity,
+                        isFavorite,
+                        stockActualQty,
+                        stockActualQtyStyle,
+                        model.itemList.indexOf(item),
+                        context)
+                    : ((displayWidth(context) >= 600 &&
+                            displayWidth(context) <= 1280)
+                        ? gridTile(
+                            item,
+                            itemQuantity,
+                            isFavorite,
+                            stockActualQty,
+                            stockActualQtyStyle,
+                            model.itemList.indexOf(item),
+                            context)
+                        : gridTileLargeTablet(
+                            item,
+                            itemQuantity,
+                            isFavorite,
+                            stockActualQty,
+                            stockActualQtyStyle,
+                            model.itemList.indexOf(item),
+                            displayWidth(context) * 0.13,
+                            context));
+              }).toList(),
+            ),
           ),
         ),
       ),
@@ -2775,7 +2782,11 @@ class FlexibleItemsGrid extends StatelessWidget {
                                   onTap: () {
                                     locator.get<NavigationService>().navigateTo(
                                         imageViewerViewRoute,
-                                        arguments: [FileModelOrderIT(fileUrl: item.imageUrl), 0]);
+                                        arguments: [
+                                          FileModelOrderIT(
+                                              fileUrl: item.imageUrl),
+                                          0
+                                        ]);
                                   },
                                   child: image_widget.imageWidget(
                                       '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
@@ -3076,11 +3087,14 @@ class ItemGroupsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverList.builder(
-      itemCount: itemGroups.length,
-      itemBuilder: (context, index) {
-        return itemGroupListTile(context, index, itemGroups, model);
-      },
+    return Skeletonizer.sliver(
+      enabled: model.isItemGroupsLoading,
+      child: SliverList.builder(
+        itemCount: itemGroups.length,
+        itemBuilder: (context, index) {
+          return itemGroupListTile(context, index, itemGroups, model);
+        },
+      ),
     );
   }
 }

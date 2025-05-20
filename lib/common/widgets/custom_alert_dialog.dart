@@ -62,7 +62,7 @@ class CustomAlertDialog {
                         RoundedRectangleBorder(
                           side: BorderSide(
                               color: cancelColor ?? CustomTheme.borderColor),
-                          borderRadius: Corners.xxlBorder,
+                          borderRadius: Corners.lgBorder,
                         ),
                       ),
                     ),

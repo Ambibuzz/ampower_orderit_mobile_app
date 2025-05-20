@@ -22,9 +22,9 @@ class ItemCategoryBottomNavBarView extends StatelessWidget {
     return [
       if (model.itemGroups.isNotEmpty)
         ItemsView(itemGroup: model.itemGroups[0].name),
+      const PastOrdersView(),
       const DraftView(),
       const FavoritesView(),
-      const PastOrdersView(),
     ];
   }
 
@@ -62,13 +62,27 @@ class ItemCategoryBottomNavBarView extends StatelessWidget {
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Image.asset(
-                  Images.categoryIcon,
+                  Images.homeIcon,
                   width: iconSize,
                   height: iconSize,
                 ),
                 label: 'Categories',
                 activeIcon: Image.asset(
-                  Images.categoryIcon,
+                  Images.homeIcon,
+                  color: activeColor,
+                  width: iconSize,
+                  height: iconSize,
+                ),
+              ),
+              BottomNavigationBarItem(
+                icon: Image.asset(
+                  Images.pastOrdersIcon,
+                  width: iconSize,
+                  height: iconSize,
+                ),
+                label: 'Past Orders',
+                activeIcon: Image.asset(
+                  Images.pastOrdersIcon,
                   color: activeColor,
                   width: iconSize,
                   height: iconSize,
@@ -94,20 +108,6 @@ class ItemCategoryBottomNavBarView extends StatelessWidget {
                 ),
                 label: 'Favorites',
                 activeIcon: Icon(Icons.favorite, color: activeColor),
-              ),
-              BottomNavigationBarItem(
-                icon: Image.asset(
-                  Images.pastOrdersIcon,
-                  width: iconSize,
-                  height: iconSize,
-                ),
-                label: 'Past Orders',
-                activeIcon: Image.asset(
-                  Images.pastOrdersIcon,
-                  color: activeColor,
-                  width: iconSize,
-                  height: iconSize,
-                ),
               ),
             ],
           ),

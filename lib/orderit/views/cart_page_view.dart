@@ -1,3 +1,4 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
@@ -71,35 +72,41 @@ class _CartPageViewState extends State<CartPageView>
             return false; // Prevents default back navigation
           },
           child: Scaffold(
+            backgroundColor: CustomTheme.scaffoldBackgroundColorLight,
             appBar: Common.commonAppBar(
-              'Your Cart',
-              [
-                customTextButtonWithIcon(
-                  'Save Draft',
-                  Images.saveAsDraftIcon,
-                  Theme.of(context).colorScheme.secondary,
-                  () async {
-                    model.saveToDraft(context);
-                  },
-                  context,
-                ),
-                SizedBox(width: Sizes.smallPaddingWidget(context)),
-                customTextButtonWithIcon(
-                  'Clear Cart',
-                  Images.clearCartIcon,
-                  CustomTheme.dangerColor,
-                  () async {
-                    await model.showDialogToRemoveAllItems(context);
-                  },
-                  context,
-                ),
-                SizedBox(
-                  width: Sizes.paddingWidget(context),
-                ),
-              ],
-              context,
-              sendResultBack: true,
-            ),
+                'Your Cart',
+                [
+                  customTextButtonWithIcon(
+                    'Save Draft',
+                    Images.saveAsDraftIcon,
+                    Theme.of(context).colorScheme.secondary,
+                    () async {
+                      model.saveToDraft(context);
+                    },
+                    context,
+                  ),
+                  SizedBox(width: Sizes.smallPaddingWidget(context)),
+                  customTextButtonWithIcon(
+                    'Clear Cart',
+                    Images.clearCartIcon,
+                    CustomTheme.dangerColor,
+                    () async {
+                      await model.showDialogToRemoveAllItems(context);
+                    },
+                    context,
+                  ),
+                  SizedBox(
+                    width: Sizes.paddingWidget(context),
+                  ),
+                ],
+                context,
+                sendResultBack: true,
+                heading:
+                    'Order for ${locator.get<StorageService>().customerSelected}',
+                headingStyle: TextStyle(
+                  color: CustomTheme.borderColor,
+                  fontSize: 12,
+                )),
             body: model.state == ViewState.busy
                 ? WidgetsFactoryList.circularProgressIndicator()
                 : GestureDetector(
@@ -132,11 +139,11 @@ class _CartPageViewState extends State<CartPageView>
       child: Container(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            vertical: Sizes.extraSmallPaddingWidget(context),
+            vertical: Sizes.smallPaddingWidget(context),
             horizontal: Sizes.smallPaddingWidget(context),
           ),
           child: Row(
@@ -163,37 +170,14 @@ class _CartPageViewState extends State<CartPageView>
   }
 
   Widget deleteSelectedItems(CartPageViewModel model, context) {
-    return SizedBox(
-      height: displayWidth(context) < 600 ? 30 : 40,
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: TextButton.icon(
-          style: ButtonStyle(
-            shape: WidgetStateProperty.all(
-              const RoundedRectangleBorder(
-                  borderRadius: Corners.xlBorder,
-                  side: BorderSide(color: Color(0xFFBE2527))),
-            ),
-            iconSize:
-                WidgetStateProperty.all(displayWidth(context) < 600 ? 20 : 24),
-            backgroundColor: WidgetStateProperty.all(
-                Theme.of(context).scaffoldBackgroundColor),
-          ),
-          onPressed: () async {
-            model.removeSelectedItems(context);
-          },
-          icon: const Icon(
-            Icons.delete,
-            color: Color(0xFFBE2527),
-          ),
-          label: Text(
-            'Remove',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: const Color(0xFFBE2527),
-                ),
-          ),
-        ),
-      ),
+    return customTextButtonWithIcon(
+      'Remove Selected Items',
+      Images.clearCartIcon,
+      CustomTheme.dangerColor,
+      () async {
+        model.removeSelectedItems(context);
+      },
+      context,
     );
   }
 
@@ -204,7 +188,7 @@ class _CartPageViewState extends State<CartPageView>
           height: displayHeight(context) * 0.85,
           child: OrderitWidgets.emptyCartWidget(
             'Your Cart is Empty!',
-            'Let’s start adding items to fill it up which you can order later!',
+            'Let’s start adding items to fill it up with all the good things!',
             'Let’s Shop!',
             () {
               Navigator.of(context).pop();
@@ -248,11 +232,6 @@ class _CartPageViewState extends State<CartPageView>
         slivers: [
           CustomSliverSizedBox(
             child: SizedBox(height: Sizes.paddingWidget(context)),
-          ),
-          CustomSliverSizedBox(
-            child: customerNameReusableWidget(
-              context,
-            ),
           ),
           items.isNotEmpty == true
               ? CustomSliverSizedBox(
@@ -309,58 +288,127 @@ class _CartPageViewState extends State<CartPageView>
               : model.quantityControllerList.isEmpty
                   ? const CustomSliverSizedBox(child: SizedBox())
                   : SliverList(
-                      delegate: SliverChildListDelegate(items.map(
-                        (item) {
-                          var index = items.indexOf(item);
-                          var isSelected = model.selectedItems.contains(index);
-                          return GestureDetector(
-                            onTap: () async {
-                              // model.toggleSelected(isSelected, index);
-                              await locator.get<NavigationService>().navigateTo(
-                                  itemsDetailViewRoute,
-                                  arguments: item.itemCode);
-                            },
-                            child: Padding(
+                      delegate: SliverChildBuilderDelegate(
+                        childCount: items.length + 1,
+                        (context, index) {
+                          Cart item;
+                          bool isSelected;
+                          if (index == items.length) {
+                            return Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal:
                                       Sizes.smallPaddingWidget(context)),
                               child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical:
-                                        Sizes.extraSmallPaddingWidget(context),
-                                  ),
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: index == 0
-                                          ? Corners.xlRadius
-                                          : Radius.zero,
-                                      topRight: index == 0
-                                          ? Corners.xlRadius
-                                          : Radius.zero,
-                                      bottomLeft: index == items.length - 1
-                                          ? Corners.xlRadius
-                                          : Radius.zero,
-                                      bottomRight: index == items.length - 1
-                                          ? Corners.xlRadius
-                                          : Radius.zero,
+                                    color: Theme.of(context).cardColor,
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Corners.xlRadius,
+                                      bottomRight: Corners.xlRadius,
                                     ),
-                                    color: isSelected
-                                        ? Colors.blue[200]
-                                        : Theme.of(context).colorScheme.surface,
                                   ),
-                                  child: cartItem(
-                                      item,
-                                      index,
-                                      imageDimension,
-                                      btnDimension,
-                                      iconSize,
-                                      isSelected,
-                                      model,
-                                      context)),
-                            ),
-                          );
+                                  height: 60,
+                                  child: Column(
+                                    children: [
+                                      const Divider(
+                                        endIndent: 0,
+                                        indent: 0,
+                                        height: 1,
+                                      ),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () async {
+                                            Navigator.of(context).pop();
+                                            locator
+                                                .get<
+                                                    ItemCategoryBottomNavBarViewModel>()
+                                                .setIndex(0);
+                                            locator
+                                                .get<ItemsViewModel>()
+                                                .updateCartItems();
+                                            await locator
+                                                .get<ItemsViewModel>()
+                                                .initQuantityController();
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.add,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface,
+                                              ),
+                                              SizedBox(
+                                                  width:
+                                                      Sizes.smallPaddingWidget(
+                                                          context)),
+                                              const Text(
+                                                'Add more items',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            );
+                          } else {
+                            item = items[index];
+                            isSelected = model.selectedItems.contains(index);
+
+                            return GestureDetector(
+                              onTap: () async {
+                                // model.toggleSelected(isSelected, index);
+                                await locator
+                                    .get<NavigationService>()
+                                    .navigateTo(itemsDetailViewRoute,
+                                        arguments: item.itemCode);
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        Sizes.smallPaddingWidget(context)),
+                                child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        // vertical:
+                                        //     Sizes.extraSmallPaddingWidget(context),
+                                        ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: index == 0
+                                            ? Corners.xlRadius
+                                            : Radius.zero,
+                                        topRight: index == 0
+                                            ? Corners.xlRadius
+                                            : Radius.zero,
+                                      ),
+                                      color: isSelected
+                                          ? Colors.blue[200]
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .surface,
+                                    ),
+                                    child: cartItem(
+                                        item,
+                                        index,
+                                        imageDimension,
+                                        btnDimension,
+                                        iconSize,
+                                        isSelected,
+                                        model,
+                                        context)),
+                              ),
+                            );
+                          }
                         },
-                      ).toList()),
+                      ),
                     ),
           verticalPaddingMedium(context),
           CustomSliverSizedBox(
@@ -430,65 +478,6 @@ class _CartPageViewState extends State<CartPageView>
     );
   }
 
-  Widget customerNameReusableWidget(BuildContext context) {
-    return Padding(
-      padding:
-          EdgeInsets.symmetric(horizontal: Sizes.smallPaddingWidget(context)),
-      child: Container(
-        height: displayWidth(context) < 600 ? 40 : 50,
-        decoration: BoxDecoration(
-          borderRadius: Corners.xlBorder,
-          color: Theme.of(context).cardColor,
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              horizontal: Sizes.smallPaddingWidget(context)),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Text(
-                  'Customer : ${locator.get<StorageService>().customerSelected}',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-              ),
-              // allow switching of customer only when user is not customer
-              locator.get<StorageService>().isUserCustomer
-                  ? const SizedBox()
-                  : GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        'Change Customer',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary,
-                              decoration: TextDecoration.underline,
-                              decorationColor:
-                                  Theme.of(context).colorScheme.secondary,
-                            )
-                            .underlined(distance: 2),
-                      ),
-                    ),
-              SizedBox(
-                width: Sizes.extraSmallPaddingWidget(context),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget cartItem(
       Cart item,
       int index,
@@ -509,9 +498,10 @@ class _CartPageViewState extends State<CartPageView>
       children: [
         Text(
           '${Formatter.formatter.format((item.rate ?? 0))} ',
-          style: textStyle?.copyWith(
+          style: GoogleFonts.inter(
+              textStyle: textStyle?.copyWith(
             fontWeight: FontWeight.bold,
-          ),
+          )),
         ),
         // Text(
         //   'Total : ${Formatter.formatter.format(((item.rate ?? 0) * items[index].quantity))} ',
@@ -531,13 +521,14 @@ class _CartPageViewState extends State<CartPageView>
       children: [
         Text(
           'Price : ${Formatter.formatter.format((item.rate ?? 0))} ',
-          style: textStyle,
+          style: GoogleFonts.inter(textStyle: textStyle),
         ),
         Text(
           'Total : ${Formatter.formatter.format((item.rate ?? 0) * model.items[index].quantity)} ',
-          style: textStyle?.copyWith(
+          style: GoogleFonts.inter(
+              textStyle: textStyle?.copyWith(
             fontWeight: FontWeight.bold,
-          ),
+          )),
         ),
       ],
     );
@@ -552,74 +543,87 @@ class _CartPageViewState extends State<CartPageView>
       bool isSelected,
       CartPageViewModel model,
       BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: Sizes.smallPaddingWidget(context),
-        vertical: Sizes.smallPaddingWidget(context),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: () {
-              model.toggleSelected(isSelected, index);
-            },
-            child: isSelected
-                ? const Icon(Icons.check_box, size: 20)
-                : const Icon(Icons.check_box_outline_blank, size: 20),
-          ),
-          const SizedBox(width: Sizes.extraSmallPadding),
-          ClipRRect(
-            borderRadius: Corners.lgBorder,
-            child: item.imageUrl == null || item.imageUrl == ''
-                ? Container(
-                    width: imageDimension,
-                    height: imageDimension,
-                    decoration: const BoxDecoration(
-                      borderRadius: Corners.xxlBorder,
-                      image: DecorationImage(
-                        image: AssetImage(
-                          Images.imageNotFound,
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  )
-                : item.imageUrl == null
-                    ? Container()
-                    : image_widget.imageWidget(
-                        '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                        imageDimension,
-                        imageDimension),
-          ),
-          // cart item name
-          Expanded(
-            child: Padding(
-              padding: displayWidth(context) < 600
-                  ? EdgeInsets.only(left: Sizes.smallPaddingWidget(context))
-                  : EdgeInsets.symmetric(
-                      horizontal: Sizes.paddingWidget(context),
-                    ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${model.items[index].itemName}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w500),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  cartItemRate(item, index, context),
-                ],
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        index == 0
+            ? Container()
+            : const Divider(
+                endIndent: 0,
+                indent: 0,
+                height: 1,
               ),
-            ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: Sizes.smallPaddingWidget(context),
+            vertical: Sizes.paddingWidget(context),
           ),
-          incDecBtn(index, btnDimension, iconSize, model, context),
-        ],
-      ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  model.toggleSelected(isSelected, index);
+                },
+                child: isSelected
+                    ? const Icon(Icons.check_box, size: 20)
+                    : const Icon(Icons.check_box_outline_blank, size: 20),
+              ),
+              const SizedBox(width: Sizes.extraSmallPadding),
+              ClipRRect(
+                borderRadius: Corners.lgBorder,
+                child: item.imageUrl == null || item.imageUrl == ''
+                    ? Container(
+                        width: imageDimension,
+                        height: imageDimension,
+                        decoration: const BoxDecoration(
+                          borderRadius: Corners.xxlBorder,
+                          image: DecorationImage(
+                            image: AssetImage(
+                              Images.imageNotFound,
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      )
+                    : item.imageUrl == null
+                        ? Container()
+                        : image_widget.imageWidget(
+                            '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
+                            imageDimension,
+                            imageDimension),
+              ),
+              // cart item name
+              Expanded(
+                child: Padding(
+                  padding: displayWidth(context) < 600
+                      ? EdgeInsets.only(left: Sizes.smallPaddingWidget(context))
+                      : EdgeInsets.symmetric(
+                          horizontal: Sizes.paddingWidget(context),
+                        ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '${model.items[index].itemName}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w500),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      cartItemRate(item, index, context),
+                    ],
+                  ),
+                ),
+              ),
+              // const Spacer(),
+              incDecBtn(index, btnDimension, iconSize, model, context),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -651,7 +655,7 @@ class _CartPageViewState extends State<CartPageView>
               horizontal: Sizes.smallPaddingWidget(context) * 0.8),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            borderRadius: Corners.xxlBorder,
+            borderRadius: Corners.lgBorder,
             border: Border.all(
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -759,7 +763,7 @@ Widget totalStickyWidget(CartPageViewModel model, BuildContext context) {
                 Text(
                   'Total Price',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: const Color(0xFF1E1E1E),
+                        fontWeight: FontWeight.bold,
                       ),
                 ),
                 SizedBox(
@@ -767,9 +771,11 @@ Widget totalStickyWidget(CartPageViewModel model, BuildContext context) {
                 ),
                 Text(
                   Formatter.formatter.format(model.total),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: GoogleFonts.inter(
+                      textStyle:
+                          Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              )),
                 ),
               ],
             ),

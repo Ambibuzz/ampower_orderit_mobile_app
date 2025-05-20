@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
@@ -123,7 +124,7 @@ class SearchPageView extends StatelessWidget {
                                                   shape: WidgetStatePropertyAll(
                                                     RoundedRectangleBorder(
                                                       borderRadius:
-                                                          Corners.xxlBorder,
+                                                          Corners.lgBorder,
                                                       side: BorderSide(
                                                           color: model
                                                                   .itemInCart(
@@ -258,83 +259,108 @@ class SearchPageView extends StatelessWidget {
       title: searchBar(model, context),
       leadingWidth: 0,
       titleSpacing: 0,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(bottom: Corners.xlRadius),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[
-              Color(0xFF006CB5), // Starting color
-              Color(0xFF002D4C) // ending color
-            ],
-          ),
-        ),
-      ),
       systemOverlayStyle: SystemUiOverlayStyle.light,
       actions: [],
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Corners.xlRadius,
-        ),
-      ),
     );
   }
 
   Widget searchBar(SearchPageViewModel model, BuildContext context) {
     return Container(
+      height: Sizes.buttonHeightWidget(context),
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onPrimary,
-          borderRadius: Corners.xxlBorder),
+        color: Theme.of(context).colorScheme.onPrimary,
+        borderRadius: Corners.lgBorder,
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
       margin: EdgeInsets.symmetric(
-        horizontal: Sizes.smallPaddingWidget(context),
-        vertical: Sizes.extraSmallPaddingWidget(context),
+        horizontal: Sizes.paddingWidget(context),
+        // vertical: Sizes.smallPaddingWidget(context),
       ),
       // padding: const EdgeInsets.symmetric(horizontal: Sizes.smallPadding),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            SizedBox(width: Sizes.smallPaddingWidget(context)),
-            GestureDetector(
-              onTap: () => locator.get<NavigationService>().pop(result: true),
-              child: Image.asset(
-                Images.backButtonIcon,
-                width: 18,
-                height: 18,
-                color: CustomTheme.borderColor,
+      child: Row(
+        children: [
+          /*
+          IconButton(
+              icon: Icon(
+                defaultTargetPlatform == TargetPlatform.iOS
+                    ? Icons.arrow_back_ios
+                    : Icons.arrow_back,
               ),
+              onPressed: () async {
+                locator.get<NavigationService>().pop();
+                // Navigator.pop(context, '');
+              }),
+          */
+          // SizedBox(
+          //   width: Sizes.smallPaddingWidget(context),
+          // ),
+          SizedBox(width: Sizes.smallPaddingWidget(context)),
+          GestureDetector(
+            onTap: () => locator.get<NavigationService>().pop(result: true),
+            child: Icon(
+              defaultTargetPlatform == TargetPlatform.iOS
+                  ? Icons.arrow_back_ios
+                  : Icons.arrow_back,
+              size: 24,
+              color: CustomTheme.iconColor,
             ),
-            Expanded(
-              child: SizedBox(
-                child: TextFormField(
-                  key: const Key(TestCasesConstants.searchField),
-                  onFieldSubmitted: (value) {},
-                  textInputAction: TextInputAction.search,
-                  decoration: InputDecoration(
-                    fillColor: Theme.of(context).colorScheme.onPrimary,
-                    hintText: 'Search',
-                    hintStyle: Theme.of(context).textTheme.titleMedium,
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    filled: true,
-                    isDense: true,
-                  ),
-                  controller: searchController,
-                  onChanged: (item) {
-                    var itemLowercase = item.toLowerCase();
-                    model.search(itemLowercase);
-                  },
+          ),
+          Expanded(
+            child: SizedBox(
+              child: TextFormField(
+                key: const Key(TestCasesConstants.searchField),
+                // keyboardType: TextInputType.,
+                onFieldSubmitted: (value) {},
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  fillColor: Theme.of(context).colorScheme.onPrimary,
+                  hintText: 'Search...',
+                  hintStyle: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: CustomTheme.iconColor),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  filled: true,
+                  isDense: true,
                 ),
+                controller: searchController,
+                onChanged: (item) {
+                  var itemLowercase = item.toLowerCase();
+                  model.search(itemLowercase);
+                },
               ),
             ),
-            const VerticalDivider(),
-            dropDownButton(model, context),
-            displayWidth(context) < 600
-                ? Container()
-                : SizedBox(width: Sizes.smallPaddingWidget(context)),
-          ],
-        ),
+          ),
+          // SizedBox(
+          //   width: Sizes.smallPaddingWidget(context),
+          // ),
+          /*
+          VerticalDivider(
+            endIndent: Sizes.smallPaddingWidget(context),
+            indent: Sizes.smallPaddingWidget(context),
+          ),
+          dropDownButton(model, context),
+          */
+          // SizedBox(
+          //   width: Sizes.extraSmallPaddingWidget(context),
+          // ),
+          // displayWidth(context) < 600
+          //     ? Container()
+          //     : SizedBox(width: Sizes.smallPaddingWidget(context)),
+          // barcode scan button
+          // barcodeScan(model),
+          // displayWidth(context) < 600
+          //     ? Container()
+          //     : SizedBox(width: Sizes.smallPaddingWidget(context)),
+        ],
       ),
     );
   }

@@ -9,11 +9,16 @@ import 'package:orderit/locators/locator.dart';
 
 class ErrorLogListViewModel extends BaseViewModel {
   var errorLogList = <ErrorLog>[];
+  bool isErrorLogLoading = false;
 
   Future getErrorLogList() async {
+    isErrorLogLoading = true;
+    notifyListeners();
+    await Future.delayed(const Duration(milliseconds: 200));
     errorLogList = await getErrorLogListFromCache();
     // sort error logs by recent
     errorLogList.sort((a, b) => b.id!.compareTo(a.id!));
+    isErrorLogLoading = false;
     notifyListeners();
   }
 
