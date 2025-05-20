@@ -1,4 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
@@ -61,9 +63,10 @@ class ItemsView extends StatelessWidget {
         Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             );
-    var itemPriceListStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-        );
+    var itemPriceListStyle = GoogleFonts.inter(
+        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ));
     return BaseView<ItemsViewModel>(
       onModelReady: (model) async {
         // get user
@@ -164,7 +167,10 @@ class ItemsView extends StatelessWidget {
                         }
                       }
                     },
-                    child: const Icon(Icons.search)),
+                    child: Icon(
+                      Icons.search,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    )),
                 SizedBox(width: Sizes.smallPaddingWidget(context)),
                 Common.profileReusableWidget(model.user, context),
                 popUpMenu(model, context),
@@ -177,34 +183,18 @@ class ItemsView extends StatelessWidget {
             },
             child: Stack(
               children: [
-                model.itemGroups.isEmpty
-                    ? Skeletonizer(
-                        enabled: model.isItemListLoading,
-                        child: EmptyWidget(
-                          onRefresh: () async {
-                            await model.reCacheData(model, context);
-                          },
-                        ),
-                      )
-                    : LayoutBuilder(
-                        builder: (context, constraints) {
-                          if (constraints.maxWidth <= 600) {
-                            return mobileView(
-                                model,
-                                itemNameListStyle,
-                                itemNameCatalogStyle,
-                                itemPriceListStyle,
-                                context);
-                          } else {
-                            return largeDevice(
-                                model,
-                                itemNameListStyle,
-                                itemNameCatalogStyle,
-                                itemPriceListStyle,
-                                context);
-                          }
-                        },
-                      ),
+                model.isItemGroupsLoading
+                    ? itemsViewLayoutBuilder(model, context)
+                    : model.itemGroups.isEmpty
+                        ? Skeletonizer(
+                            enabled: model.isItemListLoading,
+                            child: EmptyWidget(
+                              onRefresh: () async {
+                                await model.reCacheData(model, context);
+                              },
+                            ),
+                          )
+                        : itemsViewLayoutBuilder(model, context),
                 OrderitWidgets.floatingCartButton(context, () {
                   model.refresh();
                   model.updateCartItems();
@@ -214,6 +204,31 @@ class ItemsView extends StatelessWidget {
             ),
           ),
         );
+      },
+    );
+  }
+
+  Widget itemsViewLayoutBuilder(ItemsViewModel model, BuildContext context) {
+    var itemNameListStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.bold,
+        );
+    var itemNameCatalogStyle =
+        Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            );
+    var itemPriceListStyle = GoogleFonts.inter(
+        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ));
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth <= 600) {
+          return mobileView(model, itemNameListStyle, itemNameCatalogStyle,
+              itemPriceListStyle, context);
+        } else {
+          return largeDevice(model, itemNameListStyle, itemNameCatalogStyle,
+              itemPriceListStyle, context);
+        }
       },
     );
   }
@@ -423,13 +438,14 @@ class ItemsView extends StatelessWidget {
               child: Text(
                 title ?? '',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
               ),
             ),
           ],
         ),
       ),
+      shadowColor: Colors.black.withOpacity(0.4),
       leadingWidth: 35,
       leading: locator.get<StorageService>().isUserCustomer
           ? null
@@ -443,10 +459,12 @@ class ItemsView extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 2),
                       child: GestureDetector(
                         onTap: () => Navigator.of(context).pop(),
-                        child: Image.asset(
-                          Images.backButtonIcon,
-                          width: 24,
-                          height: 24,
+                        child: Icon(
+                          defaultTargetPlatform == TargetPlatform.iOS
+                              ? Icons.arrow_back_ios
+                              : Icons.arrow_back,
+                          size: 24,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -454,19 +472,6 @@ class ItemsView extends StatelessWidget {
                 )
               : null,
       titleSpacing: Sizes.smallPaddingWidget(context) * 1.5,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.vertical(bottom: Corners.xlRadius),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[
-              Color(0xFF006CB5), // Starting color
-              Color(0xFF002D4C) // ending color
-            ],
-          ),
-        ),
-      ),
       systemOverlayStyle: SystemUiOverlayStyle.light,
       actions: actions,
       shape: const RoundedRectangleBorder(
@@ -505,9 +510,13 @@ class ItemsView extends StatelessWidget {
   Widget popUpMenu(ItemsViewModel model, BuildContext context) {
     return PopupMenuButton<ViewTypes>(
       // Callback that sets the selected popup menu item.
-      color: Theme.of(context).colorScheme.onPrimary,
+      color: Theme.of(context).colorScheme.surface,
       padding: EdgeInsets.zero,
-      icon: Icon(Icons.more_vert, size: Sizes.iconSizeWidget(context)),
+      icon: Icon(
+        Icons.more_vert,
+        size: Sizes.iconSizeWidget(context),
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
       onSelected: (ViewTypes viewType) {
         if (viewType == ViewTypes.listView) {
           model.setViewType(ViewTypes.listView);
@@ -775,41 +784,59 @@ class ItemsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var stockActualQtyStyle = Theme.of(context).textTheme.titleSmall;
-    return model.itemList.isEmpty == true
-        ? EmptyWidget(
-            onRefresh: () async {
-              await model.reCacheData(model, context);
-            },
-          )
-        : RefreshIndicator.adaptive(
-            onRefresh: () async {
-              await model.reCacheData(model, context);
-            },
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: displayWidth(context) < 600
-                  ? EdgeInsets.symmetric(
-                      vertical: Sizes.smallPaddingWidget(context))
-                  : EdgeInsets.symmetric(
-                      horizontal: Sizes.smallPaddingWidget(context),
-                    ),
-              itemCount: model.itemList.length,
-              itemBuilder: (context, index) {
-                var item = model.itemList[index];
-                var isFavorite = model.isFavorite(item.itemCode!);
-                var itemQuantity = 0;
-                // set item quantity
-                if (model.cartItems != null) {
-                  for (var i = 0; i < model.cartItems!.length; i++) {
-                    if (model.cartItems?[i].itemCode == item.itemCode) {
-                      itemQuantity = model.cartItems![i].quantity;
-                    }
-                  }
+    return model.isItemListLoading
+        ? itemListWidget(stockActualQtyStyle, context)
+        : model.itemList.isEmpty == true
+            ? EmptyWidget(
+                onRefresh: () async {
+                  await model.reCacheData(model, context);
+                },
+              )
+            : itemListWidget(stockActualQtyStyle, context);
+  }
+
+  Widget itemListWidget(TextStyle? stockActualQtyStyle, BuildContext context) {
+    return RefreshIndicator.adaptive(
+      onRefresh: () async {
+        await model.reCacheData(model, context);
+      },
+      child: Skeletonizer(
+        enabled: model.isItemListLoading,
+        child: ListView.builder(
+          shrinkWrap: true,
+          padding: displayWidth(context) < 600
+              ? EdgeInsets.symmetric(
+                  vertical: Sizes.smallPaddingWidget(context))
+              : EdgeInsets.symmetric(
+                  horizontal: Sizes.smallPaddingWidget(context),
+                ),
+          itemCount: model.itemList.length,
+          itemBuilder: (context, index) {
+            var item = model.itemList[index];
+            var isFavorite = model.isFavorite(item.itemCode!);
+            var itemQuantity = 0;
+            // set item quantity
+            if (model.cartItems != null) {
+              for (var i = 0; i < model.cartItems!.length; i++) {
+                if (model.cartItems?[i].itemCode == item.itemCode) {
+                  itemQuantity = model.cartItems![i].quantity;
                 }
-                var stockActualQty = model.getStockActualQty(item.itemCode);
-                return displayWidth(context) < 600
-                    ? listTileMobile(item, index, itemQuantity, isFavorite,
-                        stockActualQty, stockActualQtyStyle, context)
+              }
+            }
+            var stockActualQty = model.getStockActualQty(item.itemCode);
+            return displayWidth(context) < 600
+                ? listTileMobile(item, index, itemQuantity, isFavorite,
+                    stockActualQty, stockActualQtyStyle, context)
+                : (displayWidth(context) >= 600 && displayWidth(context) <= 960)
+                    ? listTileTablet(
+                        item,
+                        index,
+                        itemQuantity,
+                        isFavorite,
+                        stockActualQty,
+                        stockActualQtyStyle,
+                        displayWidth(context) * 0.16,
+                        context)
                     : (displayWidth(context) >= 600 &&
                             displayWidth(context) <= 960)
                         ? listTileTablet(
@@ -821,8 +848,8 @@ class ItemsList extends StatelessWidget {
                             stockActualQtyStyle,
                             displayWidth(context) * 0.16,
                             context)
-                        : (displayWidth(context) >= 600 &&
-                                displayWidth(context) <= 960)
+                        : (displayWidth(context) > 960 &&
+                                displayWidth(context) <= 1280)
                             ? listTileTablet(
                                 item,
                                 index,
@@ -830,31 +857,21 @@ class ItemsList extends StatelessWidget {
                                 isFavorite,
                                 stockActualQty,
                                 stockActualQtyStyle,
-                                displayWidth(context) * 0.16,
+                                displayWidth(context) * 0.19,
                                 context)
-                            : (displayWidth(context) > 960 &&
-                                    displayWidth(context) <= 1280)
-                                ? listTileTablet(
-                                    item,
-                                    index,
-                                    itemQuantity,
-                                    isFavorite,
-                                    stockActualQty,
-                                    stockActualQtyStyle,
-                                    displayWidth(context) * 0.19,
-                                    context)
-                                : listTileTablet(
-                                    item,
-                                    index,
-                                    itemQuantity,
-                                    isFavorite,
-                                    stockActualQty,
-                                    stockActualQtyStyle,
-                                    displayWidth(context) * 0.2,
-                                    context);
-              },
-            ),
-          );
+                            : listTileTablet(
+                                item,
+                                index,
+                                itemQuantity,
+                                isFavorite,
+                                stockActualQty,
+                                stockActualQtyStyle,
+                                displayWidth(context) * 0.2,
+                                context);
+          },
+        ),
+      ),
+    );
   }
 
   Widget listTileMobile(
@@ -1330,7 +1347,7 @@ Widget incDecBtn(
                               side: BorderSide(
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
-                              borderRadius: Corners.xxlBorder),
+                              borderRadius: Corners.lgBorder),
                         ),
                       ),
                       onPressed: () async {
@@ -1382,7 +1399,7 @@ Widget incDecBtn(
                   ),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: Corners.xxlBorder,
+                    borderRadius: Corners.lgBorder,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -1580,7 +1597,7 @@ Widget incDecBtnCatalogView(
                         side: BorderSide(
                           color: Theme.of(context).colorScheme.secondary,
                         ),
-                        borderRadius: Corners.xxlBorder,
+                        borderRadius: Corners.lgBorder,
                       ),
                     )),
                 onPressed: () async {
@@ -1610,7 +1627,7 @@ Widget incDecBtnCatalogView(
                   horizontal: Sizes.smallPaddingWidget(context) * 0.8),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.secondary,
-                borderRadius: Corners.xxlBorder,
+                borderRadius: Corners.lgBorder,
               ),
               child: Row(
                 children: [
@@ -1731,7 +1748,8 @@ class TableView extends StatelessWidget {
                           }
                         }
                       }
-                      var stockActualQty = model.getStockActualQty(item.itemCode);
+                      var stockActualQty =
+                          model.getStockActualQty(item.itemCode);
                       if (index == 0) {
                         return tableView(item, index, itemQuantity, isFavorite,
                             stockActualQty, stockActualQtyStyle, context);
@@ -1964,35 +1982,6 @@ class TableView extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget tableHeader() {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(
-        color: CustomTheme.tableBorderColor,
-        borderRadius: Corners.xxlBorder,
-      ),
-      child: Row(
-        children: [
-          tableHeaderColumn('Item', 65),
-          tableHeaderColumn('Qty', 35),
-        ],
-      ),
-    );
-  }
-
-  Widget tableHeaderColumn(String? text, int flex) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text ?? '',
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
       ),
     );
   }

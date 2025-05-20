@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/common_service.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
@@ -781,9 +782,11 @@ class ItemInfoWidget1 extends StatelessWidget {
                   ),
                   Text(
                     Formatter.formatter.format(model.price),
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                    style: GoogleFonts.inter(
+                        textStyle:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                )),
                   ),
                   Text(
                     model.stockActualQty == 0.0

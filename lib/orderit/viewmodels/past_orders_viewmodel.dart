@@ -1,4 +1,5 @@
 import 'package:orderit/common/models/product.dart';
+import 'package:orderit/common/services/fetch_cached_doctype_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/custom_toast.dart';
 import 'package:orderit/config/theme.dart';
@@ -19,6 +20,41 @@ class PastOrdersViewModel extends BaseViewModel {
   bool isSalesOrderLoading = false;
   var itemsList = <Product>[];
   String? statusTextSO = '';
+  var productsList = <Product>[];
+  Map<String, dynamic> imagesUrlMap = {};
+  bool isImagesLoading = false;
+
+  Future getProducts() async {
+    setState(ViewState.busy);
+    productsList =
+        await locator.get<FetchCachedDoctypeService>().fetchCachedItemData();
+    setState(ViewState.idle);
+    notifyListeners();
+  }
+
+  void getSalesOrderItemsImages() {
+    isImagesLoading = true;
+    notifyListeners();
+    if (salesOrderList.isNotEmpty) {
+      for (var i = 0; i < salesOrderList.length; i++) {
+        if (salesOrderList[i].salesOrderItems?.isNotEmpty == true) {
+          var imageUrls = <String>[];
+          for (var j = 0; j < salesOrderList[i].salesOrderItems!.length; j++) {
+            var soItem = salesOrderList[i].salesOrderItems?[j];
+            var product =
+                productsList.firstWhere((e) => e.itemName == soItem?.itemname);
+            if (product.image?.isNotEmpty == true) {
+              imageUrls.add(product.image!);
+            }
+          }
+          imagesUrlMap[salesOrderList[i].name ?? ''] = imageUrls;
+          imageUrls = [];
+        }
+      }
+    }
+    isImagesLoading = false;
+    notifyListeners();
+  }
 
   void refresh() {
     notifyListeners();
