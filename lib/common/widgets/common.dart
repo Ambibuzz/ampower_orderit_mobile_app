@@ -22,7 +22,7 @@ import '../../orderit/views/image_widget_native.dart'
 class Common {
   static AppBar commonAppBar(
       String? title, List<Widget>? actions, BuildContext context,
-      {bool? sendResultBack, bool? showBackBtn = true}) {
+      {bool? sendResultBack, bool? showBackBtn = true, String? heading, TextStyle? headingStyle}) {
     return AppBar(
       title: Text(
         title ?? '',
@@ -303,6 +303,38 @@ class Common {
         style: textStyle,
       ),
     ));
+  }
+
+  static Widget reusableRowWidget(
+      String? key, String? value, BuildContext context,
+      {TextStyle? textStyle}) {
+    return Row(
+      children: [
+        Expanded(
+            flex: 40,
+            child: Text(
+              '$key : ',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xFFA2A2A2),
+                fontSize: 16,
+              ),
+            )),
+        Expanded(
+            flex: 60,
+            child: Text(
+              value ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textStyle ??
+                  TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 16,
+                  ),
+            )),
+      ],
+    );
   }
 
   static Widget reusableTextWidget(

@@ -15,6 +15,7 @@ import 'package:orderit/util/display_helper.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:orderit/util/helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ErrorLogListView extends StatelessWidget {
   const ErrorLogListView({super.key});
@@ -31,34 +32,32 @@ class ErrorLogListView extends StatelessWidget {
       builder: (context, model, child) {
         return Scaffold(
           appBar: Common.commonAppBar('Error Logs', [], context),
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              // : SizedBox()
-              // /*
-              : model.errorLogList.isNotEmpty
-                  ? errorLogList(model, context)
-                  : Center(
-                      child: EmptyWidget(
-                        height: displayHeight(context),
-                      ),
-                    ),
-          // */
+          body: model.errorLogList.isNotEmpty
+              ? errorLogList(model, context)
+              : Center(
+                  child: EmptyWidget(
+                    height: displayHeight(context),
+                  ),
+                ),
         );
       },
     );
   }
 
   Widget errorLogList(ErrorLogListViewModel model, BuildContext context) {
-    return ListView.builder(
-      itemCount: model.errorLogList.length,
-      padding: EdgeInsets.symmetric(
-        vertical: Sizes.smallPaddingWidget(context),
-        horizontal: Sizes.paddingWidget(context),
+    return Skeletonizer(
+      enabled: model.isErrorLogLoading,
+      child: ListView.builder(
+        itemCount: model.errorLogList.length,
+        padding: EdgeInsets.symmetric(
+          vertical: Sizes.smallPaddingWidget(context),
+          horizontal: Sizes.paddingWidget(context),
+        ),
+        itemBuilder: (context, index) {
+          var errorLog = model.errorLogList[index];
+          return errorLogTile(errorLog, context);
+        },
       ),
-      itemBuilder: (context, index) {
-        var errorLog = model.errorLogList[index];
-        return errorLogTile(errorLog, context);
-      },
     );
   }
 

@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 
 class FavoritesViewModel extends BaseViewModel {
   var favoriteItems = <ItemsModel>[];
+  bool isFavoritesLoading = false;
   var favoritesList = <String>[];
   List<Cart?> cartItems = [];
   // quantity controller
@@ -182,7 +183,9 @@ class FavoritesViewModel extends BaseViewModel {
   }
 
   Future getFavoritesItems() async {
-    setState(ViewState.busy);
+    isFavoritesLoading = true;
+    await Future.delayed(const Duration(milliseconds: 200));
+    notifyListeners();
     favoriteItems.clear();
     favoritesList.clear();
     var items = await locator
@@ -200,7 +203,7 @@ class FavoritesViewModel extends BaseViewModel {
             items.firstWhere((e) => e.itemCode == favoritesItemCodeList[i]));
       }
     }
-    setState(ViewState.idle);
+    isFavoritesLoading = false;
     notifyListeners();
   }
 

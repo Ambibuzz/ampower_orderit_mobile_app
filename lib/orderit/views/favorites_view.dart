@@ -21,6 +21,7 @@ import 'package:orderit/util/display_helper.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../views/image_widget_native.dart'
     if (dart.library.html) 'image_widget_web.dart' as image_widget;
 
@@ -92,142 +93,150 @@ class FavoritesView extends StatelessWidget {
     var cartPageViewModel = locator.get<CartPageViewModel>();
     var iconSize = displayWidth(context) < 600 ? 20.0 : 32.0;
 
-    return SizedBox(
-      width: displayWidth(context) < 600 ? 115 : 150,
+    return Skeleton.ignore(
       child: SizedBox(
-        height: displayWidth(context) < 600 ? 37 : 42,
-        child: itemQuantity == 0
-            ? stockActualQty == 0.0
-                ? Center(
-                    child: Text(
-                      'Out of Stock',
-                      style: TextStyle(
-                        color: CustomTheme.dangerColor,
-                      ),
-                    ),
-                  )
-                : TextButton(
-                    key: Key('${Strings.addToCart}${item.itemCode}'),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(
-                          Theme.of(context).colorScheme.surface),
-                      shape: WidgetStatePropertyAll(
-                        RoundedRectangleBorder(
-                            side: BorderSide(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            borderRadius: Corners.xxlBorder),
-                      ),
-                    ),
-                    onPressed: () async {
-                      await model.add(item, context);
-                      await Future.delayed(const Duration(milliseconds: 200));
-                      var controllerIndex = -1;
-                      for (var i = 0;
-                          i < model.quantityControllerList.length;
-                          i++) {
-                        if (model.quantityControllerList[i].id ==
-                            item.itemCode) {
-                          controllerIndex = i;
-                        }
-                      }
-                      if (controllerIndex != -1) {
-                        if (model.quantityControllerList[controllerIndex]
-                                .controller !=
-                            null) {
-                          model.incrementQuantityControllerText(
-                              controllerIndex,
-                              model.quantityControllerList[controllerIndex]
-                                  .controller!.text);
-                        }
-                        await model.refresh();
-                      }
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: displayWidth(context) < 600
-                              ? Sizes.paddingWidget(context) * 2
-                              : Sizes.paddingWidget(context)),
+        width: displayWidth(context) < 600 ? 115 : 150,
+        child: SizedBox(
+          height: displayWidth(context) < 600 ? 37 : 42,
+          child: itemQuantity == 0
+              ? stockActualQty == 0.0
+                  ? Center(
                       child: Text(
-                        Strings.add,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
+                        'Out of Stock',
+                        style: TextStyle(
+                          color: CustomTheme.dangerColor,
+                        ),
                       ),
-                    ),
-                  )
-            : (model.isQuantityControllerInitialized
-                ? Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Sizes.extraSmallPaddingWidget(context),
-                      vertical: Sizes.extraSmallPaddingWidget(context),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondary,
-                      borderRadius: Corners.xxlBorder,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        cartControllerButton(
+                    )
+                  : TextButton(
+                      key: Key('${Strings.addToCart}${item.itemCode}'),
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.surface),
+                        shape: WidgetStatePropertyAll(
+                          RoundedRectangleBorder(
+                              side: BorderSide(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              borderRadius: Corners.xxlBorder),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await model.add(item, context);
+                        await Future.delayed(const Duration(milliseconds: 200));
+                        var controllerIndex = -1;
+                        for (var i = 0;
+                            i < model.quantityControllerList.length;
+                            i++) {
+                          if (model.quantityControllerList[i].id ==
+                              item.itemCode) {
+                            controllerIndex = i;
+                          }
+                        }
+                        if (controllerIndex != -1) {
+                          if (model.quantityControllerList[controllerIndex]
+                                  .controller !=
+                              null) {
+                            model.incrementQuantityControllerText(
+                                controllerIndex,
+                                model.quantityControllerList[controllerIndex]
+                                    .controller!.text);
+                          }
+                          await model.refresh();
+                        }
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: displayWidth(context) < 600
+                                ? Sizes.paddingWidget(context) * 2
+                                : Sizes.paddingWidget(context)),
+                        child: Text(
+                          Strings.add,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                        ),
+                      ),
+                    )
+              : (model.isQuantityControllerInitialized
+                  ? Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Sizes.extraSmallPaddingWidget(context),
+                        vertical: Sizes.extraSmallPaddingWidget(context),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.secondary,
+                        borderRadius: Corners.xxlBorder,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          cartControllerButton(
+                              iconColor:
+                                  Theme.of(context).colorScheme.onSecondary,
+                              iconSize: iconSize,
+                              buttonDimension: buttonDimension,
+                              icon: Icons.remove,
+                              onPressed: () async {
+                                await decrementController(
+                                    item, itemQuantity, model, context);
+                              },
+                              key: Key(
+                                  '${Strings.decrementButtonKey}${item.itemCode}')),
+                          model.quantityControllerList.isEmpty
+                              ? const SizedBox()
+                              : incDecController(
+                                  controller: model
+                                      .quantityControllerList[index].controller,
+                                  onChanged: (String value) async {
+                                    // value empty
+                                    if (value.isEmpty) {
+                                    }
+                                    // not empty
+                                    else {
+                                      if (int.parse(value) != 0) {
+                                        await model.setQty(
+                                            index, value, context);
+                                      }
+                                      // if set to 0 then remove from cart
+                                      if (int.parse(value) == 0) {
+                                        var cartItemObj = cartPageViewModel
+                                            .items
+                                            .firstWhere((e) =>
+                                                e.itemCode == item.itemCode);
+                                        var index = cartPageViewModel.items
+                                            .indexOf(cartItemObj);
+                                        await cartPageViewModel.remove(
+                                            index, context);
+                                      }
+                                    }
+                                    await model.refresh();
+                                  },
+                                  underlineColor:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  fillColor: Colors.transparent,
+                                  context: context,
+                                ),
+                          cartControllerButton(
                             iconColor:
                                 Theme.of(context).colorScheme.onSecondary,
                             iconSize: iconSize,
                             buttonDimension: buttonDimension,
-                            icon: Icons.remove,
+                            icon: Icons.add,
                             onPressed: () async {
-                              await decrementController(
-                                  item, itemQuantity, model, context);
+                              await incrementController(item, model, context);
                             },
                             key: Key(
-                                '${Strings.decrementButtonKey}${item.itemCode}')),
-                        model.quantityControllerList.isEmpty
-                            ? const SizedBox()
-                            : incDecController(
-                                controller: model
-                                    .quantityControllerList[index].controller,
-                                onChanged: (String value) async {
-                                  // value empty
-                                  if (value.isEmpty) {
-                                  }
-                                  // not empty
-                                  else {
-                                    if (int.parse(value) != 0) {
-                                      await model.setQty(index, value, context);
-                                    }
-                                    // if set to 0 then remove from cart
-                                    if (int.parse(value) == 0) {
-                                      var cartItemObj = cartPageViewModel.items
-                                          .firstWhere((e) =>
-                                              e.itemCode == item.itemCode);
-                                      var index = cartPageViewModel.items
-                                          .indexOf(cartItemObj);
-                                      await cartPageViewModel.remove(
-                                          index, context);
-                                    }
-                                  }
-                                  await model.refresh();
-                                },
-                                underlineColor:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                                fillColor: Colors.transparent,
-                                context: context,
-                              ),
-                        cartControllerButton(
-                          iconColor: Theme.of(context).colorScheme.onSecondary,
-                          iconSize: iconSize,
-                          buttonDimension: buttonDimension,
-                          icon: Icons.add,
-                          onPressed: () async {
-                            await incrementController(item, model, context);
-                          },
-                          key: Key(
-                              '${Strings.incrementButtonKey}${item.itemCode}'),
-                        ),
-                      ],
-                    ),
-                  )
-                : const SizedBox()),
+                                '${Strings.incrementButtonKey}${item.itemCode}'),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox()),
+        ),
       ),
     );
   }
@@ -327,24 +336,27 @@ class FavoritesView extends StatelessWidget {
   }
 
   Widget favoritesList(FavoritesViewModel model, BuildContext context) {
-    return ListView.builder(
-      itemCount: model.favoriteItems.length,
-      padding:
-          EdgeInsets.symmetric(vertical: Sizes.smallPaddingWidget(context)),
-      itemBuilder: (context, index) {
-        var item = model.favoriteItems[index];
-        var itemQuantity = 0;
-        // set item quantity
-        var cartItems = locator.get<CartPageViewModel>().items;
-        if (cartItems.isNotEmpty == true) {
-          for (var i = 0; i < cartItems.length; i++) {
-            if (cartItems[i].itemCode == item.itemCode) {
-              itemQuantity = cartItems[i].quantity;
+    return Skeletonizer(
+      enabled: model.isFavoritesLoading,
+      child: ListView.builder(
+        itemCount: model.favoriteItems.length,
+        padding:
+            EdgeInsets.symmetric(vertical: Sizes.smallPaddingWidget(context)),
+        itemBuilder: (context, index) {
+          var item = model.favoriteItems[index];
+          var itemQuantity = 0;
+          // set item quantity
+          var cartItems = locator.get<CartPageViewModel>().items;
+          if (cartItems.isNotEmpty == true) {
+            for (var i = 0; i < cartItems.length; i++) {
+              if (cartItems[i].itemCode == item.itemCode) {
+                itemQuantity = cartItems[i].quantity;
+              }
             }
           }
-        }
-        return favoriteTileWidget(item, itemQuantity, index, model, context);
-      },
+          return favoriteTileWidget(item, itemQuantity, index, model, context);
+        },
+      ),
     );
   }
 

@@ -25,6 +25,7 @@ import 'package:orderit/util/display_helper.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class EnterCustomerView extends StatelessWidget {
   EnterCustomerView({
@@ -102,71 +103,74 @@ class EnterCustomerView extends StatelessWidget {
                 : SingleChildScrollView(
                     child: Padding(
                       padding: EdgeInsets.all(Sizes.paddingWidget(context)),
-                      child: Form(
-                        key: _formKey,
-                        child: GestureDetector(
-                          onTap: () {
-                            model.unfocus(context);
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Select a Customer from the list to Proceed',
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                style: displayWidth(context) < 600
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        )
-                                    : Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: CustomTheme.borderColor,
-                                        ),
-                              ),
-                              SizedBox(height: Sizes.paddingWidget(context)),
-                              customerField(model, context),
-                              SizedBox(
-                                height: Sizes.paddingWidget(context),
-                              ),
-                              nextButtonWidget(model, context),
-                              SizedBox(
-                                height: Sizes.paddingWidget(context),
-                              ),
-                              model.customerDoctype.docs?.isNotEmpty == true
-                                  ? customerData(model, context)
-                                  : const SizedBox(),
-                              model.accountsRecievable.result?.isNotEmpty ==
-                                      true
-                                  ? Column(
-                                      children: [
-                                        Common.widgetSpacingVerticalLg(),
-                                        scrollToViewTableBelow(context),
-                                        Common.widgetSpacingVerticalLg(),
-                                      ],
-                                    )
-                                  : const SizedBox(),
-                              model.accountsRecievable.result?.isNotEmpty ==
-                                      true
-                                  ? displayWidth(context) < 600
-                                      ? table(
-                                          model,
-                                          displayWidth(context) * 0.5,
-                                          displayWidth(context) * 0.35,
-                                          context)
-                                      : table(
-                                          model,
-                                          displayWidth(context) * 0.25,
-                                          displayWidth(context) * 0.2,
-                                          context)
-                                  : Container(),
-                            ],
+                      child: Skeletonizer(
+                        enabled: model.isCustomersLoading,
+                        child: Form(
+                          key: _formKey,
+                          child: GestureDetector(
+                            onTap: () {
+                              model.unfocus(context);
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Select a Customer from the list to Proceed',
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                  style: displayWidth(context) < 600
+                                      ? Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          )
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: CustomTheme.borderColor,
+                                          ),
+                                ),
+                                SizedBox(height: Sizes.paddingWidget(context)),
+                                customerField(model, context),
+                                SizedBox(
+                                  height: Sizes.paddingWidget(context),
+                                ),
+                                nextButtonWidget(model, context),
+                                SizedBox(
+                                  height: Sizes.paddingWidget(context),
+                                ),
+                                model.customerDoctype.docs?.isNotEmpty == true
+                                    ? customerData(model, context)
+                                    : const SizedBox(),
+                                model.accountsRecievable.result?.isNotEmpty ==
+                                        true
+                                    ? Column(
+                                        children: [
+                                          Common.widgetSpacingVerticalLg(),
+                                          scrollToViewTableBelow(context),
+                                          Common.widgetSpacingVerticalLg(),
+                                        ],
+                                      )
+                                    : const SizedBox(),
+                                model.accountsRecievable.result?.isNotEmpty ==
+                                        true
+                                    ? displayWidth(context) < 600
+                                        ? table(
+                                            model,
+                                            displayWidth(context) * 0.5,
+                                            displayWidth(context) * 0.35,
+                                            context)
+                                        : table(
+                                            model,
+                                            displayWidth(context) * 0.25,
+                                            displayWidth(context) * 0.2,
+                                            context)
+                                    : Container(),
+                              ],
+                            ),
                           ),
                         ),
                       ),

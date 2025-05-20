@@ -12,12 +12,16 @@ import 'package:intl/intl.dart';
 
 class DraftViewModel extends BaseViewModel {
   List<Draft>? drafts = [];
+  bool isDraftsLoading = false;
 
   void refresh() {
     notifyListeners();
   }
 
   Future getDrafts() async {
+    isDraftsLoading = true;
+    await Future.delayed(const Duration(milliseconds: 200));
+    notifyListeners();
     List<Draft>? draftsListFiltered = [];
     var data = locator.get<OfflineStorage>().getItem('draft');
     if (data['data'] != null) {
@@ -46,7 +50,7 @@ class DraftViewModel extends BaseViewModel {
       drafts?.sort((a, b) => b.time!.compareTo(a.time!));
     }
 
-    // setState(ViewState.idle);
+    isDraftsLoading = false;
     notifyListeners();
   }
 

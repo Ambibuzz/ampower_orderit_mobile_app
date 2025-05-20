@@ -22,6 +22,7 @@ import 'package:orderit/util/enums.dart';
 import 'package:orderit/util/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:json_table/json_table.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class PastOrdersView extends StatelessWidget {
   const PastOrdersView({super.key});
@@ -31,7 +32,7 @@ class PastOrdersView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseView<PastOrdersViewModel>(
       onModelReady: (model) async {
-        await model.getPastOrders(context,[]);
+        await model.getPastOrders(context, []);
         await model.getItems(context);
         locator.get<PastOrdersFilterViewModel>().clearData();
       },
@@ -44,13 +45,13 @@ class PastOrdersView extends StatelessWidget {
                     onTap: () async {
                       var result = await openPastOrderFilter(context);
                       var filters = result as List;
-                        if (result[0] is! List) {
-                          model.setStatusSO(result[0]);
-                          await model.getPastOrders(context, []);
-                        } else {
-                          var filters = result[0] as List;
-                          await model.getPastOrders(context, filters);
-                        }
+                      if (result[0] is! List) {
+                        model.setStatusSO(result[0]);
+                        await model.getPastOrders(context, []);
+                      } else {
+                        var filters = result[0] as List;
+                        await model.getPastOrders(context, filters);
+                      }
                     },
                     child: const Icon(Icons.filter_alt)),
                 SizedBox(
@@ -106,118 +107,122 @@ class PastOrderListView extends StatelessWidget {
         );
     return model.salesOrderList.isEmpty
         ? const EmptyWidget()
-        : ListView.builder(
-            itemCount: model.salesOrderList.length,
-            padding: EdgeInsets.symmetric(
-              vertical: Sizes.paddingWidget(context),
-              horizontal: Sizes.paddingWidget(context),
-            ),
-            itemBuilder: (context, index) {
-              var pastOrder = model.salesOrderList[index];
-              return GestureDetector(
-                onTap: () async {
-                  var result = await locator
-                      .get<NavigationService>()
-                      .navigateTo(pastOrdersDetailViewRoute,
-                          arguments: pastOrder);
-                  if (result != null) {
-                    var res = result as List;
-                    if (res[0] == true) {
-                      model.refresh();
+        : Skeletonizer(
+            enabled: model.isSalesOrderLoading,
+            child: ListView.builder(
+              itemCount: model.salesOrderList.length,
+              padding: EdgeInsets.symmetric(
+                vertical: Sizes.paddingWidget(context),
+                horizontal: Sizes.paddingWidget(context),
+              ),
+              itemBuilder: (context, index) {
+                var pastOrder = model.salesOrderList[index];
+                return GestureDetector(
+                  onTap: () async {
+                    var result = await locator
+                        .get<NavigationService>()
+                        .navigateTo(pastOrdersDetailViewRoute,
+                            arguments: pastOrder);
+                    if (result != null) {
+                      var res = result as List;
+                      if (res[0] == true) {
+                        model.refresh();
+                      }
                     }
-                  }
-                },
-                child: SizedBox(
-                  height: displayWidth(context) < 600 ? 130 : 160,
-                  child: Card(
-                    margin:
-                        EdgeInsets.only(bottom: Sizes.paddingWidget(context)),
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: Sizes.paddingWidget(context),
-                        vertical: Sizes.paddingWidget(context),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: displayWidth(context) < 600 ? 70 : 87,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          pastOrder.name ?? '',
-                                          style: titleTextStyle,
-                                        ),
-                                        SizedBox(
-                                            height: Sizes.smallPaddingWidget(
-                                                context)),
-                                        Text(
-                                          'Date : ${defaultDateFormat(pastOrder.transactiondate!)}',
-                                          style: subTitleTextStyle,
-                                        ),
-                                        SizedBox(
-                                            height: Sizes.smallPaddingWidget(
-                                                context)),
-                                        Text(
-                                            Formatter.formatter
-                                                .format(pastOrder.grandtotal),
-                                            style: priceTextStyle),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
+                  },
+                  child: SizedBox(
+                    height: displayWidth(context) < 600 ? 130 : 160,
+                    child: Card(
+                      margin:
+                          EdgeInsets.only(bottom: Sizes.paddingWidget(context)),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Sizes.paddingWidget(context),
+                          vertical: Sizes.paddingWidget(context),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: displayWidth(context) < 600 ? 70 : 87,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            pastOrder.name ?? '',
+                                            style: titleTextStyle,
+                                          ),
+                                          SizedBox(
+                                              height: Sizes.smallPaddingWidget(
+                                                  context)),
+                                          Text(
+                                            'Date : ${defaultDateFormat(pastOrder.transactiondate!)}',
+                                            style: subTitleTextStyle,
+                                          ),
+                                          SizedBox(
+                                              height: Sizes.smallPaddingWidget(
+                                                  context)),
+                                          Text(
+                                              Formatter.formatter
+                                                  .format(pastOrder.grandtotal),
+                                              style: priceTextStyle),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            flex: displayWidth(context) < 600 ? 30 : 13,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      'View',
-                                      style: subTitleTextStyle,
-                                    ),
-                                    SizedBox(
-                                      width: Sizes.extraSmallPaddingWidget(
-                                          context),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_forward_ios,
-                                      size:
-                                          displayWidth(context) < 600 ? 14 : 18,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: displayWidth(context) < 600
-                                      ? Sizes.paddingWidget(context) * 1.5
-                                      : Sizes.paddingWidget(context) * 0.5,
-                                ),
-                                addToCartButton(pastOrder, context),
-                              ],
+                            Expanded(
+                              flex: displayWidth(context) < 600 ? 30 : 13,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        'View',
+                                        style: subTitleTextStyle,
+                                      ),
+                                      SizedBox(
+                                        width: Sizes.extraSmallPaddingWidget(
+                                            context),
+                                      ),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: displayWidth(context) < 600
+                                            ? 14
+                                            : 18,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: displayWidth(context) < 600
+                                        ? Sizes.paddingWidget(context) * 1.5
+                                        : Sizes.paddingWidget(context) * 0.5,
+                                  ),
+                                  addToCartButton(pastOrder, context),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
   }
 
@@ -261,31 +266,34 @@ class PastOrderListView extends StatelessWidget {
 
   Widget pastOrderReusableBtn(String text, void Function()? onPressed,
       SalesOrder pastOrder, BuildContext context) {
-    return SizedBox(
-      height: displayWidth(context) < 600 ? 32 : 50,
-      width: 110,
-      child: TextButton(
-        style: ButtonStyle(
-          shape: WidgetStateProperty.all(
-            RoundedRectangleBorder(
-                borderRadius: Corners.xxlBorder,
-                side: BorderSide(
-                  color: Theme.of(context).colorScheme.secondary,
-                )),
-          ),
-          backgroundColor: WidgetStatePropertyAll(Theme.of(context).cardColor),
-          padding: WidgetStateProperty.all(
-            EdgeInsets.symmetric(
-              horizontal: Sizes.paddingWidget(context),
+    return Skeleton.ignore(
+      child: SizedBox(
+        height: displayWidth(context) < 600 ? 32 : 50,
+        width: 110,
+        child: TextButton(
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(
+                  borderRadius: Corners.xxlBorder,
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                  )),
+            ),
+            backgroundColor:
+                WidgetStatePropertyAll(Theme.of(context).cardColor),
+            padding: WidgetStateProperty.all(
+              EdgeInsets.symmetric(
+                horizontal: Sizes.paddingWidget(context),
+              ),
             ),
           ),
-        ),
-        onPressed: onPressed,
-        child: Text(
-          text,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Theme.of(context).colorScheme.secondary,
-              ),
+          onPressed: onPressed,
+          child: Text(
+            text,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+          ),
         ),
       ),
     );

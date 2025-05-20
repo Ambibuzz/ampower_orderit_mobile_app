@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 
 class PastOrdersViewModel extends BaseViewModel {
   var salesOrderList = <SalesOrder>[];
+  bool isSalesOrderLoading = false;
   var itemsList = <Product>[];
   String? statusTextSO = '';
 
@@ -83,10 +84,13 @@ class PastOrdersViewModel extends BaseViewModel {
     }
   }
 
-  Future getPastOrders(BuildContext context,List<dynamic> filters) async {
-    setState(ViewState.busy);
-    salesOrderList =
-        await locator.get<OrderitApiService>().getSalesOrderList(filters, context);
+  Future getPastOrders(BuildContext context, List<dynamic> filters) async {
+    isSalesOrderLoading = true;
+    await Future.delayed(const Duration(milliseconds: 200));
+    notifyListeners();
+    salesOrderList = await locator
+        .get<OrderitApiService>()
+        .getSalesOrderList(filters, context);
 
     if (statusTextSO == '') {
       salesOrderList = salesOrderList
@@ -101,7 +105,7 @@ class PastOrdersViewModel extends BaseViewModel {
           .toList();
     }
 
-    setState(ViewState.idle);
+    isSalesOrderLoading = false;
     notifyListeners();
   }
 

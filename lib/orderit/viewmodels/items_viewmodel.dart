@@ -45,11 +45,13 @@ import 'package:provider/provider.dart';
 
 class ItemsViewModel extends BaseViewModel {
   List<ItemsModel> itemList = [];
+  bool isItemListLoading = false;
   List<ItemsModel> itemCopyList = [];
   List<String> items = [];
   String weightText = '';
   String item = '';
   List<ItemGroupModel> itemGroups = [];
+  bool isItemGroupsLoading = false;
 
   String weight1 = '';
   String weight2 = '';
@@ -148,7 +150,8 @@ class ItemsViewModel extends BaseViewModel {
 
   Future getItemFromTagData(String itemGroupName, BuildContext context) async {
     // List<ItemsModel> c = [];
-    setState(ViewState.busy);
+    isItemListLoading = true;
+    notifyListeners();
     itemList.clear();
 
     itemList = await locator.get<ItemsService>().getItemFromTag(itemGroupName);
@@ -167,8 +170,8 @@ class ItemsViewModel extends BaseViewModel {
     itemList = itemList.where((e) => (e.variantOf == null)).toList();
     itemCopyList = itemList;
     getPrices();
-    setState(ViewState.idle);
     await Future.delayed(const Duration(milliseconds: 5));
+    isItemListLoading = false;
     notifyListeners();
   }
 
@@ -229,15 +232,17 @@ class ItemsViewModel extends BaseViewModel {
   }
 
   Future checkDoctypeCache() async {
-    setState(ViewState.busy);
+    isItemListLoading = true;
+    isItemGroupsLoading = true;
+    notifyListeners();
     try {
       await checkDoctypeCachedOrNot(connectivityStatus);
     } catch (e) {
       exception(e, '', 'checkDoctypeCache');
     } finally {
-      setState(ViewState.idle);
+      isItemListLoading = false;
+      isItemGroupsLoading = false;
     }
-    setState(ViewState.idle);
   }
 
   Future checkDoctypeCachedOrNot(ConnectivityStatus connectivityStatus) async {
@@ -247,14 +252,12 @@ class ItemsViewModel extends BaseViewModel {
       var statusCode = await locator.get<CommonService>().checkSessionExpired();
       // session not expired cache data
       if (statusCode == 200) {
-        setState(ViewState.busy);
         await Future.wait([
           doctypeCachingService.cacheDoctype(
               Strings.itemGroupTree, 7, connectivityStatus),
           doctypeCachingService.cacheDoctype(
               Strings.salesOrder, 30, connectivityStatus),
         ]);
-        setState(ViewState.idle);
         await Future.wait([
           doctypeCachingService.cacheDoctype(
               Strings.customerNameList, 7, connectivityStatus),
@@ -279,13 +282,13 @@ class ItemsViewModel extends BaseViewModel {
       } else {}
     } catch (e) {
       exception(e, '', 'checkDoctypeCachedOrNot');
-    } finally {
-      setState(ViewState.idle);
-    }
+    } finally {}
   }
 
   Future cachePriceListAndItemPrice(int cacheDays, BuildContext context) async {
-    setState(ViewState.busy);
+    isItemListLoading = true;
+    isItemGroupsLoading = true;
+    notifyListeners();
     var pricelist = <String>[];
     var custPriceList = locator.get<StorageService>().priceList;
     if (custPriceList.isNotEmpty) {
@@ -329,7 +332,8 @@ class ItemsViewModel extends BaseViewModel {
         }
       }
     }
-    setState(ViewState.idle);
+    isItemListLoading = false;
+    isItemGroupsLoading = false;
   }
 
   Future cacheItemPrice(
@@ -864,12 +868,16 @@ class ItemsViewModel extends BaseViewModel {
   }
 
   Future itemGroupListWithoutReturn(BuildContext context) async {
-    setState(ViewState.busy);
+    isItemGroupsLoading = true;
+    isItemListLoading = true;
+    await Future.delayed(const Duration(milliseconds: 200));
+    notifyListeners();
     var connectivityStatus =
         Provider.of<ConnectivityStatus>(context, listen: false);
     itemGroups =
         await locator.get<ItemsService>().getItemGroupList(connectivityStatus);
-    setState(ViewState.idle);
+    isItemGroupsLoading = false;
+    isItemListLoading = false;
     notifyListeners();
     return itemGroups;
   }
@@ -949,158 +957,6 @@ class ItemsViewModel extends BaseViewModel {
     }
   }
 
-  Future getItem(String item) async {
-    itemList = await locator.get<ItemsService>().getItem(item);
-    notifyListeners();
-  }
-
-  Future getAllItems() async {
-    setState(ViewState.busy);
-    itemList.clear();
-    itemList = await locator
-        .get<FetchCachedDoctypeService>()
-        .fetchCachedItemItemsModelData();
-    itemList = itemList.where((e) => (e.variantOf == null)).toList();
-    itemCopyList = itemList;
-    getPrices();
-    setState(ViewState.idle);
-    await Future.delayed(const Duration(milliseconds: 5));
-    notifyListeners();
-    // getPrices();
-  }
-
-  Future getItemListFromItemName(
-      String itemName, ConnectivityStatus connectivityStatus) async {
-    setState(ViewState.busy);
-    itemList.clear();
-    itemList = await locator
-        .get<ItemsService>()
-        .getItemsListFromItemName(itemName, connectivityStatus);
-
-    // itemList.sort((a, b) => a.itemName!.compareTo(b.itemName!));
-    // print('P : ' + itemList[1].price.toString());
-
-    // itemList.forEach((item) async {
-    //   double price = await locator.get<ItemsService>().getPrice(item.itemCode!);
-    //   int index = itemList.indexOf(item);
-    //   itemList[index].price = price;
-
-    //   // print('Price is ' + itemList[index].price.toString());
-    // });
-
-    // itemList = itemList
-    //     .where((e) =>
-    //         ((e.price != 0 || e.hasVariants == 1) && (e.variantOf == null)))
-    //     .toList();
-    itemList = itemList.where((e) => (e.variantOf == null)).toList();
-    // print(itemList.length);
-    itemCopyList = itemList;
-    getPrices();
-    setState(ViewState.idle);
-    await Future.delayed(const Duration(milliseconds: 5));
-    notifyListeners();
-    // getPrices();
-  }
-
-  Future getItemListFromItemCode(
-      String itemCode, ConnectivityStatus connectivityStatus) async {
-    setState(ViewState.busy);
-    itemList.clear();
-    itemList = await locator
-        .get<ItemsService>()
-        .getItemsListFromItemCode(itemCode, connectivityStatus);
-
-    // itemList.sort((a, b) => a.itemName!.compareTo(b.itemName!));
-    // print('P : ' + itemList[1].price.toString());
-
-    // itemList.forEach((item) async {
-    //   double price = await locator.get<ItemsService>().getPrice(item.itemCode!);
-    //   int index = itemList.indexOf(item);
-    //   itemList[index].price = price;
-
-    //   // print('Price is ' + itemList[index].price.toString());
-    // });
-
-    // itemList = itemList
-    //     .where((e) =>
-    //         ((e.price != 0 || e.hasVariants == 1) && (e.variantOf == null)))
-    //     .toList();
-    // print(itemList.length);
-    itemList = itemList.where((e) => (e.variantOf == null)).toList();
-    itemCopyList = itemList;
-    getPrices();
-    setState(ViewState.idle);
-    await Future.delayed(const Duration(milliseconds: 5));
-    notifyListeners();
-    // getPrices();
-  }
-
-  Future getSpecificItemFromItemName(
-      String searchText, ConnectivityStatus connectivityStatus) async {
-    // List<ItemsModel> list = [];
-    setState(ViewState.busy);
-    itemList.clear();
-    itemList = await locator
-        .get<ItemsService>()
-        .getSpecificItemDataFromItemName(searchText, connectivityStatus);
-    // print('P : ' + itemList[1].price.toString());
-    // itemList.sort((a, b) => a.itemName!.compareTo(b.itemName!));
-    for (var item in itemList) {
-      double price = await locator.get<ItemsService>().getPrice(item.itemCode!);
-      var index = itemList.indexOf(item);
-      itemList[index].price = price;
-      // print('Price is ' + itemList[index].price.toString());
-    }
-    //TODO
-    // add item when hasVariants is 1 and variantOf is null
-    // itemList = itemList
-    //     .where((e) =>
-    //         ((e.price != 0 || e.hasVariants == 1) && (e.variantOf == null)))
-    //     .toList();
-    itemList = itemList.where((e) => (e.variantOf == null)).toList();
-    itemList = itemList;
-    // print(itemList.length);
-    itemCopyList = itemList;
-    setState(ViewState.idle);
-    await Future.delayed(const Duration(milliseconds: 5));
-    notifyListeners();
-  }
-
-  Future getSpecificItemFromItemCode(
-      String searchText, ConnectivityStatus connectivityStatus) async {
-    // List<ItemsModel> list = [];
-    setState(ViewState.busy);
-    itemList.clear();
-    itemList = await locator
-        .get<FetchCachedDoctypeService>()
-        .fetchCachedItemItemsModelData();
-    itemList = itemList.where((e) => (e.itemCode == searchText)).toList();
-    // itemList = await locator
-    //     .get<ItemsService>()
-    //     .getSpecificItemDataFromItemCode(searchText, connectivityStatus);
-    // print('P : ' + itemList[1].price.toString());
-    // itemList.sort((a, b) => a.itemName!.compareTo(b.itemName!));
-    for (var item in itemList) {
-      double price = await locator.get<ItemsService>().getPrice(item.itemCode!);
-      var index = itemList.indexOf(item);
-      itemList[index].price = price;
-      // print('Price is ' + itemList[index].price.toString());
-    }
-    //TODO
-    // add item when hasVariants is 1 and variantOf is null
-    // itemList = itemList
-    //     .where((e) =>
-    //         ((e.price != 0 || e.hasVariants == 1) && (e.variantOf == null)))
-    //     .toList();
-    itemList = itemList.where((e) => (e.variantOf == null)).toList();
-    itemList = itemList;
-    // print(itemList.length);
-    itemCopyList = itemList;
-    setState(ViewState.idle);
-    await Future.delayed(const Duration(milliseconds: 5));
-    notifyListeners();
-  }
-
   Future<List<FileModelOrderIT>> getImages(
       String? name, ConnectivityStatus connectivityStatus) async {
     var files = <FileModelOrderIT>[];
@@ -1129,7 +985,9 @@ class ItemsViewModel extends BaseViewModel {
 
   Future getItemGroupData(String itemGroupName, BuildContext context) async {
     // List<ItemsModel> c = [];
-    setState(ViewState.busy);
+    isItemListLoading = true;
+    await Future.delayed(const Duration(milliseconds: 200));
+    notifyListeners();
     itemList.clear();
     var connectivityStatus =
         Provider.of<ConnectivityStatus>(context, listen: false);
@@ -1152,7 +1010,7 @@ class ItemsViewModel extends BaseViewModel {
     itemList = itemList.where((e) => (e.variantOf == null)).toList();
     itemCopyList = itemList;
     getPrices();
-    setState(ViewState.idle);
+    isItemListLoading = false;
     await Future.delayed(const Duration(milliseconds: 5));
     notifyListeners();
   }

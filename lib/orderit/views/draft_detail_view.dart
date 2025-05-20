@@ -1,3 +1,4 @@
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
@@ -37,6 +38,7 @@ class DraftDetailView extends StatelessWidget {
       },
       builder: (context, model, child) {
         return Scaffold(
+          backgroundColor: CustomTheme.scaffoldBackgroundColorLight,
           appBar: Common.commonAppBar(
               'Wishlist',
               [
@@ -68,34 +70,43 @@ class DraftDetailView extends StatelessWidget {
               children: [
                 SizedBox(height: Sizes.paddingWidget(context)),
                 verticalPaddingSmall(context),
-                Row(
-                  children: [
-                    Column(
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Sizes.paddingWidget(context),
+                      vertical: Sizes.paddingWidget(context),
+                    ),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          draft?.customer ?? '',
-                          style: textStyle,
-                        ),
+                        Common.reusableRowWidget(
+                            'Customer', draft?.customer ?? '', context),
                         verticalPaddingSmall(context),
-                        Text(
-                            'Date : ${DateFormat('dd-MM-yyyy HH:MM:ss').format(DateTime.parse(draft!.time!))}',
-                            style: textStyle),
+                        Common.reusableRowWidget(
+                            'Date',
+                            DateFormat('dd-MM-yyyy HH:MM:ss')
+                                .format(DateTime.parse(draft!.time!)),
+                            context),
                         verticalPaddingSmall(context),
-                        Text(
-                          draft.cartItems != null
-                              ? 'Total Items : ${draft.cartItems?.length.toString()}'
-                              : 'Total Items : 0',
-                          style: textStyle,
-                        ),
+                        Common.reusableRowWidget(
+                            'Total Items',
+                            draft.cartItems != null
+                                ? '${draft.cartItems?.length.toString()}'
+                                : '0',
+                            context),
                         verticalPaddingSmall(context),
-                        Text(
-                            Strings.totalPrice +
-                                Formatter.formatter.format(draft.totalPrice),
-                            style: textStyle),
+                        Common.reusableRowWidget(
+                            'Total Price',
+                            Formatter.formatter.format(draft.totalPrice),
+                            context,
+                            textStyle: GoogleFonts.inter(
+                                textStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 16,
+                            ))),
                       ],
                     ),
-                  ],
+                  ),
                 ),
                 verticalPaddingMedium(context),
                 Row(
@@ -109,7 +120,6 @@ class DraftDetailView extends StatelessWidget {
                   ],
                 ),
                 verticalPaddingMedium(context),
-                tableHeader(context),
               ],
             ),
           ),
@@ -122,6 +132,25 @@ class DraftDetailView extends StatelessWidget {
                     bottomRight: Corners.xxlRadius,
                   ),
                   child: cartItem(index, model, context),
+                );
+              }
+              if (index == 0) {
+                return ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Corners.xxlRadius,
+                    topRight: Corners.xxlRadius,
+                  ),
+                  child: Column(
+                    children: [
+                      cartItem(index, model, context),
+                      const Divider(
+                        endIndent: 0,
+                        height: 0,
+                        indent: 0,
+                        thickness: 1,
+                      ),
+                    ],
+                  ),
                 );
               }
               // return cartItem(index, model, context);
@@ -158,7 +187,7 @@ class DraftDetailView extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
           color: Theme.of(context).colorScheme.secondary,
         ),
         child: Padding(
@@ -178,43 +207,6 @@ class DraftDetailView extends StatelessWidget {
     );
   }
 
-  Widget tableHeader(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Corners.xxlRadius,
-          topRight: Corners.xxlRadius,
-        ),
-      ),
-      child: Container(
-        height: 50,
-        decoration: BoxDecoration(
-            color: CustomTheme.tableHeaderColor,
-            borderRadius: Corners.xxlBorder),
-        child: Row(
-          children: [
-            tableHeaderColumn('Item', 65),
-            tableHeaderColumn('Qty', displayWidth(context) < 600 ? 35 : 25),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget tableHeaderColumn(String? text, int flex) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text ?? '',
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
   Widget cartItem(int index, DraftDetailViewModel model, BuildContext context) {
     var imageDimension = displayWidth(context) < 600 ? 38.0 : 62.0;
     var btnDimension = displayWidth(context) < 600 ? 28.0 : 52.0;
@@ -229,19 +221,20 @@ class DraftDetailView extends StatelessWidget {
   }
 
   Widget cartItemRate(Cart item, int index, BuildContext context) {
-    var textStyle = TextStyle(fontSize: displayWidth(context) < 600 ? 13 : 16);
+    var textStyle = TextStyle(fontSize: displayWidth(context) < 600 ? 14 : 16);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Price : ${Formatter.formatter.format((item.rate ?? 0))} ',
-          style: textStyle,
+          style: GoogleFonts.inter(textStyle: textStyle),
         ),
         Text(
           'Total : ${Formatter.formatter.format((item.rate ?? 0) * item.quantity)} ',
-          style: textStyle.copyWith(
+          style: GoogleFonts.inter(
+              textStyle: textStyle.copyWith(
             fontWeight: FontWeight.bold,
-          ),
+          )),
         ),
       ],
     );
@@ -254,13 +247,14 @@ class DraftDetailView extends StatelessWidget {
       children: [
         Text(
           '${Formatter.formatter.format((item.rate ?? 0))} ',
-          style: textStyle,
+          style: GoogleFonts.inter(textStyle: textStyle),
         ),
         Text(
           'Total : ${Formatter.formatter.format((item.rate ?? 0) * item.quantity)} ',
-          style: textStyle?.copyWith(
+          style: GoogleFonts.inter(
+              textStyle: textStyle?.copyWith(
             fontWeight: FontWeight.bold,
-          ),
+          )),
         ),
       ],
     );
@@ -270,7 +264,7 @@ class DraftDetailView extends StatelessWidget {
       double imageDimension, double btnDimension, BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: Sizes.extraSmallPaddingWidget(context), vertical: 0),
+          horizontal: Sizes.smallPaddingWidget(context), vertical: 0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -325,11 +319,6 @@ class DraftDetailView extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          const VerticalDivider(
-            endIndent: 0,
-            indent: 0,
-            width: 0,
-          ),
           SizedBox(
             width: Sizes.extraSmallPaddingWidget(context),
           ),
@@ -359,7 +348,7 @@ class DraftDetailView extends StatelessWidget {
                 horizontal: Sizes.smallPaddingWidget(context) * 0.8),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.secondary,
-              borderRadius: Corners.xxlBorder,
+              borderRadius: Corners.lgBorder,
             ),
             child: Row(
               children: [
@@ -463,7 +452,7 @@ class DraftDetailView extends StatelessWidget {
           style: ButtonStyle(
             shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
-                  borderRadius: Corners.xxlBorder,
+                  borderRadius: Corners.lgBorder,
                   side: BorderSide(
                       color: Theme.of(context).colorScheme.secondary)),
             ),
@@ -492,14 +481,13 @@ class DraftDetailView extends StatelessWidget {
       child: SizedBox(
         height: 55,
         child: TextButton(
-          style: ButtonStyle(
-            shape: const WidgetStatePropertyAll(
+          style: const ButtonStyle(
+            shape: WidgetStatePropertyAll(
               RoundedRectangleBorder(
-                  borderRadius: Corners.xxlBorder,
-                  side: BorderSide(color: Color(0xFFBE2527))),
+                borderRadius: Corners.lgBorder,
+              ),
             ),
-            backgroundColor:
-                WidgetStatePropertyAll(Theme.of(context).colorScheme.surface),
+            backgroundColor: WidgetStatePropertyAll(Color(0xFFBE2527)),
           ),
           onPressed: () async {
             await model.clearCartAndAppend(context);
@@ -508,7 +496,7 @@ class DraftDetailView extends StatelessWidget {
           child: Text(
             'Clear & Append',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFFBE2527),
+                  color: Theme.of(context).colorScheme.onSecondary,
                   fontWeight: FontWeight.w700,
                   fontSize: Sizes.fontSizeTextButtonWidget(context),
                 ),
