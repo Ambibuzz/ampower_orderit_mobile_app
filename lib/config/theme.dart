@@ -48,7 +48,7 @@ class CustomTheme {
           fontSize: 12, fontWeight: FontWeight.w400, letterSpacing: 0.4));
 
   static TextStyle buttonTextStyle = GoogleFonts.dmSans(
-      textStyle: TextStyle(
+      textStyle: const TextStyle(
           fontSize: 20, fontWeight: FontWeight.w600, letterSpacing: 0.15));
 
   static const buttonPadding = EdgeInsets.symmetric(
@@ -56,14 +56,14 @@ class CustomTheme {
       vertical: Sizes.verticalExtraSmallPadding);
 
   static const buttonShape =
-      RoundedRectangleBorder(borderRadius: Corners.xxlBorder);
+      RoundedRectangleBorder(borderRadius: Corners.lgBorder);
 
-  static final buttonShapeWithBorder = RoundedRectangleBorder(
-    borderRadius: Corners.xxlBorder,
+  static const buttonShapeWithBorder = RoundedRectangleBorder(
+    borderRadius: Corners.lgBorder,
     side: BorderSide(color: Colors.white, width: 1),
   );
 
-  static const buttonBorder = Corners.xxlBorder;
+  static const buttonBorder = Corners.lgBorder;
 
   static const double elevation = 3;
 
@@ -76,7 +76,10 @@ class CustomTheme {
   // static final Color primarycolor = Palette.primaryColor;
 
   //Light Theme
-  static Color backgroundColorLight = const Color(0xFFF2F2F2);
+  // static Color backgroundColorLight = const Color(0xFFF2F2F2);
+  static Color scaffoldBackgroundColorLight = const Color(0xFFF2F2F2);
+  static Color backgroundColorLight = const Color(0xFFFFFFFF);
+  static Color fieldbackgroundColorLight = Colors.white;
   static Brightness brightnessLight = Brightness.light;
   static Color disabledColorLight = const Color(0xFFA5A5A5);
   static Color dangerColor = const Color(0xFFE33629);
@@ -87,11 +90,11 @@ class CustomTheme {
   static Color onPrimaryColorLight = const Color(0xFFFFFFFF);
   static Color onSecondaryColorLight = const Color(0xFFFFFFFF);
   static Color onSurfaceColorLight = const Color(0xFF000000);
-  static Color primaryColorLight = primarycolor;
+  static Color primaryColorLight = Colors.black;
   static Color primaryVariantLight = const Color(0xFF3700B3);
-  static Color secondaryColorLight = const Color(0xFFFF731D);
+  static Color secondaryColorLight = Colors.black;
   static Color secondaryVariantLight = const Color(0xFF018786);
-  static Color surfaceColorLight = const Color(0xFFFAFAFA);
+  static Color surfaceColorLight = const Color(0xFFFFFFFF);
 
   //Dark Theme
   static Color backgroundColorDark = const Color(0xFF121212);
@@ -118,8 +121,8 @@ class CustomTheme {
   static var dropdownColor = const Color(0xFFD9D9D9);
   static var imageBorderColor = const Color(0xFFD9D9D9);
   static var toastMessageBgColor = const Color(0xFFB0D1E8);
-  static var iconColor = const Color(0xFF666666);
-  static var borderColor = const Color(0xFF666666);
+  static var iconColor = const Color(0xFF9A9A9A);
+  static var borderColor = const Color(0xFF9A9A9A);
   static var tableBorderColor = const Color(0xFFD6D6D6);
   static var successColor = const Color(0xFF45B36D);
 
@@ -206,32 +209,32 @@ class CustomTheme {
       iconTheme: IconThemeData(color: onBackgroundColorLight, size: iconSize),
       inputDecorationTheme: InputDecorationTheme(
         // fillColor: surfaceColorLight,
-        fillColor: backgroundColorLight,
+        fillColor: fieldbackgroundColorLight,
         filled: true,
         // isDense: true,
         border: OutlineInputBorder(
           borderSide: BorderSide(
             color: borderColor,
           ),
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: errorColorLight,
           ),
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: primaryColor ?? primaryColorLight,
           ),
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: errorColorLight,
           ),
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -337,7 +340,7 @@ class CustomTheme {
         collapsedIconColor: Colors.white,
         collapsedBackgroundColor: backgroundColorDark,
         collapsedTextColor: Colors.white,
-        // shape: const RoundedRectangleBorder(borderRadius: Corners.xxlBorder),
+        // shape: const RoundedRectangleBorder(borderRadius: Corners.lgBorder),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaryColor ?? primaryColorDark,
@@ -352,25 +355,25 @@ class CustomTheme {
         isDense: true,
         border: const OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: errorColorDark,
           ),
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: primaryColor ?? primaryColorDark,
           ),
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: errorColorDark,
           ),
-          borderRadius: Corners.xxlBorder,
+          borderRadius: Corners.lgBorder,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
