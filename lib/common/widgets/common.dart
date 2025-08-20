@@ -31,7 +31,8 @@ class Common {
       title: Text(
         title ?? '',
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
+              fontWeight: FontWeight.bold,
             ),
       ),
       centerTitle: false,
