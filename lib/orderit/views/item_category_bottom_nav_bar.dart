@@ -1,4 +1,6 @@
 import 'package:orderit/common/services/storage_service.dart';
+import 'package:orderit/common/viewmodels/enter_customer_viewmodel.dart';
+import 'package:orderit/common/views/orderit_disabled.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/viewmodels/item_category_bottom_nav_bar_viewmodel.dart';
@@ -35,6 +37,16 @@ class ItemCategoryBottomNavBarView extends StatelessWidget {
     var iconSize = 24.0;
     return BaseView<ItemCategoryBottomNavBarViewModel>(
       onModelReady: (model) async {
+        var orderitConfig = await EnterCustomerViewModel().getOrderitConfig();
+        if (orderitConfig != null) {
+          if (orderitConfig['data']['enable_orderit'] == 0) {
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OrderitDisabled(),
+                ));
+          }
+        }
         await model.getItemGroupsList(context);
         model.loadPages();
         model.setIndex(0);

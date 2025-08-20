@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/doctype_caching_service.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
+import 'package:orderit/common/views/orderit_disabled.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_snackbar.dart';
@@ -41,6 +42,16 @@ class EnterCustomerView extends StatelessWidget {
     return BaseView<EnterCustomerViewModel>(
       onModelReady: (model) async {
         model.getUser();
+        var orderitConfig = await model.getOrderitConfig();
+        if (orderitConfig != null) {
+          if (orderitConfig['data']['enable_orderit'] == 0) {
+            await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OrderitDisabled(),
+                ));
+          }
+        }
         var connectivityStatus =
             Provider.of<ConnectivityStatus>(context, listen: false);
         if (connectivityStatus == ConnectivityStatus.wifi ||
