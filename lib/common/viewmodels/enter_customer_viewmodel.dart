@@ -5,6 +5,7 @@ import 'package:orderit/common/services/doctype_caching_service.dart';
 import 'package:orderit/common/services/fetch_cached_doctype_service.dart';
 import 'package:orderit/common/services/offline_storage_service.dart';
 import 'package:orderit/base_viewmodel.dart';
+import 'package:orderit/config/exception.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/common/models/accounts_recievable_model.dart';
 import 'package:orderit/common/models/customer_doctype_model.dart';
@@ -12,6 +13,7 @@ import 'package:orderit/common/services/report_service.dart';
 import 'package:orderit/orderit/services/orderit_api_service.dart';
 import 'package:orderit/orderit/services/user_service.dart';
 import 'package:orderit/util/constants/strings.dart';
+import 'package:orderit/util/dio_helper.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,21 @@ class EnterCustomerViewModel extends BaseViewModel {
   final TextEditingController customerController = TextEditingController();
   User user = User();
   bool isCustomersLoading = false;
+
+  Future<dynamic> getOrderitConfig() async {
+    var url =
+        '/api/resource/OrderIT%20Community%20Config/OrderIT%20Community%20Config';
+    try {
+      final response = await DioHelper.dio?.get(url);
+      if (response?.statusCode == 200) {
+        return response?.data;
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
+    return null;
+  }
 
   Future<int?> checkSessionExpired() async {
     setState(ViewState.busy);
