@@ -86,14 +86,18 @@ class LoginView extends StatelessWidget {
                     children: [
                       SizedBox(
                         width: displayWidth(context),
-                        height: displayHeight(context) * 0.60,
+                        height: displayHeight(context) *
+                            (displayHeight(context) <= 780 ? 0.54 : 0.6),
                         child: const Center(child: Logo()),
                       ),
                       Stack(
                         children: [
                           Container(
                             height: displayHeight(context) -
-                                (displayHeight(context) * 0.60),
+                                (displayHeight(context) *
+                                    (displayHeight(context) <= 780
+                                        ? 0.54
+                                        : 0.6)),
                             decoration: const BoxDecoration(
                                 borderRadius: BorderRadius.vertical(
                                   top: Corners.lgRadius,
