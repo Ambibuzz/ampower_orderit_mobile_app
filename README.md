@@ -55,6 +55,12 @@ AmPower OrderIT is your ultimate solution for simplifying and accelerating the s
 - Role Based Access
 - Download and Share Sales Order
 
+## 🔗 Frappe App Installation Guide
+
+To enable and configure the OrderIT Mobile App within your ERP system, please install the corresponding Frappe wrapper app:  
+[AmPower OrderIT App](https://github.com/Ambibuzz/ampower_orderit_app)
+
+
 ### To run code
 Clone the source code<br/>
 ```sh
