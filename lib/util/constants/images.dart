@@ -16,6 +16,7 @@ class Images {
   static const pastOrdersIcon = 'assets/icon/past_orders_icon.png';
   static const saveAsDraftIcon = 'assets/icon/save_as_draft_icon.png';
   static const tableViewIcon = 'assets/icon/table_view_icon.png';
+  static const warningRedIcon = 'assets/icon/warning_red_icon.png';
 
   // illustrations
   static const emptyCartImage = 'assets/illustrations/empty_cart.png';
