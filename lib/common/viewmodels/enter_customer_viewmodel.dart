@@ -31,7 +31,7 @@ class EnterCustomerViewModel extends BaseViewModel {
 
   Future<dynamic> getOrderitConfig() async {
     var url =
-        '/api/resource/OrderIT%20Community%20Config/OrderIT%20Community%20Config';
+        '/api/resource/Ampower%20Orderit%20App/Ampower%20Orderit%20App';
     try {
       final response = await DioHelper.dio?.get(url);
       if (response?.statusCode == 200) {
