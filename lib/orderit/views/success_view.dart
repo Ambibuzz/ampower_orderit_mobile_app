@@ -44,84 +44,88 @@ class SuccessView extends StatelessWidget {
       builder: (context, model, child) {
         return Scaffold(
           backgroundColor: Colors.white,
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              : SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: Sizes.padding),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(height: displayHeight(context) * 0.18),
-                            SizedBox(
-                              width: displayWidth(context) - Sizes.padding,
-                              height: displayWidth(context) < 600 ? 300 : 400,
-                              child: const RiveAnimation.asset(
-                                Images.checkAmination,
+          body: SafeArea(
+            child: model.state == ViewState.busy
+                ? WidgetsFactoryList.circularProgressIndicator()
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: Sizes.padding),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(height: displayHeight(context) * 0.18),
+                              SizedBox(
+                                width: displayWidth(context) - Sizes.padding,
+                                height: displayWidth(context) < 600 ? 300 : 400,
+                                child: const RiveAnimation.asset(
+                                  Images.checkAmination,
+                                ),
                               ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Woo-hoo!',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineLarge
-                                      ?.copyWith(
-                                          letterSpacing: 1.5,
-                                          color: successColor,
-                                          fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  height: Sizes.paddingWidget(context),
-                                ),
-                                Text(
-                                  'Your Sales Order is created Successfully.',
-                                  maxLines: 2,
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                                SizedBox(
-                                  height:
-                                      Sizes.extraSmallPaddingWidget(context),
-                                ),
-                                Text(
-                                  name ?? '',
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                                SizedBox(
-                                  height: Sizes.paddingWidget(context),
-                                ),
-                              ],
-                            ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Woo-hoo!',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineLarge
+                                        ?.copyWith(
+                                            letterSpacing: 1.5,
+                                            color: successColor,
+                                            fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                    height: Sizes.paddingWidget(context),
+                                  ),
+                                  Text(
+                                    'Your Sales Order is created Successfully.',
+                                    maxLines: 2,
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                  SizedBox(
+                                    height:
+                                        Sizes.extraSmallPaddingWidget(context),
+                                  ),
+                                  Text(
+                                    name ?? '',
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                  SizedBox(
+                                    height: Sizes.paddingWidget(context),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: Sizes.paddingWidget(context),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            continueWidget(context),
+                            sharePdf(model, context),
                           ],
                         ),
-                      ),
-                      SizedBox(
-                        height: Sizes.paddingWidget(context),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          continueWidget(context),
-                          sharePdf(model, context),
-                        ],
-                      ),
-                      SizedBox(
-                        height: Sizes.paddingWidget(context),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          downloadPdf(model, context),
-                        ],
-                      ),
-                    ],
+                        SizedBox(
+                          height: Sizes.paddingWidget(context),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            downloadPdf(model, context),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+          ),
         );
       },
     );
@@ -173,7 +177,7 @@ class SuccessView extends StatelessWidget {
         border: Border.all(
           color: successColor,
         ),
-        borderRadius: Corners.xxlBorder,
+        borderRadius: Corners.lgBorder,
         color: Colors.white,
       ),
       child: TextButton(
@@ -224,7 +228,7 @@ class SuccessView extends StatelessWidget {
         border: Border.all(
           color: successColor,
         ),
-        borderRadius: Corners.xxlBorder,
+        borderRadius: Corners.lgBorder,
         color: Colors.white,
       ),
       child: TextButton(

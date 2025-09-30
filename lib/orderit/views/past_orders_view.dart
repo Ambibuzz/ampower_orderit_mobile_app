@@ -63,16 +63,18 @@ class PastOrdersView extends StatelessWidget {
                 ),
               ],
               context),
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              : Stack(
-                  children: [
-                    PastOrderListView(model: model),
-                    OrderitWidgets.floatingCartButton(context, () {
-                      model.refresh();
-                    }),
-                  ],
-                ),
+          body: SafeArea(
+            child: model.state == ViewState.busy
+                ? WidgetsFactoryList.circularProgressIndicator()
+                : Stack(
+                    children: [
+                      PastOrderListView(model: model),
+                      OrderitWidgets.floatingCartButton(context, () {
+                        model.refresh();
+                      }),
+                    ],
+                  ),
+          ),
         );
       },
     );

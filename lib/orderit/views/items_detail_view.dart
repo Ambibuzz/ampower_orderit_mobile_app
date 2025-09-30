@@ -78,13 +78,15 @@ class ItemsDetailView extends StatelessWidget {
         var baseurl = storageService.apiUrl;
         return Scaffold(
           appBar: Common.commonAppBar('${model.product.itemName}', [], context),
-          body: GestureDetector(
-            onTap: () => CommonService.unfocus(),
-            child: model.state == ViewState.busy
-                ? WidgetsFactoryList.circularProgressIndicator()
-                : SingleChildScrollView(
-                    child: itemDetailWidget(model, context, baseurl),
-                  ),
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () => CommonService.unfocus(),
+              child: model.state == ViewState.busy
+                  ? WidgetsFactoryList.circularProgressIndicator()
+                  : SingleChildScrollView(
+                      child: itemDetailWidget(model, context, baseurl),
+                    ),
+            ),
           ),
         );
       },
@@ -282,7 +284,14 @@ class CustomCarousel extends StatelessWidget {
   Widget build(BuildContext context) {
     var images = model.files;
     return images.isEmpty
-        ? Container()
+        ? ClipRRect(
+            borderRadius: Corners.xlBorder,
+            child: Image.asset(
+              Images.imageNotFound,
+              width: displayWidth(context),
+              fit: BoxFit.cover,
+            ),
+          )
         : Padding(
             padding:
                 EdgeInsets.symmetric(horizontal: Sizes.paddingWidget(context)),

@@ -44,33 +44,35 @@ class FavoritesView extends StatelessWidget {
             [],
             context,
           ),
-          body: Stack(
-            children: [
-              model.favoriteItems.isNotEmpty
-                  ? favoritesList(model, context)
-                  : Center(
-                      child: SizedBox(
-                        height: displayHeight(context) * 0.7,
-                        child: OrderitWidgets.emptyCartWidget(
-                            'No items in Favorites!', '', 'Let’s Shop!', () {
-                          locator
-                              .get<ItemCategoryBottomNavBarViewModel>()
-                              .setIndex(0);
-                          locator.get<ItemsViewModel>().updateCartItems();
-                          locator
-                              .get<ItemsViewModel>()
-                              .initQuantityController();
-                        }, context),
+          body: SafeArea(
+            child: Stack(
+              children: [
+                model.favoriteItems.isNotEmpty
+                    ? favoritesList(model, context)
+                    : Center(
+                        child: SizedBox(
+                          height: displayHeight(context) * 0.7,
+                          child: OrderitWidgets.emptyCartWidget(
+                              'No items in Favorites!', '', 'Let’s Shop!', () {
+                            locator
+                                .get<ItemCategoryBottomNavBarViewModel>()
+                                .setIndex(0);
+                            locator.get<ItemsViewModel>().updateCartItems();
+                            locator
+                                .get<ItemsViewModel>()
+                                .initQuantityController();
+                          }, context),
+                        ),
                       ),
-                    ),
-              OrderitWidgets.floatingCartButton(context, () async {
-                await model.getFavoritesItems();
-                await model.initQuantityController();
-                await model.updateCartItems();
-                await model.getCartItems();
-                await model.refresh();
-              }),
-            ],
+                OrderitWidgets.floatingCartButton(context, () async {
+                  await model.getFavoritesItems();
+                  await model.initQuantityController();
+                  await model.updateCartItems();
+                  await model.getCartItems();
+                  await model.refresh();
+                }),
+              ],
+            ),
           ),
         );
       },
@@ -400,7 +402,7 @@ class FavoritesView extends StatelessWidget {
                       width: imgDimension,
                       height: imgDimension,
                       decoration: const BoxDecoration(
-                        borderRadius: Corners.xxlBorder,
+                        borderRadius: Corners.lgBorder,
                         image: DecorationImage(
                           image: AssetImage(
                             Images.imageNotFound,

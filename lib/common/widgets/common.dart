@@ -308,7 +308,7 @@ class Common {
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Color(0xFFA2A2A2),
-                fontSize: 16,
+                fontSize: 14,
               ),
             )),
         Expanded(
@@ -320,7 +320,7 @@ class Common {
               style: textStyle ??
                   TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 16,
+                    fontSize: 14,
                   ),
             )),
       ],

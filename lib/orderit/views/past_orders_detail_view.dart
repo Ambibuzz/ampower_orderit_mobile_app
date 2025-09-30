@@ -51,9 +51,11 @@ class PastOrdersDetailView extends StatelessWidget {
                   context,
                   sendResultBack: true,
                 ),
-                body: model.state == ViewState.busy
-                    ? WidgetsFactoryList.circularProgressIndicator()
-                    : pastOrdersDetail(model, context),
+                body: SafeArea(
+                  child: model.state == ViewState.busy
+                      ? WidgetsFactoryList.circularProgressIndicator()
+                      : pastOrdersDetail(model, context),
+                ),
               ),
             );
           },

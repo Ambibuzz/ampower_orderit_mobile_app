@@ -177,30 +177,32 @@ class ItemsView extends StatelessWidget {
               ],
               context,
               model),
-          body: GestureDetector(
-            onTap: () {
-              model.unfocus(context);
-            },
-            child: Stack(
-              children: [
-                model.isItemGroupsLoading
-                    ? itemsViewLayoutBuilder(model, context)
-                    : model.itemGroups.isEmpty
-                        ? Skeletonizer(
-                            enabled: model.isItemListLoading,
-                            child: EmptyWidget(
-                              onRefresh: () async {
-                                await model.reCacheData(model, context);
-                              },
-                            ),
-                          )
-                        : itemsViewLayoutBuilder(model, context),
-                OrderitWidgets.floatingCartButton(context, () {
-                  model.refresh();
-                  model.updateCartItems();
-                  model.initQuantityController();
-                }),
-              ],
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () {
+                model.unfocus(context);
+              },
+              child: Stack(
+                children: [
+                  model.isItemGroupsLoading
+                      ? itemsViewLayoutBuilder(model, context)
+                      : model.itemGroups.isEmpty
+                          ? Skeletonizer(
+                              enabled: model.isItemListLoading,
+                              child: EmptyWidget(
+                                onRefresh: () async {
+                                  await model.reCacheData(model, context);
+                                },
+                              ),
+                            )
+                          : itemsViewLayoutBuilder(model, context),
+                  OrderitWidgets.floatingCartButton(context, () {
+                    model.refresh();
+                    model.updateCartItems();
+                    model.initQuantityController();
+                  }),
+                ],
+              ),
             ),
           ),
         );
