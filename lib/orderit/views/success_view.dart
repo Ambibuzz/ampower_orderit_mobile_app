@@ -25,7 +25,6 @@ import 'package:orderit/base_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:orderit/util/enums.dart';
-import 'package:rive/rive.dart';
 
 class SuccessView extends StatelessWidget {
   final String? name;
@@ -59,10 +58,12 @@ class SuccessView extends StatelessWidget {
                               SizedBox(height: displayHeight(context) * 0.18),
                               SizedBox(
                                 width: displayWidth(context) - Sizes.padding,
-                                height: displayWidth(context) < 600 ? 300 : 400,
-                                child: const RiveAnimation.asset(
-                                  Images.checkAmination,
-                                ),
+                                height: displayWidth(context) < 600 ? 200 : 300,
+                                child: Icon(Icons.check_circle,
+                                    color: successColor,
+                                    size: displayWidth(context) < 600
+                                        ? 150
+                                        : 200),
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,

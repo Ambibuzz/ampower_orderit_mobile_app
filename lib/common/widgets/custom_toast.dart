@@ -6,7 +6,6 @@ import 'package:orderit/util/display_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:rive/rive.dart';
 
 //It displays toast message throughout the app
 
