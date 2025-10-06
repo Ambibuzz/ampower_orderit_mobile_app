@@ -58,11 +58,11 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v2.1.0" # Replace with your desired tag name
-        release_name: "v2.1.0" # Replace with your desired release name
+        tag_name: "v2.2.0" # Replace with your desired tag name
+        release_name: "v2.2.0" # Replace with your desired release name
         body: |
           This release includes:
-          - Fixed nav buttons hidding behind content in all places in app
+          - changes related to fixing 16kb page size issue
         draft: false
         prerelease: false
       env:
