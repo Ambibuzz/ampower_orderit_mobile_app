@@ -48,9 +48,11 @@ class DraftDetailView extends StatelessWidget {
                 ),
               ],
               context),
-          body: model.state == ViewState.busy
-              ? WidgetsFactoryList.circularProgressIndicator()
-              : draftDetail(model, context),
+          body: SafeArea(
+            child: model.state == ViewState.busy
+                ? WidgetsFactoryList.circularProgressIndicator()
+                : draftDetail(model, context),
+          ),
         );
       },
     );
@@ -275,7 +277,7 @@ class DraftDetailView extends StatelessWidget {
                   width: imageDimension,
                   height: imageDimension,
                   decoration: const BoxDecoration(
-                    borderRadius: Corners.xxlBorder,
+                    borderRadius: Corners.lgBorder,
                     image: DecorationImage(
                       image: AssetImage(
                         Images.imageNotFound,

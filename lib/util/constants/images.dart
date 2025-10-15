@@ -27,9 +27,6 @@ class Images {
   static const imageNotFound = 'assets/no_image_available.png';
   static const poweredByAmbibuzzLogo = 'assets/powered_by_ambibuzz_logo.png';
 
-  //Rive Check Animation
-  static const checkAmination = 'assets/rive_assets/check.riv';
-
   // Onboarding
   static const onboarding1 = 'assets/Onboarding_1.png';
   static const onboarding2 = 'assets/Onboarding_2.png';

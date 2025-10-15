@@ -107,25 +107,27 @@ class _CartPageViewState extends State<CartPageView>
                   color: CustomTheme.borderColor,
                   fontSize: 12,
                 )),
-            body: model.state == ViewState.busy
-                ? WidgetsFactoryList.circularProgressIndicator()
-                : GestureDetector(
-                    onTap: () {
-                      model.unfocus(context);
-                    },
-                    child: Stack(
-                      children: [
-                        cartPageUi(model, connectivityStatus, context),
-                        model.items.isNotEmpty == true
-                            ? Positioned(
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                child: totalStickyWidget(model, context))
-                            : const SizedBox()
-                      ],
+            body: SafeArea(
+              child: model.state == ViewState.busy
+                  ? WidgetsFactoryList.circularProgressIndicator()
+                  : GestureDetector(
+                      onTap: () {
+                        model.unfocus(context);
+                      },
+                      child: Stack(
+                        children: [
+                          cartPageUi(model, connectivityStatus, context),
+                          model.items.isNotEmpty == true
+                              ? Positioned(
+                                  bottom: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: totalStickyWidget(model, context))
+                              : const SizedBox()
+                        ],
+                      ),
                     ),
-                  ),
+            ),
           ),
         );
       },
@@ -577,7 +579,7 @@ class _CartPageViewState extends State<CartPageView>
                         width: imageDimension,
                         height: imageDimension,
                         decoration: const BoxDecoration(
-                          borderRadius: Corners.xxlBorder,
+                          borderRadius: Corners.lgBorder,
                           image: DecorationImage(
                             image: AssetImage(
                               Images.imageNotFound,

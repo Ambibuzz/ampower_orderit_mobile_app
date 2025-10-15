@@ -36,13 +36,15 @@ class DraftView extends StatelessWidget {
       builder: (context, model, child) {
         return Scaffold(
           appBar: Common.commonAppBar('Wishlist', [], context),
-          body: Stack(
-            children: [
-              draftList(model.drafts, model, context),
-              OrderitWidgets.floatingCartButton(context, () {
-                model.refresh();
-              }),
-            ],
+          body: SafeArea(
+            child: Stack(
+              children: [
+                draftList(model.drafts, model, context),
+                OrderitWidgets.floatingCartButton(context, () {
+                  model.refresh();
+                }),
+              ],
+            ),
           ),
         );
       },

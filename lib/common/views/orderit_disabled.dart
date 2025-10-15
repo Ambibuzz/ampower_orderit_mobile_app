@@ -11,43 +11,46 @@ class OrderitDisabled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: Sizes.paddingWidget(context)),
-        child: Center(
-          child: SizedBox(
-            height: displayHeight(context) * 0.75,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(
-                  Images.warningRedIcon,
-                  height: 80,
-                ),
-                SizedBox(
-                  height: Sizes.paddingWidget(context),
-                ),
-                Text(
-                  'Oops!',
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-                SizedBox(
-                  height: Sizes.paddingWidget(context),
-                ),
-                const Text(
-                  'OrderIT is currently disabled. Please enable it from the configuration.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: Sizes.paddingWidget(context)),
+          child: Center(
+            child: SizedBox(
+              height: displayHeight(context) * 0.75,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    Images.warningRedIcon,
+                    height: 80,
                   ),
-                ),
-                SizedBox(
-                  height: Sizes.paddingWidget(context) * 1.5,
-                ),
-                logoutButton(context),
-              ],
+                  SizedBox(
+                    height: Sizes.paddingWidget(context),
+                  ),
+                  Text(
+                    'Oops!',
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  SizedBox(
+                    height: Sizes.paddingWidget(context),
+                  ),
+                  const Text(
+                    'OrderIT is currently disabled. Please enable it from the configuration.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: Sizes.paddingWidget(context) * 1.5,
+                  ),
+                  logoutButton(context),
+                ],
+              ),
             ),
           ),
         ),
