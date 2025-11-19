@@ -165,6 +165,7 @@ class OrderitApiService {
     var list = [];
     var itemlist = <Product>[];
     filters.add(['Item', 'is_stock_item', '=', 1]);
+    filters.add(['Item', 'disabled', '=', 0]);
     var url = '/api/resource/Item';
     var queryParams = {
       'fields':
@@ -361,6 +362,7 @@ class OrderitApiService {
     var list = [];
     var itemlist = <Product>[];
     filters.add(['Item', 'is_stock_item', '=', 1]);
+    filters.add(['Item', 'disabled', '=', 0]);
     var url = '/api/resource/Item';
     var queryParams = {
       'fields':
@@ -418,7 +420,7 @@ class OrderitApiService {
           connectivityStatus == ConnectivityStatus.wifi) {
         var data = locator.get<OfflineStorage>().getItem(Strings.salesOrder);
         // contains cached sales order display cached data
-        if (data['data'] != null && (filters.isEmpty==true)) {
+        if (data['data'] != null && (filters.isEmpty == true)) {
           return await locator
               .get<FetchCachedDoctypeService>()
               .fetchCachedSalesOrderData();
