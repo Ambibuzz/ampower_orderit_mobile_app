@@ -58,11 +58,11 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v2.2.1" # Replace with your desired tag name
-        release_name: "v2.2.1" # Replace with your desired release name
+        tag_name: "v2.2.2" # Replace with your desired tag name
+        release_name: "v2.2.2" # Replace with your desired release name
         body: |
           This release includes:
-          - changes related to fixing 16kb page size issue
+          - updated packages
         draft: false
         prerelease: false
       env:
