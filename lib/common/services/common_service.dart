@@ -24,7 +24,6 @@ import 'package:orderit/common/models/product.dart';
 import 'package:orderit/config/exception.dart';
 import 'package:orderit/util/apiurls.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CommonService {
@@ -283,35 +282,30 @@ class CommonService {
   }
 
   Future<String> pdfFromDocName(String doctype, String docname) async {
-    var storagePermission = await [
-      Permission.storage,
-    ].request();
     try {
       String fullPath;
-      if (storagePermission.isNotEmpty) {
-        var downloadsDirectoryPath = '/storage/emulated/0/Download';
-        var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
-        var url = '/api/method/frappe.utils.print_format.download_pdf';
-        var queryParams = {
-          'doctype': doctype,
-          'name': docname,
-        };
-        var fileName =
-            '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
-        fullPath = downpath + fileName;
-        await DioHelper.dio?.download(
-          url,
-          fullPath,
-          queryParameters: queryParams,
-          options: Options(
-              responseType: ResponseType.bytes,
-              followRedirects: false,
-              validateStatus: (status) {
-                return status! < 500;
-              }),
-        );
-        return fullPath;
-      }
+      var downloadsDirectoryPath = '/storage/emulated/0/Download';
+      var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
+      var url = '/api/method/frappe.utils.print_format.download_pdf';
+      var queryParams = {
+        'doctype': doctype,
+        'name': docname,
+      };
+      var fileName =
+          '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
+      fullPath = downpath + fileName;
+      await DioHelper.dio?.download(
+        url,
+        fullPath,
+        queryParameters: queryParams,
+        options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! < 500;
+            }),
+      );
+      return fullPath;
     } catch (e) {
       exception(e, '', 'pdfFromDocName');
     }
@@ -320,37 +314,32 @@ class CommonService {
 
   Future<String> downloadSalesOrder(
       String doctype, String docname, String printFormat) async {
-    var storagePermission = await [
-      Permission.storage,
-    ].request();
     try {
       String fullPath;
-      if (storagePermission.isNotEmpty) {
-        var downloadsDirectoryPath = '/storage/emulated/0/Download';
-        var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
-        var url = '/api/method/frappe.utils.print_format.download_pdf';
-        var queryParams = {
-          'doctype': doctype,
-          'name': docname,
-          'print_format': printFormat,
-          'letterhead': 'No Letterhead'
-        };
-        var fileName =
-            '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
-        fullPath = downpath + fileName;
-        await DioHelper.dio?.download(
-          url,
-          fullPath,
-          queryParameters: queryParams,
-          options: Options(
-              responseType: ResponseType.bytes,
-              followRedirects: false,
-              validateStatus: (status) {
-                return status! < 500;
-              }),
-        );
-        return fullPath;
-      }
+      var downloadsDirectoryPath = '/storage/emulated/0/Download';
+      var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
+      var url = '/api/method/frappe.utils.print_format.download_pdf';
+      var queryParams = {
+        'doctype': doctype,
+        'name': docname,
+        'print_format': printFormat,
+        'letterhead': 'No Letterhead'
+      };
+      var fileName =
+          '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
+      fullPath = downpath + fileName;
+      await DioHelper.dio?.download(
+        url,
+        fullPath,
+        queryParameters: queryParams,
+        options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! < 500;
+            }),
+      );
+      return fullPath;
     } catch (e) {
       exception(e, '', 'downloadSalesOrder');
     }

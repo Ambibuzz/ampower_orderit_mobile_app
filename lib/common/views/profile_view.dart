@@ -409,7 +409,10 @@ class UserImage extends StatelessWidget {
                       final picker = ImagePicker();
                       // Capture a photo.
                       var image = await picker.pickImage(
-                          source: ImageSource.gallery, imageQuality: 30);
+                        source: ImageSource.gallery,
+                        imageQuality: 30,
+                        requestFullMetadata: false,
+                      );
                       model.setImage(image);
                       if (image != null) {
                         var img64 =
@@ -454,7 +457,10 @@ class UserImage extends StatelessWidget {
                       final picker = ImagePicker();
                       // Pick an image.
                       final image = await picker.pickImage(
-                          source: ImageSource.camera, imageQuality: 30);
+                        source: ImageSource.camera,
+                        imageQuality: 30,
+                        requestFullMetadata: false,
+                      );
                       model.setImage(image);
                       if (image != null) {
                         var img64 =
