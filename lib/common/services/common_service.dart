@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:file_save_directory/file_save_directory.dart';
 import 'package:orderit/common/models/currency_model.dart';
 import 'package:orderit/common/services/fetch_cached_doctype_service.dart';
 import 'package:orderit/common/services/offline_storage_service.dart';
@@ -283,29 +285,33 @@ class CommonService {
 
   Future<String> pdfFromDocName(String doctype, String docname) async {
     try {
-      String fullPath;
-      var downloadsDirectoryPath = '/storage/emulated/0/Download';
-      var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
-      var url = '/api/method/frappe.utils.print_format.download_pdf';
-      var queryParams = {
-        'doctype': doctype,
-        'name': docname,
-      };
-      var fileName =
-          '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
-      fullPath = downpath + fileName;
-      await DioHelper.dio?.download(
-        url,
-        fullPath,
-        queryParameters: queryParams,
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) {
-              return status! < 500;
-            }),
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final filename = '${docname}_$timestamp.pdf';
+
+      // 1. Fetch PDF bytes from Frappe
+      final response = await DioHelper.dio?.get(
+        '/api/method/frappe.utils.print_format.download_pdf',
+        queryParameters: {
+          'doctype': doctype,
+          'name': docname,
+        },
+        options: Options(responseType: ResponseType.bytes),
       );
-      return fullPath;
+
+      if (response?.data != null) {
+        final bytes = Uint8List.fromList(response?.data);
+
+        // 2. Save file to file_save_directory
+        final savedPath = await FileSaveDirectory.instance.saveFile(
+          fileName: filename,
+          fileBytes: bytes,
+          location: SaveLocation
+              .downloads, // or SaveLocation.documents, SaveLocation.music, SaveLocation.videos, SaveLocation.appDocuments
+          openAfterSave: true, // Default to true
+        );
+
+        return savedPath.path ?? ''; // Full absolute path returned
+      }
     } catch (e) {
       exception(e, '', 'pdfFromDocName');
     }
@@ -315,31 +321,35 @@ class CommonService {
   Future<String> downloadSalesOrder(
       String doctype, String docname, String printFormat) async {
     try {
-      String fullPath;
-      var downloadsDirectoryPath = '/storage/emulated/0/Download';
-      var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
-      var url = '/api/method/frappe.utils.print_format.download_pdf';
-      var queryParams = {
-        'doctype': doctype,
-        'name': docname,
-        'print_format': printFormat,
-        'letterhead': 'No Letterhead'
-      };
-      var fileName =
-          '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
-      fullPath = downpath + fileName;
-      await DioHelper.dio?.download(
-        url,
-        fullPath,
-        queryParameters: queryParams,
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) {
-              return status! < 500;
-            }),
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final filename = '${docname}_$timestamp.pdf';
+
+      // 1. Fetch PDF bytes from Frappe
+      final response = await DioHelper.dio?.get(
+        '/api/method/frappe.utils.print_format.download_pdf',
+        queryParameters: {
+          'doctype': doctype,
+          'name': docname,
+          'print_format': printFormat,
+          'letterhead': 'No Letterhead',
+        },
+        options: Options(responseType: ResponseType.bytes),
       );
-      return fullPath;
+
+      if (response?.data != null) {
+        final bytes = Uint8List.fromList(response?.data);
+
+        // 2. Save file to file_save_directory
+        final savedPath = await FileSaveDirectory.instance.saveFile(
+          fileName: filename,
+          fileBytes: bytes,
+          location: SaveLocation
+              .downloads, // or SaveLocation.documents, SaveLocation.music, SaveLocation.videos, SaveLocation.appDocuments
+          openAfterSave: true, // Default to true
+        );
+
+        return savedPath.path ?? ''; // Full absolute path returned
+      }
     } catch (e) {
       exception(e, '', 'downloadSalesOrder');
     }
