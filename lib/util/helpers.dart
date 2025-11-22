@@ -14,16 +14,6 @@ Future initDb() async {
   await locator<StorageService>().initHiveBox('config');
 }
 
-Future<String> getDownloadPath() async {
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    return '/storage/emulated/0/Download/';
-  } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-    var downloadsDirectory = await getApplicationDocumentsDirectory();
-    return downloadsDirectory.path;
-  }
-  return '';
-}
-
 Future<bool> verifyOnline() async {
   var isOnline = false;
   try {

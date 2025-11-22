@@ -9,7 +9,6 @@ import 'package:orderit/common/widgets/custom_toast.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:orderit/util/helpers.dart';
-import 'package:open_filex/open_filex.dart';
 
 class SuccessViewModel extends BaseViewModel {
   var printFormatController = TextEditingController();
@@ -47,9 +46,6 @@ class SuccessViewModel extends BaseViewModel {
         var path = await locator
             .get<CommonService>()
             .downloadSalesOrder(doctype!, name!, printFormatController.text);
-        if (path.isNotEmpty) {
-          await OpenFilex.open(path);
-        }
       } else {
         showSnackBar('Doctype or Doc name is missing', context);
       }
