@@ -198,23 +198,26 @@ class PastOrderListView extends StatelessWidget {
                               ),
                               SizedBox(
                                   height: Sizes.smallPaddingWidget(context)),
-                              Row(
-                                children: [
-                                  StackedImages(
-                                    imageUrls:
-                                        model.imagesUrlMap[pastOrder.name],
-                                    isImageLoading: model.isImagesLoading,
-                                  ),
-                                  SizedBox(
-                                      width: Sizes.smallPaddingWidget(context)),
-                                  Text(
-                                    '${model.imagesUrlMap[pastOrder.name].length > 3 ? '+${model.imagesUrlMap[pastOrder.name].length - 3}' : ''}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
+                              model.imagesUrlMap[pastOrder.name] == null
+                                  ? Container()
+                                  : Row(
+                                      children: [
+                                        StackedImages(
+                                          imageUrls: model
+                                              .imagesUrlMap[pastOrder.name],
+                                          isImageLoading: model.isImagesLoading,
+                                        ),
+                                        SizedBox(
+                                            width: Sizes.smallPaddingWidget(
+                                                context)),
+                                        Text(
+                                          '${model.imagesUrlMap[pastOrder.name].length > 3 ? '+${model.imagesUrlMap[pastOrder.name].length - 3}' : ''}',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                         ],
