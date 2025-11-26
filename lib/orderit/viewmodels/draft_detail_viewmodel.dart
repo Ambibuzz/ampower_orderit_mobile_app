@@ -26,7 +26,7 @@ class DraftDetailViewModel extends BaseViewModel {
   Future createCart(BuildContext context) async {
     setState(ViewState.busy);
     await create(draft?.cartItems, context,
-        message: 'Sales Order added to your cart!');
+        message: 'Sales order items added to cart!');
     setState(ViewState.idle);
   }
 

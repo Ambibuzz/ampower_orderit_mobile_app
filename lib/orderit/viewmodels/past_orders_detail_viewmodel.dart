@@ -47,7 +47,7 @@ class PastOrdersDetailViewModel extends BaseViewModel {
   Future createCart(SalesOrder? salesOrder, BuildContext context) async {
     setState(ViewState.busy);
     await create(salesOrder?.salesOrderItems, context,
-        message: 'Sales Order added to your cart!');
+        message: 'Sales order items added to cart!');
     setState(ViewState.idle);
   }
 

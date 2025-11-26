@@ -4,10 +4,12 @@ import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
+import 'package:orderit/common/widgets/custom_toast.dart';
 import 'package:orderit/common/widgets/empty_widget.dart';
 import 'package:orderit/common/widgets/stacked_images.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/base_view.dart';
+import 'package:orderit/config/theme.dart';
 import 'package:orderit/orderit/models/sales_order.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/viewmodels/filters/past_orders_filter_viewmodel.dart';
@@ -298,6 +300,14 @@ class PastOrderListView extends StatelessWidget {
   Widget addToCartButton(SalesOrder pastOrder, BuildContext context) {
     return pastOrderReusableBtn('Add To Cart', () async {
       await model.addToCart(pastOrder, context);
+      flutterStyledToast(
+        context,
+        'Sales order items added to cart!',
+        CustomTheme.onPrimaryColorLight,
+        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: CustomTheme.successColor,
+            ),
+      );
     }, pastOrder, context);
   }
 
