@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:orderit/base_viewmodel.dart';
 import 'package:orderit/common/services/common_service.dart';
 import 'package:orderit/common/widgets/custom_snackbar.dart';
@@ -46,6 +47,9 @@ class SuccessViewModel extends BaseViewModel {
         var path = await locator
             .get<CommonService>()
             .downloadSalesOrder(doctype!, name!, printFormatController.text);
+        if (path.isNotEmpty) {
+          await OpenFilex.open(path);
+        }
       } else {
         showSnackBar('Doctype or Doc name is missing', context);
       }
