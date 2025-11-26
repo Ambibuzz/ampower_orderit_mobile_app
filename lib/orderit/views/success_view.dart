@@ -153,9 +153,10 @@ class SuccessView extends StatelessWidget {
             locator.get<ItemsViewModel>().updateCartItems();
             await locator.get<ItemsViewModel>().initQuantityController();
           } else {
-            await locator
-                .get<NavigationService>()
-                .pushNamedAndRemoveUntil(enterCustomerRoute, (_) => false);
+            await locator.get<NavigationService>().pushNamedAndRemoveUntil(
+                  enterCustomerRoute,
+                  (_) => false,
+                );
           }
         },
         child: Text(

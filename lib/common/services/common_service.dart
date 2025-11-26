@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
-import 'package:file_save_directory/file_save_directory.dart';
 import 'package:orderit/common/models/currency_model.dart';
 import 'package:orderit/common/services/fetch_cached_doctype_service.dart';
 import 'package:orderit/common/services/offline_storage_service.dart';
@@ -26,6 +26,7 @@ import 'package:orderit/common/models/product.dart';
 import 'package:orderit/config/exception.dart';
 import 'package:orderit/util/apiurls.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CommonService {
@@ -301,16 +302,16 @@ class CommonService {
       if (response?.data != null) {
         final bytes = Uint8List.fromList(response?.data);
 
-        // 2. Save file to file_save_directory
-        final savedPath = await FileSaveDirectory.instance.saveFile(
-          fileName: filename,
-          fileBytes: bytes,
-          location: SaveLocation
-              .downloads, // or SaveLocation.documents, SaveLocation.music, SaveLocation.videos, SaveLocation.appDocuments
-          openAfterSave: true, // Default to true
-        );
+        // 2. Platform-safe internal directory (Android + iOS)
+        final directory = await getApplicationSupportDirectory();
 
-        return savedPath.path ?? ''; // Full absolute path returned
+        final filePath = '${directory.path}/$filename';
+        final file = File(filePath);
+
+        // 3. Write file bytes
+        await file.writeAsBytes(bytes);
+
+        return filePath;
       }
     } catch (e) {
       exception(e, '', 'pdfFromDocName');
@@ -339,16 +340,16 @@ class CommonService {
       if (response?.data != null) {
         final bytes = Uint8List.fromList(response?.data);
 
-        // 2. Save file to file_save_directory
-        final savedPath = await FileSaveDirectory.instance.saveFile(
-          fileName: filename,
-          fileBytes: bytes,
-          location: SaveLocation
-              .downloads, // or SaveLocation.documents, SaveLocation.music, SaveLocation.videos, SaveLocation.appDocuments
-          openAfterSave: true, // Default to true
-        );
+        // 2. Platform-safe internal directory (Android + iOS)
+        final directory = await getApplicationSupportDirectory();
 
-        return savedPath.path ?? ''; // Full absolute path returned
+        final filePath = '${directory.path}/$filename';
+        final file = File(filePath);
+
+        // 3. Write file bytes
+        await file.writeAsBytes(bytes);
+
+        return filePath;
       }
     } catch (e) {
       exception(e, '', 'downloadSalesOrder');
