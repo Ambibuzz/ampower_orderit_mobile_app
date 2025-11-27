@@ -3,7 +3,7 @@ description: "AmPower OrderIT - the B2B Catalogue and Order Booking system built
 
 publish_to: "none"
 
-version: 2.2.2+10
+version: 2.2.5+11
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
@@ -52,10 +52,10 @@ dependencies:
   flutter_native_splash: ^2.4.1
   cookie_jar: any
   url_launcher_ios: ^6.3.1
-  open_filex: ^4.7.0
   flutter_upgrade_version: ^1.1.7
   photo_view: ^0.15.0
   skeletonizer: ^1.4.3
+  open_filex: ^4.7.0
 
 dev_dependencies:
   build_runner:

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:orderit/base_viewmodel.dart';
 import 'package:orderit/common/services/common_service.dart';
 import 'package:orderit/common/widgets/custom_snackbar.dart';
@@ -9,7 +10,6 @@ import 'package:orderit/common/widgets/custom_toast.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/util/enums.dart';
 import 'package:orderit/util/helpers.dart';
-import 'package:open_filex/open_filex.dart';
 
 class SuccessViewModel extends BaseViewModel {
   var printFormatController = TextEditingController();

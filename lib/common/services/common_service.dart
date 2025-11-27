@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:orderit/common/models/currency_model.dart';
 import 'package:orderit/common/services/fetch_cached_doctype_service.dart';
@@ -24,6 +26,7 @@ import 'package:orderit/common/models/product.dart';
 import 'package:orderit/config/exception.dart';
 import 'package:orderit/util/apiurls.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CommonService {
@@ -283,29 +286,33 @@ class CommonService {
 
   Future<String> pdfFromDocName(String doctype, String docname) async {
     try {
-      String fullPath;
-      var downloadsDirectoryPath = '/storage/emulated/0/Download';
-      var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
-      var url = '/api/method/frappe.utils.print_format.download_pdf';
-      var queryParams = {
-        'doctype': doctype,
-        'name': docname,
-      };
-      var fileName =
-          '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
-      fullPath = downpath + fileName;
-      await DioHelper.dio?.download(
-        url,
-        fullPath,
-        queryParameters: queryParams,
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) {
-              return status! < 500;
-            }),
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final filename = '${docname}_$timestamp.pdf';
+
+      // 1. Fetch PDF bytes from Frappe
+      final response = await DioHelper.dio?.get(
+        '/api/method/frappe.utils.print_format.download_pdf',
+        queryParameters: {
+          'doctype': doctype,
+          'name': docname,
+        },
+        options: Options(responseType: ResponseType.bytes),
       );
-      return fullPath;
+
+      if (response?.data != null) {
+        final bytes = Uint8List.fromList(response?.data);
+
+        // 2. Platform-safe internal directory (Android + iOS)
+        final directory = await getApplicationSupportDirectory();
+
+        final filePath = '${directory.path}/$filename';
+        final file = File(filePath);
+
+        // 3. Write file bytes
+        await file.writeAsBytes(bytes);
+
+        return filePath;
+      }
     } catch (e) {
       exception(e, '', 'pdfFromDocName');
     }
@@ -315,31 +322,35 @@ class CommonService {
   Future<String> downloadSalesOrder(
       String doctype, String docname, String printFormat) async {
     try {
-      String fullPath;
-      var downloadsDirectoryPath = '/storage/emulated/0/Download';
-      var downpath = '$downloadsDirectoryPath/${Strings.ampower}';
-      var url = '/api/method/frappe.utils.print_format.download_pdf';
-      var queryParams = {
-        'doctype': doctype,
-        'name': docname,
-        'print_format': printFormat,
-        'letterhead': 'No Letterhead'
-      };
-      var fileName =
-          '/$docname${DateTime.now().hour}${DateTime.now().minute}${DateTime.now().second}.pdf';
-      fullPath = downpath + fileName;
-      await DioHelper.dio?.download(
-        url,
-        fullPath,
-        queryParameters: queryParams,
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) {
-              return status! < 500;
-            }),
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final filename = '${docname}_$timestamp.pdf';
+
+      // 1. Fetch PDF bytes from Frappe
+      final response = await DioHelper.dio?.get(
+        '/api/method/frappe.utils.print_format.download_pdf',
+        queryParameters: {
+          'doctype': doctype,
+          'name': docname,
+          'print_format': printFormat,
+          'letterhead': 'No Letterhead',
+        },
+        options: Options(responseType: ResponseType.bytes),
       );
-      return fullPath;
+
+      if (response?.data != null) {
+        final bytes = Uint8List.fromList(response?.data);
+
+        // 2. Platform-safe internal directory (Android + iOS)
+        final directory = await getApplicationSupportDirectory();
+
+        final filePath = '${directory.path}/$filename';
+        final file = File(filePath);
+
+        // 3. Write file bytes
+        await file.writeAsBytes(bytes);
+
+        return filePath;
+      }
     } catch (e) {
       exception(e, '', 'downloadSalesOrder');
     }

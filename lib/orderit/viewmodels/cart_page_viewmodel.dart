@@ -643,6 +643,7 @@ class CartPageViewModel extends BaseViewModel {
       //Clear cart after sales order saved
       removeAll();
     }
+    
     setState(ViewState.idle);
     notifyListeners();
   }

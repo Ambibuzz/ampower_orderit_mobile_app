@@ -79,7 +79,6 @@ class ItemsView extends StatelessWidget {
         await model.getFavorites();
         // cache doctypes
         await model.checkDoctypeCache();
-        await model.cachePriceListAndItemPrice(7, context);
         await model.getStockActualQtyList();
         await model.getItemPrices();
         model.getConnectivityStatus(context);
@@ -107,6 +106,7 @@ class ItemsView extends StatelessWidget {
         else {
           showSnackBar('Price List not found', context);
         }
+        await model.cachePriceListAndItemPrice(7, context);
         // store catalog data to a map for later using that data at another places i.e while placing sales order ,quotation etc
         await model.storeCatalogModelData();
         // setup cart items to cart page
@@ -137,6 +137,7 @@ class ItemsView extends StatelessWidget {
         // initialize quantity controller
         await model.initQuantityController();
         model.initCarouselData();
+        await model.refresh();
       },
       builder: (context, model, child) {
         return Scaffold(

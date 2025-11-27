@@ -4,6 +4,7 @@ import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/models/quotation_model.dart';
 import 'package:orderit/orderit/models/sales_order_model.dart';
 import 'package:orderit/config/exception.dart';
+import 'package:orderit/orderit/viewmodels/cart_page_viewmodel.dart';
 import 'package:orderit/route/routing_constants.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/util/apiurls.dart';
@@ -20,6 +21,7 @@ class CartService {
           await DioHelper.dio?.post(url, data: jsonEncode(salesOrderModel));
       if (response?.statusCode == 200) {
         var data = response?.data['data'];
+        locator.get<CartPageViewModel>().removeAll();
         // navigate to success screen
         await locator.get<NavigationService>().navigateTo(
           successViewRoute,

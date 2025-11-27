@@ -58,11 +58,12 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v2.2.2" # Replace with your desired tag name
-        release_name: "v2.2.2" # Replace with your desired release name
+        tag_name: "v2.2.5" # Replace with your desired tag name
+        release_name: "v2.2.5" # Replace with your desired release name
         body: |
           This release includes:
-          - updated packages
+          - Removed file_save_directory package
+          - Added open_filex package to open downloaded files directly
         draft: false
         prerelease: false
       env:

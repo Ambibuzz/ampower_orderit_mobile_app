@@ -169,7 +169,7 @@ class ItemsViewModel extends BaseViewModel {
     // below code hides template
     itemList = itemList.where((e) => (e.variantOf == null)).toList();
     itemCopyList = itemList;
-    getPrices();
+    await getPrices();
     await Future.delayed(const Duration(milliseconds: 5));
     isItemListLoading = false;
     notifyListeners();
@@ -1009,14 +1009,14 @@ class ItemsViewModel extends BaseViewModel {
     // below code hides template
     itemList = itemList.where((e) => (e.variantOf == null)).toList();
     itemCopyList = itemList;
-    getPrices();
+    await getPrices();
     isItemListLoading = false;
     await Future.delayed(const Duration(milliseconds: 5));
     notifyListeners();
   }
 
   // return type is not added intentionally to load list data without waiting for prices to fetch
-  getPrices() async {
+  Future getPrices() async {
     for (var i in itemList) {
       double price = await locator.get<ItemsService>().getPrice(i.itemCode!);
       // print(i.hasVariants);
