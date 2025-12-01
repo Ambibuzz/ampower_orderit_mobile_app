@@ -58,12 +58,13 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v2.2.5" # Replace with your desired tag name
-        release_name: "v2.2.5" # Replace with your desired release name
+        tag_name: "v2.2.6" # Replace with your desired tag name
+        release_name: "v2.2.6" # Replace with your desired release name
         body: |
           This release includes:
-          - Removed file_save_directory package
-          - Added open_filex package to open downloaded files directly
+          - handle null case in setting imageurl
+          - fixed issue of cart total not updating in top right
+          - fixed overflow in favorites view
         draft: false
         prerelease: false
       env:
