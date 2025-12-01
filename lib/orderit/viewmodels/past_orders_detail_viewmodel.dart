@@ -62,13 +62,18 @@ class PastOrdersDetailViewModel extends BaseViewModel {
         var images = await locator
             .get<ItemsViewModel>()
             .getImages(e.itemcode, ConnectivityStatus.wifi);
+        final imageUrl = (images != null &&
+                images.isNotEmpty &&
+                images.first.fileUrl != null)
+            ? images.first.fileUrl!
+            : product.image;
         di.add(Cart(
             id: e.itemcode,
             itemName: e.itemname,
             quantity: e.qty == null ? 0 : e.qty!.toInt(),
             itemCode: e.itemcode,
             rate: e.rate,
-            imageUrl: images != [] ? images[0].fileUrl : product.image));
+            imageUrl: imageUrl));
       }
       di.forEach((draftItem) {
         if (locator

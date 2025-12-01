@@ -384,42 +384,45 @@ class FavoritesView extends StatelessWidget {
       child: ListTile(
         contentPadding:
             EdgeInsets.symmetric(horizontal: Sizes.smallPaddingWidget(context)),
-        leading: Row(
-          children: [
-            SizedBox(width: Sizes.smallPaddingWidget(context)),
-            GestureDetector(
-              child: Icon(
-                isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: isFavorite ? Colors.red : null,
+        leading: SizedBox(
+          width: displayWidth(context) < 600 ? 100 : 150,
+          child: Row(
+            children: [
+              SizedBox(width: Sizes.smallPaddingWidget(context)),
+              GestureDetector(
+                child: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : null,
+                ),
+                onTap: () => model.toggleFavorite(item.itemCode!, context),
               ),
-              onTap: () => model.toggleFavorite(item.itemCode!, context),
-            ),
-            SizedBox(width: Sizes.smallPaddingWidget(context)),
-            ClipRRect(
-              borderRadius: Corners.lgBorder,
-              child: item.imageUrl == null || item.imageUrl == ''
-                  ? Container(
-                      width: imgDimension,
-                      height: imgDimension,
-                      decoration: const BoxDecoration(
-                        borderRadius: Corners.lgBorder,
-                        image: DecorationImage(
-                          image: AssetImage(
-                            Images.imageNotFound,
+              SizedBox(width: Sizes.smallPaddingWidget(context)),
+              ClipRRect(
+                borderRadius: Corners.lgBorder,
+                child: item.imageUrl == null || item.imageUrl == ''
+                    ? Container(
+                        width: imgDimension,
+                        height: imgDimension,
+                        decoration: const BoxDecoration(
+                          borderRadius: Corners.lgBorder,
+                          image: DecorationImage(
+                            image: AssetImage(
+                              Images.imageNotFound,
+                            ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
                         ),
-                      ),
-                    )
-                  : item.imageUrl == null
-                      ? Container()
-                      : image_widget.imageWidget(
-                          '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
-                          imgDimension,
-                          imgDimension,
-                          fit: BoxFit.fill),
-            ),
-          ],
+                      )
+                    : item.imageUrl == null
+                        ? Container()
+                        : image_widget.imageWidget(
+                            '${locator.get<StorageService>().apiUrl}${item.imageUrl}',
+                            imgDimension,
+                            imgDimension,
+                            fit: BoxFit.fill),
+              ),
+            ],
+          ),
         ),
         title: Text(item.itemName ?? ''),
         subtitle: Column(

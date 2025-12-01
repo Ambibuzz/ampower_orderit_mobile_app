@@ -12,6 +12,7 @@ import 'package:orderit/base_view.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/orderit/models/sales_order.dart';
 import 'package:orderit/locators/locator.dart';
+import 'package:orderit/orderit/viewmodels/cart_page_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/filters/past_orders_filter_viewmodel.dart';
 import 'package:orderit/orderit/viewmodels/past_orders_viewmodel.dart';
 import 'package:orderit/orderit/views/filters/past_orders_filter_view.dart';
@@ -159,6 +160,9 @@ class PastOrderListView extends StatelessWidget {
           var res = result as List;
           if (res[0] == true) {
             model.refresh();
+            locator.get<CartPageViewModel>().updateCart();
+            await Future.delayed(const Duration(milliseconds: 50));
+            model.refresh();
           }
         }
       },
@@ -300,6 +304,9 @@ class PastOrderListView extends StatelessWidget {
   Widget addToCartButton(SalesOrder pastOrder, BuildContext context) {
     return pastOrderReusableBtn('Add To Cart', () async {
       await model.addToCart(pastOrder, context);
+      locator.get<CartPageViewModel>().updateCart();
+      await Future.delayed(const Duration(milliseconds: 50));
+      model.refresh();
       flutterStyledToast(
         context,
         'Sales order items added to cart!',

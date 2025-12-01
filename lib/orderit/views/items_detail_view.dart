@@ -431,13 +431,18 @@ class AddToCart extends StatelessWidget {
       var images = await locator
           .get<ItemsViewModel>()
           .getImages(item.itemCode, connectivityStatus);
+      final imageUrl = (images != null &&
+                images.isNotEmpty &&
+                images.first.fileUrl != null)
+            ? images.first.fileUrl!
+            : item.imageUrl;
       cartItem = Cart(
           id: item.itemCode,
           itemName: item.itemName,
           quantity: item.quantity,
           itemCode: item.itemCode,
           rate: item.price,
-          imageUrl: images != [] ? images[0].fileUrl : item.imageUrl);
+          imageUrl: imageUrl);
 
       if (locator
           .get<CartPageViewModel>()
@@ -463,14 +468,18 @@ class AddToCart extends StatelessWidget {
       var images = await locator
           .get<ItemsViewModel>()
           .getImages(product.itemCode, connectivityStatus);
+      final imageUrl = (images != null &&
+                images.isNotEmpty &&
+                images.first.fileUrl != null)
+            ? images.first.fileUrl!
+            : product.image;
       cartItem = Cart(
           id: product.itemCode,
           itemName: product.itemName,
           quantity: item.quantity,
           itemCode: product.itemCode,
           rate: model.price,
-          imageUrl: images != [] ? images[0].fileUrl : product.image);
-
+          imageUrl: imageUrl);
       if (locator
           .get<CartPageViewModel>()
           .existsInCart(locator.get<CartPageViewModel>().items, cartItem)) {
