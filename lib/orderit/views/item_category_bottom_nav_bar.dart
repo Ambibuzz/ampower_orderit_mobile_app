@@ -24,9 +24,9 @@ class ItemCategoryBottomNavBarView extends StatelessWidget {
     return [
       if (model.itemGroups.isNotEmpty)
         ItemsView(itemGroup: model.itemGroups[0].name),
-      const PastOrdersView(),
-      const DraftView(),
-      const FavoritesView(),
+      PastOrdersView(),
+      DraftView(),
+      FavoritesView(),
     ];
   }
 
