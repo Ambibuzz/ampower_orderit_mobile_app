@@ -431,11 +431,10 @@ class AddToCart extends StatelessWidget {
       var images = await locator
           .get<ItemsViewModel>()
           .getImages(item.itemCode, connectivityStatus);
-      final imageUrl = (images != null &&
-                images.isNotEmpty &&
-                images.first.fileUrl != null)
-            ? images.first.fileUrl!
-            : item.imageUrl;
+      final imageUrl =
+          (images != null && images.isNotEmpty && images.first.fileUrl != null)
+              ? images.first.fileUrl!
+              : item.imageUrl;
       cartItem = Cart(
           id: item.itemCode,
           itemName: item.itemName,
@@ -468,11 +467,10 @@ class AddToCart extends StatelessWidget {
       var images = await locator
           .get<ItemsViewModel>()
           .getImages(product.itemCode, connectivityStatus);
-      final imageUrl = (images != null &&
-                images.isNotEmpty &&
-                images.first.fileUrl != null)
-            ? images.first.fileUrl!
-            : product.image;
+      final imageUrl =
+          (images != null && images.isNotEmpty && images.first.fileUrl != null)
+              ? images.first.fileUrl!
+              : product.image;
       cartItem = Cart(
           id: product.itemCode,
           itemName: product.itemName,
@@ -799,7 +797,9 @@ class ItemInfoWidget1 extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
                   Text(
-                    Formatter.formatter.format(model.price),
+                    Formatter.customFormatter(
+                            locator.get<ItemsViewModel>().currencySymbol)
+                        .format(model.price),
                     style: GoogleFonts.inter(
                         textStyle:
                             Theme.of(context).textTheme.titleMedium?.copyWith(

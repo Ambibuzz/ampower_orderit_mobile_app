@@ -29,3 +29,9 @@ enum ViewTypes {
   tableView,
   catalogueView,
 }
+
+enum DrawerMenu {
+  orderit,
+  targetit,
+  buzzit,
+}

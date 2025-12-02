@@ -2,6 +2,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
+import 'package:orderit/common/widgets/drawer.dart';
 import 'package:orderit/common/widgets/empty_widget.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/config/theme.dart';
@@ -25,7 +26,8 @@ import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DraftView extends StatelessWidget {
-  const DraftView({super.key});
+  DraftView({super.key});
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +37,21 @@ class DraftView extends StatelessWidget {
       },
       builder: (context, model, child) {
         return Scaffold(
-          appBar: Common.commonAppBar('Wishlist', [], context),
+          key: _scaffoldKey,
+          drawer: drawer(context, DrawerMenu.orderit),
+          appBar: Common.commonAppBar(
+            'Wishlist',
+            [
+              Common.shoppingCartReusableWidget(context, () {
+                model.refresh();
+              }),
+              SizedBox(width: Sizes.smallPaddingWidget(context)),
+            ],
+            context,
+            leading: Common.hamburgerMenuWidget(_scaffoldKey, context),
+          ),
           body: SafeArea(
-            child: Stack(
-              children: [
-                draftList(model.drafts, model, context),
-                OrderitWidgets.floatingCartButton(context, () {
-                  model.refresh();
-                }),
-              ],
-            ),
+            child: draftList(model.drafts, model, context),
           ),
         );
       },

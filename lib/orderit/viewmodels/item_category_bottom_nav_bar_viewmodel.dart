@@ -50,8 +50,8 @@ class ItemCategoryBottomNavBarViewModel extends BaseViewModel {
     pages = [
       if (itemGroups.isNotEmpty) ItemsView(itemGroup: itemGroups[0].name),
       SearchPageView(),
-      const DraftView(),
-      const PastOrdersView(),
+      DraftView(),
+      PastOrdersView(),
       CartPageView(key: const Key(cartViewRoute)),
     ];
     notifyListeners();

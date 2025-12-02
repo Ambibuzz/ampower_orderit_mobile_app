@@ -4,6 +4,7 @@ import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
+import 'package:orderit/common/widgets/drawer.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/locators/locator.dart';
@@ -26,7 +27,8 @@ import '../views/image_widget_native.dart'
     if (dart.library.html) 'image_widget_web.dart' as image_widget;
 
 class FavoritesView extends StatelessWidget {
-  const FavoritesView({super.key});
+  FavoritesView({super.key});
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -38,41 +40,40 @@ class FavoritesView extends StatelessWidget {
       },
       builder: (context, model, child) {
         return Scaffold(
+          key: _scaffoldKey,
+          drawer: drawer(context, DrawerMenu.orderit),
           backgroundColor: CustomTheme.scaffoldBackgroundColorLight,
           appBar: Common.commonAppBar(
             'Favorites',
-            [],
+            [
+              Common.shoppingCartReusableWidget(context, () async {
+                await model.getFavoritesItems();
+                await model.initQuantityController();
+                await model.updateCartItems();
+                await model.getCartItems();
+                await model.refresh();
+              }),
+              SizedBox(width: Sizes.smallPaddingWidget(context)),
+            ],
             context,
+            leading: Common.hamburgerMenuWidget(_scaffoldKey, context),
           ),
           body: SafeArea(
-            child: Stack(
-              children: [
-                model.favoriteItems.isNotEmpty
-                    ? favoritesList(model, context)
-                    : Center(
-                        child: SizedBox(
-                          height: displayHeight(context) * 0.7,
-                          child: OrderitWidgets.emptyCartWidget(
-                              'No items in Favorites!', '', 'Let’s Shop!', () {
-                            locator
-                                .get<ItemCategoryBottomNavBarViewModel>()
-                                .setIndex(0);
-                            locator.get<ItemsViewModel>().updateCartItems();
-                            locator
-                                .get<ItemsViewModel>()
-                                .initQuantityController();
-                          }, context),
-                        ),
-                      ),
-                OrderitWidgets.floatingCartButton(context, () async {
-                  await model.getFavoritesItems();
-                  await model.initQuantityController();
-                  await model.updateCartItems();
-                  await model.getCartItems();
-                  await model.refresh();
-                }),
-              ],
-            ),
+            child: model.favoriteItems.isNotEmpty
+                ? favoritesList(model, context)
+                : Center(
+                    child: SizedBox(
+                      height: displayHeight(context) * 0.7,
+                      child: OrderitWidgets.emptyCartWidget(
+                          'No items in Favorites!', '', 'Let’s Shop!', () {
+                        locator
+                            .get<ItemCategoryBottomNavBarViewModel>()
+                            .setIndex(0);
+                        locator.get<ItemsViewModel>().updateCartItems();
+                        locator.get<ItemsViewModel>().initQuantityController();
+                      }, context),
+                    ),
+                  ),
           ),
         );
       },

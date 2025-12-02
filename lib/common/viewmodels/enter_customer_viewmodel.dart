@@ -28,10 +28,31 @@ class EnterCustomerViewModel extends BaseViewModel {
   final TextEditingController customerController = TextEditingController();
   User user = User();
   bool isCustomersLoading = false;
+  var customerCurrencySymbol = '';
+  var symbols = <String>[];
+
+  Future getCurrencySymbols() async {
+    var currencies = <String?>[];
+    if (accountsRecievable.result?.isNotEmpty == true) {
+      for (var r in accountsRecievable.result!) {
+        currencies.add(r.currency);
+      }
+    }
+    if (currencies.isNotEmpty) {
+      for (var c in currencies) {
+        if (c != null) {
+          var symbol = await CommonService().getCurrencySymbolFromCurrency(c);
+          symbols.add(symbol);
+        } else {
+          symbols.add('');
+        }
+      }
+    }
+    notifyListeners();
+  }
 
   Future<dynamic> getOrderitConfig() async {
-    var url =
-        '/api/resource/Ampower%20Orderit%20App/Ampower%20Orderit%20App';
+    var url = '/api/resource/Ampower%20Orderit%20App/Ampower%20Orderit%20App';
     try {
       final response = await DioHelper.dio?.get(url);
       if (response?.statusCode == 200) {
@@ -95,6 +116,13 @@ class EnterCustomerViewModel extends BaseViewModel {
   Future getCustomerDoctype(String? customer) async {
     customerDoctype =
         await locator.get<OrderitApiService>().getCustomerDoctype(customer);
+    // fetch customer currency
+    if (customerDoctype.docs?[0].oOnload?.dashboardInfo?.isNotEmpty == true) {
+      var customerCurrency =
+          customerDoctype.docs?[0].oOnload?.dashboardInfo?[0].currency ?? '';
+      customerCurrencySymbol =
+          await CommonService().getCurrencySymbolFromCurrency(customerCurrency);
+    }
     notifyListeners();
   }
 

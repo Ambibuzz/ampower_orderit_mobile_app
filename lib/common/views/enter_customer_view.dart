@@ -7,6 +7,7 @@ import 'package:orderit/common/views/orderit_disabled.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_snackbar.dart';
+import 'package:orderit/common/widgets/drawer.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/common/services/offline_storage_service.dart';
@@ -36,6 +37,7 @@ class EnterCustomerView extends StatelessWidget {
   final String? fromRoute;
   final _formKey = GlobalKey<FormState>(debugLabel: 'enter_customer_key');
   bool _isDialogOpen = false; // Flag to prevent multiple dialogs
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +102,8 @@ class EnterCustomerView extends StatelessWidget {
             return exitApp;
           },
           child: Scaffold(
+            key: _scaffoldKey,
+            drawer: drawer(context, DrawerMenu.orderit),
             appBar: Common.commonAppBar(
               'Customer Selection',
               [
@@ -107,7 +111,7 @@ class EnterCustomerView extends StatelessWidget {
                 SizedBox(width: Sizes.paddingWidget(context)),
               ],
               context,
-              showBackBtn: false,
+              leading: Common.hamburgerMenuWidget(_scaffoldKey, context),
             ),
             body: SafeArea(
               child: model.state == ViewState.busy
@@ -254,7 +258,7 @@ class EnterCustomerView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Credit Limit : ${Formatter.formatter.format(creditLimit)}',
+                'Credit Limit : ${Formatter.customFormatter(model.customerCurrencySymbol).format(creditLimit)}',
                 style: GoogleFonts.inter(
                     textStyle: const TextStyle(
                   color: Color(0xFF189333),
@@ -266,7 +270,7 @@ class EnterCustomerView extends StatelessWidget {
                 height: Sizes.extraSmallPaddingWidget(context),
               ),
               Text(
-                'Outstanding : ${Formatter.formatter.format(outstanding)}',
+                'Outstanding : ${Formatter.customFormatter(model.customerCurrencySymbol).format(outstanding)}',
                 style: GoogleFonts.inter(
                     textStyle: const TextStyle(
                   color: Color(0xFFBE2527),
@@ -277,7 +281,7 @@ class EnterCustomerView extends StatelessWidget {
                 height: Sizes.extraSmallPaddingWidget(context),
               ),
               Text(
-                'Billing as on date : ${Formatter.formatter.format(billingAsOnDate)}',
+                'Billing as on date : ${Formatter.customFormatter(model.customerCurrencySymbol).format(billingAsOnDate)}',
                 style: GoogleFonts.inter(
                     textStyle: const TextStyle(
                   color: Color(0xFF84292A),
@@ -312,6 +316,8 @@ class EnterCustomerView extends StatelessWidget {
 
     if (model.accountsRecievable.result?.isNotEmpty == true) {
       for (var r in model.accountsRecievable.result!) {
+        var index = model.accountsRecievable.result!.indexOf(r);
+        var symbol = model.symbols[index];
         data.add([
           TableData(
               value:
@@ -324,39 +330,39 @@ class EnterCustomerView extends StatelessWidget {
               alignment: Alignment.centerRight),
           TableData(
               value: r.paidInAccountCurrency != null
-                  ? Formatter.formatter.format(r.paidInAccountCurrency)
+                  ? Formatter.customFormatter(symbol).format(r.paidInAccountCurrency)
                   : '0',
               width: commonWidth,
               alignment: Alignment.centerRight),
           TableData(
               value:
-                  r.range1 != null ? Formatter.formatter.format(r.range1) : '0',
+                  r.range1 != null ? Formatter.customFormatter(symbol).format(r.range1) : '0',
               width: commonWidth,
               alignment: Alignment.centerRight),
           TableData(
               value:
-                  r.range2 != null ? Formatter.formatter.format(r.range2) : '0',
+                  r.range2 != null ? Formatter.customFormatter(symbol).format(r.range2) : '0',
               width: commonWidth,
               alignment: Alignment.centerRight),
           TableData(
               value:
-                  r.range3 != null ? Formatter.formatter.format(r.range3) : '0',
+                  r.range3 != null ? Formatter.customFormatter(symbol).format(r.range3) : '0',
               width: commonWidth,
               alignment: Alignment.centerRight),
           TableData(
               value:
-                  r.range4 != null ? Formatter.formatter.format(r.range4) : '0',
+                  r.range4 != null ? Formatter.customFormatter(symbol).format(r.range4) : '0',
               width: commonWidth,
               alignment: Alignment.centerRight),
           TableData(
               value:
-                  r.range5 != null ? Formatter.formatter.format(r.range5) : '0',
+                  r.range5 != null ? Formatter.customFormatter(symbol).format(r.range5) : '0',
               width: commonWidth,
               alignment: Alignment.centerRight),
         ]);
       }
     }
-
+    var symbol = model.symbols[0];
     data.add(
       [
         TableData(
@@ -371,42 +377,42 @@ class EnterCustomerView extends StatelessWidget {
             alignment: Alignment.center),
         TableData(
             value: totalRow[10].toString().isNotEmpty
-                ? Formatter.formatter.format(totalRow[10])
+                ? Formatter.customFormatter(symbol).format(totalRow[10])
                 : Formatter.formatter.format(0),
             width: commonWidth,
             isBold: true,
             alignment: Alignment.centerRight),
         TableData(
             value: totalRow[14].toString().isNotEmpty
-                ? Formatter.formatter.format(totalRow[14])
+                ? Formatter.customFormatter(symbol).format(totalRow[14])
                 : Formatter.formatter.format(0),
             width: commonWidth,
             isBold: true,
             alignment: Alignment.centerRight),
         TableData(
             value: totalRow[15].toString().isNotEmpty
-                ? Formatter.formatter.format(totalRow[15])
+                ? Formatter.customFormatter(symbol).format(totalRow[15])
                 : Formatter.formatter.format(0),
             width: commonWidth,
             isBold: true,
             alignment: Alignment.centerRight),
         TableData(
             value: totalRow[16].toString().isNotEmpty
-                ? Formatter.formatter.format(totalRow[16])
+                ? Formatter.customFormatter(symbol).format(totalRow[16])
                 : Formatter.formatter.format(0),
             width: commonWidth,
             isBold: true,
             alignment: Alignment.centerRight),
         TableData(
             value: totalRow[17].toString().isNotEmpty
-                ? Formatter.formatter.format(totalRow[17])
+                ? Formatter.customFormatter(symbol).format(totalRow[17])
                 : Formatter.formatter.format(0),
             width: commonWidth,
             isBold: true,
             alignment: Alignment.centerRight),
         TableData(
             value: totalRow[18].toString().isNotEmpty
-                ? Formatter.formatter.format(totalRow[18])
+                ? Formatter.customFormatter(symbol).format(totalRow[18])
                 : Formatter.formatter.format(0),
             width: commonWidth,
             isBold: true,
@@ -759,6 +765,7 @@ class EnterCustomerView extends StatelessWidget {
         await model.getAccountsRecievableReport(
             model.customerController.text, model.globalDefaults.defaultCompany);
         FocusManager.instance.primaryFocus?.unfocus();
+        await model.getCurrencySymbols();
       },
       suggestionsCallback: (pattern) {
         return TypeAheadWidgets.getSuggestions(pattern, model.customer);

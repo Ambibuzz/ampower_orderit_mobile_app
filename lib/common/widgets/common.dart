@@ -2,13 +2,18 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:orderit/common/models/user.dart';
+import 'package:orderit/common/services/common_service.dart';
 import 'package:orderit/common/services/storage_service.dart';
+import 'package:orderit/common/viewmodels/enter_customer_viewmodel.dart';
 import 'package:orderit/common/widgets/custom_alert_dialog.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/viewmodels/cart_page_viewmodel.dart';
+import 'package:orderit/orderit/viewmodels/items_viewmodel.dart';
 import 'package:orderit/route/routing_constants.dart';
+import 'package:orderit/util/constants/formatter.dart';
 import 'package:orderit/util/constants/images.dart';
 import 'package:orderit/util/constants/sizes.dart';
 import 'package:orderit/util/dio_helper.dart';
@@ -24,9 +29,9 @@ class Common {
   static AppBar commonAppBar(
       String? title, List<Widget>? actions, BuildContext context,
       {bool? sendResultBack,
-      bool? showBackBtn = true,
       String? heading,
-      TextStyle? headingStyle}) {
+      TextStyle? headingStyle,
+      Widget? leading}) {
     return AppBar(
       title: Text(
         title ?? '',
@@ -37,9 +42,9 @@ class Common {
       ),
       centerTitle: false,
       leadingWidth: 36,
-      shadowColor: Colors.black.withOpacity(0.4),
-      leading: showBackBtn == true
-          ? Navigator.of(context).canPop()
+      leading: leading != null
+          ? leading
+          : Navigator.of(context).canPop()
               ? Row(
                   children: [
                     const SizedBox(
@@ -62,8 +67,8 @@ class Common {
                     ),
                   ],
                 )
-              : null
-          : null,
+              : null,
+      shadowColor: Colors.black.withOpacity(0.4),
       titleSpacing: Sizes.smallPaddingWidget(context) * 1.5,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       actions: actions,
@@ -142,6 +147,17 @@ class Common {
               : const SizedBox()
         ],
       ),
+    );
+  }
+
+  static Widget hamburgerMenuWidget(
+      GlobalKey<ScaffoldState> key, BuildContext context) {
+    return IconButton(
+      icon: Icon(
+        Icons.menu,
+        color: Theme.of(context).primaryColor,
+      ),
+      onPressed: () => key.currentState?.openDrawer(),
     );
   }
 
@@ -236,7 +252,7 @@ class Common {
                 profileViewRoute,
               );
         },
-        child: Common.userImage(context, user),
+        child: Common.userImage(context),
       ),
     );
   }
@@ -342,14 +358,63 @@ class Common {
     );
   }
 
-  static Widget userImage(BuildContext context, User user) {
-    var imageDimension = 32.0;
+  static Widget shoppingCartReusableWidget(
+      BuildContext context, Function onTap) {
+    return GestureDetector(
+      onTap: () async {
+        var result =
+            await locator.get<NavigationService>().navigateTo(cartViewRoute);
+        onTap;
+        if (result != null) {
+          var res = result as List;
+          if (res[0] == true) {
+            onTap();
+          }
+        }
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          vertical: Sizes.extraSmallPaddingWidget(context),
+          horizontal: Sizes.smallPaddingWidget(context),
+        ),
+        height: 40,
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).colorScheme.onSurface),
+          borderRadius: Corners.lgBorder,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.shopping_cart,
+              size: 20,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            SizedBox(width: Sizes.smallPaddingWidget(context)),
+            Text(
+              '${Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format((locator.get<CartPageViewModel>().total ?? 0.0))}',
+              style: GoogleFonts.inter(
+                textStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: displayWidth(context) < 600 ? 15 : 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(width: Sizes.smallPaddingWidget(context)),
+          ],
+        ),
+      ),
+    );
+  }
 
-    return user.userImage != null
+  static Widget userImage(BuildContext context, {double? imgDimension}) {
+    var imageDimension = imgDimension ?? 32.0;
+    var model = locator.get<EnterCustomerViewModel>();
+    return model.user.userImage != null
         ? ClipOval(
             clipBehavior: Clip.antiAlias,
             child: image_widget.imageWidget(
-              '${locator.get<StorageService>().apiUrl}${user.userImage}',
+              '${locator.get<StorageService>().apiUrl}${model.user.userImage}',
               imageDimension,
               imageDimension,
               fit: BoxFit.cover,
@@ -364,13 +429,50 @@ class Common {
             ),
             child: Center(
               child: Text(
-                user.firstName != null ? user.firstName![0] : '',
+                model.user.firstName != null ? model.user.firstName![0] : '',
                 style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     color: Theme.of(context).primaryColor,
                     fontWeight: FontWeight.w600),
               ),
             ),
           );
+  }
+
+  static Widget currencyFormattedWidget(
+      String? currency, double? value, TextStyle? style) {
+    return FutureBuilder<String>(
+      future: CommonService().getCurrencySymbolFromCurrency(currency ?? 'INR'),
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text(
+            Formatter.formatter.format(value),
+            style: style,
+          );
+        } else if (snapshot.hasError) {
+          return Text(
+            Formatter.formatter.format(value),
+            style: style,
+          );
+        } else if (snapshot.hasData) {
+          if (snapshot.data!.isNotEmpty == true) {
+            return Text(
+              Formatter.customFormatter(snapshot.data).format(value),
+              style: style,
+            );
+          } else {
+            return Text(
+              Formatter.customFormatter(snapshot.data).format(value),
+              style: style,
+            );
+          }
+        } else {
+          return Text(
+            Formatter.customFormatter(snapshot.data).format(value),
+            style: style,
+          );
+        }
+      },
+    );
   }
 
   static InputDecoration inputDecoration({
