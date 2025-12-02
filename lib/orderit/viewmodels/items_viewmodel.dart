@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:orderit/common/models/currency_model.dart';
+import 'package:orderit/common/models/global_defaults.dart';
 import 'package:orderit/common/models/stock_actual_qty.dart';
 import 'package:orderit/common/services/stock_actual_qty_service.dart';
 import 'package:orderit/common/models/user.dart';
@@ -22,6 +24,7 @@ import 'package:orderit/orderit/models/customer_model.dart';
 import 'package:orderit/orderit/models/file_model.dart';
 import 'package:orderit/orderit/models/item_tag_category.dart';
 import 'package:orderit/orderit/models/item_tag_name.dart';
+import 'package:orderit/orderit/models/price_list.dart';
 import 'package:orderit/orderit/models/tag.dart';
 import 'package:orderit/orderit/services/customer_service.dart';
 import 'package:orderit/orderit/services/items_api_service.dart';
@@ -89,6 +92,39 @@ class ItemsViewModel extends BaseViewModel {
   User user = User();
   var stockActualQtyList = <StockActualQty>[];
   var favoritesList = <String>[];
+  var currentCurrency = CurrencyModel();
+  var globalDefaults = GlobalDefaults();
+  var currencySymbol = '';
+  var priceList = PriceList();
+
+  Future getGlobalDefaults() async {
+    globalDefaults = await locator.get<CommonService>().getGlobalDefaults();
+    notifyListeners();
+  }
+
+  Future fetchCurrentCurrencySymbolFromGlobalDefaults() async {
+    if (globalDefaults.defaultCurrency?.isNotEmpty == true) {
+      var defaultCurrency = globalDefaults.defaultCurrency;
+      var currencyList = await locator
+          .get<FetchCachedDoctypeService>()
+          .fetchCachedCurrencyData();
+      if (currencyList.isNotEmpty) {
+        currentCurrency = currencyList.firstWhere(
+          (element) => element.name == defaultCurrency,
+        );
+      }
+    }
+    notifyListeners();
+  }
+
+  Future getPriceListAndCurrencySymbol() async {
+    priceList = await CommonService()
+        .getPriceList(locator.get<StorageService>().priceList);
+    var currency = priceList.currency ?? '';
+    currencySymbol =
+        await CommonService().getCurrencySymbolFromCurrency(currency);
+    notifyListeners();
+  }
 
   void unfocus(BuildContext context) {
     var currentFocus = FocusScope.of(context);

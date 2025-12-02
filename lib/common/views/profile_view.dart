@@ -10,6 +10,7 @@ import 'package:orderit/common/views/login_view.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_toast.dart';
+import 'package:orderit/common/widgets/drawer.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/config/theme_model.dart';
 import 'package:orderit/common/models/custom_textformformfield.dart';
@@ -35,6 +36,7 @@ class ProfileView extends StatelessWidget {
   ProfileView({super.key});
   static final isUserCustomer = locator.get<StorageService>().isUserCustomer;
   final _formKey = GlobalKey<FormState>(debugLabel: 'profile');
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     return BaseView<ProfileViewModel>(
@@ -45,8 +47,11 @@ class ProfileView extends StatelessWidget {
       },
       builder: (context, model, child) {
         return Scaffold(
+          key: _scaffoldKey,
+          drawer: drawer(context, DrawerMenu.orderit),
           appBar: Common.commonAppBar(
               'Profile',
+              leading: Common.hamburgerMenuWidget(_scaffoldKey, context),
               [
                 ElevatedButton(
                   style: ButtonStyle(

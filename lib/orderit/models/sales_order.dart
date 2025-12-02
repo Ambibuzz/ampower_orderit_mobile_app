@@ -26,6 +26,7 @@ class SalesOrder {
   final double? perdelivered;
   final String? customer;
   final String? company;
+  final String? currency;
   final String? ordertype;
   final String? transactiondate;
   final String? deliverydate;
@@ -63,6 +64,7 @@ class SalesOrder {
     this.status,
     this.customer,
     this.company,
+    this.currency,
     this.ordertype,
     this.transactiondate,
     this.deliverydate,
@@ -98,6 +100,7 @@ class SalesOrder {
       basegrandtotal: json['base_grand_total'] ?? 0,
       company: json['company'] ?? '',
       customer: json['customer'] ?? '',
+      currency: json['currency'] ?? '',
       deliverydate: json['delivery_date'] ?? '',
       grandtotal: json['grand_total'] ?? 0,
       ordertype: json['order_type'] ?? '',
@@ -151,6 +154,7 @@ class SalesOrder {
     data['base_grand_total'] = basegrandtotal;
     data['company'] = company;
     data['customer'] = customer;
+    data['currency'] = currency;
     data['delivery_date'] = deliverydate;
     data['grand_total'] = grandtotal;
     data['order_type'] = ordertype;
@@ -212,13 +216,13 @@ class SalesOrderItems {
   }
 
   // For converting model to json format for storing it in quality inspection readings
-  Map<String,dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         'delivery_date': deliverydate,
         'item_code': itemcode,
         'qty': qty,
       };
 
-  Map<String,dynamic> salesOrderToJson() => {
+  Map<String, dynamic> salesOrderToJson() => {
         'delivery_date': deliverydate,
         'item_code': itemcode,
         'item_name': itemname,

@@ -499,7 +499,7 @@ class _CartPageViewState extends State<CartPageView>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${Formatter.formatter.format((item.rate ?? 0))} ',
+          '${Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format((item.rate ?? 0))} ',
           style: GoogleFonts.inter(
               textStyle: textStyle?.copyWith(
             fontWeight: FontWeight.bold,
@@ -522,11 +522,11 @@ class _CartPageViewState extends State<CartPageView>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Price : ${Formatter.formatter.format((item.rate ?? 0))} ',
+          'Price : ${Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format((item.rate ?? 0))} ',
           style: GoogleFonts.inter(textStyle: textStyle),
         ),
         Text(
-          'Total : ${Formatter.formatter.format((item.rate ?? 0) * model.items[index].quantity)} ',
+          'Total : ${Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format((item.rate ?? 0) * model.items[index].quantity)} ',
           style: GoogleFonts.inter(
               textStyle: textStyle?.copyWith(
             fontWeight: FontWeight.bold,
@@ -772,7 +772,7 @@ Widget totalStickyWidget(CartPageViewModel model, BuildContext context) {
                   height: Sizes.smallPaddingWidget(context),
                 ),
                 Text(
-                  Formatter.formatter.format(model.total),
+                  Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format(model.total),
                   style: GoogleFonts.inter(
                       textStyle:
                           Theme.of(context).textTheme.titleLarge?.copyWith(

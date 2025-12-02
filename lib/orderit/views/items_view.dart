@@ -1,10 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:orderit/common/models/currency_model.dart';
 import 'package:orderit/common/services/navigation_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_snackbar.dart';
+import 'package:orderit/common/widgets/drawer.dart';
 import 'package:orderit/common/widgets/empty_widget.dart';
 import 'package:orderit/common/widgets/popup_menu_item.dart';
 import 'package:orderit/config/theme.dart';
@@ -81,6 +83,8 @@ class ItemsView extends StatelessWidget {
         await model.checkDoctypeCache();
         await model.getStockActualQtyList();
         await model.getItemPrices();
+        await model.getGlobalDefaults();
+        await model.fetchCurrentCurrencySymbolFromGlobalDefaults();
         model.getConnectivityStatus(context);
         var isUserCustomer = locator.get<StorageService>().isUserCustomer;
         var user = locator.get<UserService>().getUser();
@@ -137,43 +141,16 @@ class ItemsView extends StatelessWidget {
         // initialize quantity controller
         await model.initQuantityController();
         model.initCarouselData();
+        await model.getPriceListAndCurrencySymbol();
         await model.refresh();
       },
       builder: (context, model, child) {
         return Scaffold(
           key: _scaffoldKey,
+          drawer: drawer(context, DrawerMenu.orderit),
           appBar: appBar(
               model.categorySelected ?? '',
               [
-                GestureDetector(
-                    onTap: () async {
-                      var result = await locator
-                          .get<NavigationService>()
-                          .navigateTo(searchViewRoute,
-                              arguments: itemsViewRoute);
-                      if (result != null) {
-                        var res = result as List;
-                        if (res[0] == true) {
-                          // for updating items controllers
-                          model.updateCartItems();
-                          // setup cart items to cart page
-                          await locator.get<CartPageViewModel>().setCartItems();
-                          // init quantity controllers
-                          await locator
-                              .get<CartPageViewModel>()
-                              .initQuantityController();
-                          await model.getCartItems();
-                          // initialize quantity controller
-                          await model.initQuantityController();
-                        }
-                      }
-                    },
-                    child: Icon(
-                      Icons.search,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    )),
-                SizedBox(width: Sizes.smallPaddingWidget(context)),
-                Common.profileReusableWidget(model.user, context),
                 popUpMenu(model, context),
               ],
               context,
@@ -183,27 +160,18 @@ class ItemsView extends StatelessWidget {
               onTap: () {
                 model.unfocus(context);
               },
-              child: Stack(
-                children: [
-                  model.isItemGroupsLoading
-                      ? itemsViewLayoutBuilder(model, context)
-                      : model.itemGroups.isEmpty
-                          ? Skeletonizer(
-                              enabled: model.isItemListLoading,
-                              child: EmptyWidget(
-                                onRefresh: () async {
-                                  await model.reCacheData(model, context);
-                                },
-                              ),
-                            )
-                          : itemsViewLayoutBuilder(model, context),
-                  OrderitWidgets.floatingCartButton(context, () {
-                    model.refresh();
-                    model.updateCartItems();
-                    model.initQuantityController();
-                  }),
-                ],
-              ),
+              child: model.isItemGroupsLoading
+                  ? itemsViewLayoutBuilder(model, context)
+                  : model.itemGroups.isEmpty
+                      ? Skeletonizer(
+                          enabled: model.isItemListLoading,
+                          child: EmptyWidget(
+                            onRefresh: () async {
+                              await model.reCacheData(model, context);
+                            },
+                          ),
+                        )
+                      : itemsViewLayoutBuilder(model, context),
             ),
           ),
         );
@@ -419,69 +387,75 @@ class ItemsView extends StatelessWidget {
   AppBar appBar(String? title, List<Widget>? actions, BuildContext context,
       ItemsViewModel model) {
     return AppBar(
-      title: GestureDetector(
-        onTap: () {
-          model.unfocus(context);
-        },
-        child: Row(
-          children: [
-            model.categorySelectedImage == null ||
-                    model.categorySelectedImage == ''
-                ? const SizedBox()
-                : model.categorySelectedImage == null
-                    ? Container()
-                    : image_widget.imageWidget(
-                        '${locator.get<StorageService>().apiUrl}${model.categorySelectedImage!}',
-                        40,
-                        40),
-            SizedBox(
-              width: Sizes.smallPaddingWidget(context),
-            ),
-            Expanded(
-              child: Text(
-                title ?? '',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
+      title: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: () async {
+                var result = await locator
+                    .get<NavigationService>()
+                    .navigateTo(searchViewRoute, arguments: itemsViewRoute);
+                if (result != null) {
+                  var res = result as List;
+                  if (res[0] == true) {
+                    // for updating items controllers
+                    model.updateCartItems();
+                    // setup cart items to cart page
+                    await locator.get<CartPageViewModel>().setCartItems();
+                    // init quantity controllers
+                    await locator
+                        .get<CartPageViewModel>()
+                        .initQuantityController();
+                    await model.getCartItems();
+                    // initialize quantity controller
+                    await model.initQuantityController();
+                  }
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: Sizes.extraSmallPaddingWidget(context),
+                  horizontal: Sizes.smallPaddingWidget(context),
+                ),
+                height: 40,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.onSurface),
+                  borderRadius: Corners.lgBorder,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.search,
+                      size: displayWidth(context) < 600 ? 20 : 28,
+                      color: Color(0xFF666666),
                     ),
+                    SizedBox(width: Sizes.smallPaddingWidget(context)),
+                    Text(
+                      'Search...',
+                      style: TextStyle(
+                          color: const Color(0xFF666666),
+                          fontSize: Sizes.fontSizeSubTitleWidget(context)),
+                    ),
+                    SizedBox(width: Sizes.smallPaddingWidget(context)),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+          SizedBox(width: Sizes.paddingWidget(context)),
+          Common.shoppingCartReusableWidget(context, () {
+            model.refresh();
+            model.updateCartItems();
+            model.initQuantityController();
+          }),
+        ],
       ),
       shadowColor: Colors.black.withOpacity(0.4),
       leadingWidth: 35,
-      leading: locator.get<StorageService>().isUserCustomer
-          ? null
-          : Navigator.of(context).canPop()
-              ? Row(
-                  children: [
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: GestureDetector(
-                        onTap: () => Navigator.of(context).pop(),
-                        child: Icon(
-                          defaultTargetPlatform == TargetPlatform.iOS
-                              ? Icons.arrow_back_ios
-                              : Icons.arrow_back,
-                          size: 24,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : null,
+      leading: Common.hamburgerMenuWidget(_scaffoldKey, context),
       titleSpacing: Sizes.smallPaddingWidget(context) * 1.5,
-      systemOverlayStyle: SystemUiOverlayStyle.light,
       actions: actions,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Corners.xlRadius,
-        ),
-      ),
     );
   }
 
@@ -1033,7 +1007,9 @@ class ItemsList extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  Formatter.formatter.format(item.price),
+                                  Formatter.customFormatter(
+                                          model.currencySymbol)
+                                      .format(item.price),
                                   style: priceStyle,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -1232,7 +1208,9 @@ class ItemsList extends StatelessWidget {
                                   padding: const EdgeInsets.only(
                                       top: Sizes.extraSmallPadding),
                                   child: Text(
-                                      Formatter.formatter.format(item.price),
+                                      Formatter.customFormatter(
+                                              model.currencySymbol)
+                                          .format(item.price),
                                       style: priceStyle),
                                 ),
                                 Text(
@@ -1922,7 +1900,9 @@ class TableView extends StatelessWidget {
                                           ),
                                     ),
                                     Text(
-                                      Formatter.formatter.format(item.price),
+                                      Formatter.customFormatter(
+                                              model.currencySymbol)
+                                          .format(item.price),
                                       style: priceStyle,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -2519,7 +2499,8 @@ class CatalogueView extends StatelessWidget {
                         ),
                   ),
                   Text(
-                    Formatter.formatter.format(item.price),
+                    Formatter.customFormatter(model.currencySymbol)
+                        .format(item.price),
                     style: priceStyle,
                   ),
                   Text(
@@ -2821,7 +2802,8 @@ class FlexibleItemsGrid extends StatelessWidget {
                                 ),
                           ),
                           Text(
-                            Formatter.formatter.format(item.price),
+                            Formatter.customFormatter(model.currencySymbol)
+                                .format(item.price),
                             style: priceStyle,
                             textAlign: TextAlign.left,
                           ),
@@ -2981,7 +2963,8 @@ class FlexibleItemsGrid extends StatelessWidget {
                           style: itemNameStyle,
                         ),
                         Text(
-                          Formatter.formatter.format(item.price),
+                          Formatter.customFormatter(model.currencySymbol)
+                              .format(item.price),
                           style: priceStyle,
                         ),
                         Text(

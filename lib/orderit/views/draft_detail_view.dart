@@ -12,6 +12,7 @@ import 'package:orderit/locators/locator.dart';
 import 'package:orderit/orderit/models/cart.dart';
 import 'package:orderit/orderit/models/draft.dart';
 import 'package:orderit/orderit/viewmodels/draft_detail_viewmodel.dart';
+import 'package:orderit/orderit/viewmodels/items_viewmodel.dart';
 
 import 'package:orderit/util/constants/images.dart';
 import 'package:orderit/util/constants/formatter.dart';
@@ -99,7 +100,10 @@ class DraftDetailView extends StatelessWidget {
                         verticalPaddingSmall(context),
                         Common.reusableRowWidget(
                             'Total Price',
-                            Formatter.formatter.format(draft.totalPrice),
+                            Formatter.customFormatter(locator
+                                    .get<ItemsViewModel>()
+                                    .currencySymbol)
+                                .format(draft.totalPrice),
                             context,
                             textStyle: GoogleFonts.inter(
                                 textStyle: TextStyle(
@@ -228,11 +232,11 @@ class DraftDetailView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Price : ${Formatter.formatter.format((item.rate ?? 0))} ',
+          'Price : ${Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format((item.rate ?? 0))} ',
           style: GoogleFonts.inter(textStyle: textStyle),
         ),
         Text(
-          'Total : ${Formatter.formatter.format((item.rate ?? 0) * item.quantity)} ',
+          'Total : ${Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format((item.rate ?? 0) * item.quantity)} ',
           style: GoogleFonts.inter(
               textStyle: textStyle.copyWith(
             fontWeight: FontWeight.bold,
@@ -248,11 +252,11 @@ class DraftDetailView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${Formatter.formatter.format((item.rate ?? 0))} ',
+          '${Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format((item.rate ?? 0))} ',
           style: GoogleFonts.inter(textStyle: textStyle),
         ),
         Text(
-          'Total : ${Formatter.formatter.format((item.rate ?? 0) * item.quantity)} ',
+          'Total : ${Formatter.customFormatter(locator.get<ItemsViewModel>().currencySymbol).format((item.rate ?? 0) * item.quantity)} ',
           style: GoogleFonts.inter(
               textStyle: textStyle?.copyWith(
             fontWeight: FontWeight.bold,

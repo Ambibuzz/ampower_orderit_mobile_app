@@ -44,11 +44,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) => NoInternetConnectionView());
     case favoritesViewRoute:
       var args = settings.arguments as String?;
-      return MaterialPageRoute(builder: (context) => const FavoritesView());
+      return MaterialPageRoute(builder: (context) => FavoritesView());
     case errorLogListViewRoute:
       return MaterialPageRoute(builder: (context) => const ErrorLogListView());
     case pastOrdersViewRoute:
-      return MaterialPageRoute(builder: (context) => const PastOrdersView());
+      return MaterialPageRoute(builder: (context) => PastOrdersView());
     case pastOrdersDetailViewRoute:
       var args = settings.arguments as SalesOrder?;
       return MaterialPageRoute(
@@ -57,7 +57,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => const AmpowerAnimation());
     //Catalogue
     case draftViewRoute:
-      return MaterialPageRoute(builder: (context) => const DraftView());
+      return MaterialPageRoute(builder: (context) => DraftView());
     case draftDetailViewRoute:
       var draft = settings.arguments as Draft?;
       return MaterialPageRoute(

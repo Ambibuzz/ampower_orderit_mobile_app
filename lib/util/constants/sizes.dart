@@ -88,6 +88,51 @@ class Sizes {
 
   static double elevation = defaultTargetPlatform == TargetPlatform.iOS ? 0 : 4;
 
+  static double? subTitleFontSize(BuildContext context) {
+    return displayWidth(context) < 600 ? 14 : 18;
+  }
+
+  static TextStyle? titleTextStyle(BuildContext context) {
+    return displayWidth(context) < 600
+        ? Theme.of(context).textTheme.titleMedium
+        : Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20);
+  }
+
+  static TextStyle? titleTextStyleBold(BuildContext context) {
+    return displayWidth(context) < 600
+        ? Theme.of(context)
+            .textTheme
+            .titleMedium
+            ?.copyWith(fontWeight: FontWeight.bold)
+        : Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            );
+  }
+
+  static TextStyle? subTitleSmallTextStyle(BuildContext context) {
+    return displayWidth(context) < 600
+        ? Theme.of(context).textTheme.labelMedium
+        : Theme.of(context).textTheme.titleMedium;
+  }
+
+  static TextStyle? subTitleTextStyle(BuildContext context) {
+    return displayWidth(context) < 600
+        ? Theme.of(context).textTheme.titleSmall
+        : Theme.of(context).textTheme.titleLarge;
+  }
+
+  static TextStyle? priceTextStyle(BuildContext context) {
+    return displayWidth(context) < 600
+        ? Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            )
+        : Theme.of(context)
+            .textTheme
+            .titleLarge
+            ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20);
+  }
+
   static TextStyle? textAndLabelStyle(BuildContext context) {
     if (displayWidth(context) < 600) {
       return Theme.of(context).textTheme.titleSmall;

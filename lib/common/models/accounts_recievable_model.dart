@@ -13,7 +13,8 @@ class AccountsRecievable {
     if (json['result'] != null) {
       result = <AccountsRecievableResult>[];
       json['result'].forEach((v) {
-        if (v is Map<String, dynamic>) result!.add(AccountsRecievableResult.fromJson(v));
+        if (v is Map<String, dynamic>)
+          result!.add(AccountsRecievableResult.fromJson(v));
       });
     }
     if (json['columns'] != null) {
@@ -22,7 +23,9 @@ class AccountsRecievable {
         columns!.add(AccountsRecievableColumns.fromJson(v));
       });
     }
-    chart = json['chart'] != null ? AccountsRecievableChart.fromJson(json['chart']) : null;
+    chart = json['chart'] != null
+        ? AccountsRecievableChart.fromJson(json['chart'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -41,6 +44,7 @@ class AccountsRecievableResult {
   String? voucherNo;
   double? paidInAccountCurrency;
   String? dueDate;
+  String? currency;
   double? range1;
   double? range2;
   double? range3;
@@ -51,6 +55,7 @@ class AccountsRecievableResult {
     this.voucherNo,
     this.paidInAccountCurrency,
     this.dueDate,
+    this.currency,
     this.range1,
     this.range2,
     this.range3,
@@ -62,6 +67,7 @@ class AccountsRecievableResult {
     voucherNo = json['voucher_no'];
     paidInAccountCurrency = json['paid_in_account_currency'];
     dueDate = json['due_date'];
+    currency = json['currency'];
     range1 = json['range1'];
     range2 = json['range2'];
     range3 = json['range3'];
@@ -74,6 +80,7 @@ class AccountsRecievableResult {
     data['voucher_no'] = voucherNo;
     data['paid_in_account_currency'] = paidInAccountCurrency;
     data['due_date'] = dueDate;
+    data['currency'] = currency;
     data['range1'] = range1;
     data['range2'] = range2;
     data['range3'] = range3;
@@ -119,7 +126,9 @@ class AccountsRecievableChart {
   AccountsRecievableChart({this.data, this.type});
 
   AccountsRecievableChart.fromJson(Map<String, dynamic> json) {
-    data = json['data'] != null ? AccountsRecievableData.fromJson(json['data']) : null;
+    data = json['data'] != null
+        ? AccountsRecievableData.fromJson(json['data'])
+        : null;
     type = json['type'];
   }
 

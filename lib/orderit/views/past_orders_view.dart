@@ -5,6 +5,7 @@ import 'package:orderit/common/services/storage_service.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_toast.dart';
+import 'package:orderit/common/widgets/drawer.dart';
 import 'package:orderit/common/widgets/empty_widget.dart';
 import 'package:orderit/common/widgets/stacked_images.dart';
 import 'package:orderit/config/styles.dart';
@@ -30,8 +31,9 @@ import 'package:json_table/json_table.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class PastOrdersView extends StatelessWidget {
-  const PastOrdersView({super.key});
+  PastOrdersView({super.key});
   static final isUserCustomer = locator.get<StorageService>().isUserCustomer;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,38 +47,39 @@ class PastOrdersView extends StatelessWidget {
       },
       builder: (context, model, child) {
         return Scaffold(
+          key: _scaffoldKey,
+          drawer: drawer(context, DrawerMenu.orderit),
           appBar: Common.commonAppBar(
-              'Past Orders',
-              [
-                GestureDetector(
-                    onTap: () async {
-                      var result = await openPastOrderFilter(context);
-                      var filters = result as List;
-                      if (result[0] is! List) {
-                        model.setStatusSO(result[0]);
-                        await model.getPastOrders(context, []);
-                      } else {
-                        var filters = result[0] as List;
-                        await model.getPastOrders(context, filters);
-                      }
-                    },
-                    child: const Icon(Icons.filter_alt)),
-                SizedBox(
-                  width: Sizes.smallPaddingWidget(context),
-                ),
-              ],
-              context),
+            'Past Orders',
+            [
+              Common.shoppingCartReusableWidget(context, () {
+                model.refresh();
+              }),
+              SizedBox(width: Sizes.smallPaddingWidget(context)),
+              GestureDetector(
+                  onTap: () async {
+                    var result = await openPastOrderFilter(context);
+                    var filters = result as List;
+                    if (result[0] is! List) {
+                      model.setStatusSO(result[0]);
+                      await model.getPastOrders(context, []);
+                    } else {
+                      var filters = result[0] as List;
+                      await model.getPastOrders(context, filters);
+                    }
+                  },
+                  child: const Icon(Icons.filter_alt)),
+              SizedBox(
+                width: Sizes.smallPaddingWidget(context),
+              ),
+            ],
+            context,
+            leading: Common.hamburgerMenuWidget(_scaffoldKey, context),
+          ),
           body: SafeArea(
             child: model.state == ViewState.busy
                 ? WidgetsFactoryList.circularProgressIndicator()
-                : Stack(
-                    children: [
-                      PastOrderListView(model: model),
-                      OrderitWidgets.floatingCartButton(context, () {
-                        model.refresh();
-                      }),
-                    ],
-                  ),
+                : PastOrderListView(model: model),
           ),
         );
       },
