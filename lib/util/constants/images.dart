@@ -32,4 +32,10 @@ class Images {
   static const onboarding2 = 'assets/Onboarding_2.png';
   static const onboarding3 = 'assets/Onboarding_3.png';
   static const onboarding4 = 'assets/Onboarding_4.png';
+
+  // Drawer Icons
+  static const profileIcon = 'assets/icon/account_circle.png';
+  static const mainMenuIcon = 'assets/icon/apps.png';
+  static const homeIconBlack = 'assets/icon/home_icon_black.png';
+  static const customerSelectionIcon = 'assets/icon/person_search.png';
 }
