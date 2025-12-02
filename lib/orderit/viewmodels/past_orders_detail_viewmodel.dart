@@ -1,4 +1,5 @@
 import 'package:orderit/common/models/product.dart';
+import 'package:orderit/common/services/common_service.dart';
 import 'package:orderit/common/services/fetch_cached_doctype_service.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_toast.dart';
@@ -20,6 +21,16 @@ import 'package:provider/provider.dart';
 class PastOrdersDetailViewModel extends BaseViewModel {
   var productsList = <Product>[];
   var salesOrderItems = <Product>[];
+  var currencySymbol = '';
+
+  Future getCurrencySymbol(SalesOrder? so) async {
+    if (so?.currency?.isNotEmpty == true) {
+      currencySymbol =
+          await CommonService().getCurrencySymbolFromCurrency(so!.currency!);
+    }
+    notifyListeners();
+  }
+
 
   Future getProducts(SalesOrder? salesOrder) async {
     setState(ViewState.busy);

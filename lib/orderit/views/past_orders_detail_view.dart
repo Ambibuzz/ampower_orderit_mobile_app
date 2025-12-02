@@ -34,6 +34,7 @@ class PastOrdersDetailView extends StatelessWidget {
     return BaseView<PastOrdersDetailViewModel>(
       onModelReady: (model) async {
         await model.getProducts(salesOrder);
+        await model.getCurrencySymbol(salesOrder);
       },
       builder: (context, model, child) {
         return BaseView<PastOrdersDetailViewModel>(

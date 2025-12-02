@@ -1007,7 +1007,9 @@ class ItemsList extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  Formatter.formatter.format(item.price),
+                                  Formatter.customFormatter(
+                                          model.currencySymbol)
+                                      .format(item.price),
                                   style: priceStyle,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -1206,7 +1208,9 @@ class ItemsList extends StatelessWidget {
                                   padding: const EdgeInsets.only(
                                       top: Sizes.extraSmallPadding),
                                   child: Text(
-                                      Formatter.formatter.format(item.price),
+                                      Formatter.customFormatter(
+                                              model.currencySymbol)
+                                          .format(item.price),
                                       style: priceStyle),
                                 ),
                                 Text(
@@ -1896,7 +1900,9 @@ class TableView extends StatelessWidget {
                                           ),
                                     ),
                                     Text(
-                                      Formatter.formatter.format(item.price),
+                                      Formatter.customFormatter(
+                                              model.currencySymbol)
+                                          .format(item.price),
                                       style: priceStyle,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -2493,7 +2499,8 @@ class CatalogueView extends StatelessWidget {
                         ),
                   ),
                   Text(
-                    Formatter.formatter.format(item.price),
+                    Formatter.customFormatter(model.currencySymbol)
+                        .format(item.price),
                     style: priceStyle,
                   ),
                   Text(
@@ -2795,7 +2802,8 @@ class FlexibleItemsGrid extends StatelessWidget {
                                 ),
                           ),
                           Text(
-                            Formatter.formatter.format(item.price),
+                            Formatter.customFormatter(model.currencySymbol)
+                                .format(item.price),
                             style: priceStyle,
                             textAlign: TextAlign.left,
                           ),
@@ -2955,7 +2963,8 @@ class FlexibleItemsGrid extends StatelessWidget {
                           style: itemNameStyle,
                         ),
                         Text(
-                          Formatter.formatter.format(item.price),
+                          Formatter.customFormatter(model.currencySymbol)
+                              .format(item.price),
                           style: priceStyle,
                         ),
                         Text(

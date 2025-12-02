@@ -99,6 +99,24 @@ class CommonService {
     }
   }
 
+  Future<String> getCurrencySymbolFromCurrency(String currency) async {
+    if (currency.isNotEmpty == true) {
+      var currencyList = await locator
+          .get<FetchCachedDoctypeService>()
+          .fetchCachedCurrencyData();
+      if (currencyList.isNotEmpty) {
+        var model = currencyList.firstWhere(
+          (element) => element.name == currency,
+        );
+        return model.symbol ?? '';
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
+
   // get single field data from doctype ie getting item_name list from item doctype
   Future<List<String>> getDoctypeFieldList(
       String url, String field, Map<String, String> queryParams) async {
