@@ -7,6 +7,7 @@ import 'package:orderit/common/views/orderit_disabled.dart';
 import 'package:orderit/common/widgets/abstract_factory/iwidgetsfactory.dart';
 import 'package:orderit/common/widgets/common.dart';
 import 'package:orderit/common/widgets/custom_snackbar.dart';
+import 'package:orderit/common/widgets/drawer.dart';
 import 'package:orderit/config/styles.dart';
 import 'package:orderit/config/theme.dart';
 import 'package:orderit/common/services/offline_storage_service.dart';
@@ -36,6 +37,7 @@ class EnterCustomerView extends StatelessWidget {
   final String? fromRoute;
   final _formKey = GlobalKey<FormState>(debugLabel: 'enter_customer_key');
   bool _isDialogOpen = false; // Flag to prevent multiple dialogs
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +102,8 @@ class EnterCustomerView extends StatelessWidget {
             return exitApp;
           },
           child: Scaffold(
+            key: _scaffoldKey,
+            drawer: drawer(context, DrawerMenu.orderit),
             appBar: Common.commonAppBar(
               'Customer Selection',
               [
@@ -107,7 +111,7 @@ class EnterCustomerView extends StatelessWidget {
                 SizedBox(width: Sizes.paddingWidget(context)),
               ],
               context,
-              showBackBtn: false,
+              leading: Common.hamburgerMenuWidget(_scaffoldKey, context),
             ),
             body: SafeArea(
               child: model.state == ViewState.busy
