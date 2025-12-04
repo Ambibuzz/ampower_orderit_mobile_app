@@ -159,22 +159,28 @@ class FetchCachedDoctypeService {
             .where((item) =>
                 item.itemGroup == itemGroupName && item.variantOf == null)
             .toList();
+
+        var listWithoutDisabled = list.where((e) => (e.disabled != 1)).toList();
+        for (var i = 0; i < listWithoutDisabled.length; i++) {
+          print(
+              'Item: ${listWithoutDisabled[i].itemName}, disabled=${listWithoutDisabled[i].disabled}');
+        }
         // map product to itemsmodel
-        for (var i = 0; i < list.length; i++) {
+        for (var i = 0; i < listWithoutDisabled.length; i++) {
           var images = await locator
               .get<ItemsViewModel>()
-              .getImages(list[i].name, connectivityStatus);
+              .getImages(listWithoutDisabled[i].name, connectivityStatus);
           var item = ItemsModel(
-            imageUrl: list[i].image,
-            itemCode: list[i].itemCode,
-            itemDescription: list[i].description,
-            itemName: list[i].itemName,
+            imageUrl: listWithoutDisabled[i].image,
+            itemCode: listWithoutDisabled[i].itemCode,
+            itemDescription: listWithoutDisabled[i].description,
+            itemName: listWithoutDisabled[i].itemName,
             price: 0,
             quantity: 1,
-            hasVariants: list[i].hasVariants,
-            variantOf: list[i].variantOf,
+            hasVariants: listWithoutDisabled[i].hasVariants,
+            variantOf: listWithoutDisabled[i].variantOf,
             // attributes: list[i].attributes,
-            itemGroup: list[i].itemGroup,
+            itemGroup: listWithoutDisabled[i].itemGroup,
             images: images ?? [],
           );
           itemsList.add(item);
@@ -258,6 +264,7 @@ class FetchCachedDoctypeService {
               variantOf: item.variantOf,
               // attributes: item.attributes,
               itemGroup: item.itemGroup,
+              disabled: item.disabled,
             );
             itemsModel.add(itemModel);
           }

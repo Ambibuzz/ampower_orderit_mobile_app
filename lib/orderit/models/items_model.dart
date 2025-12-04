@@ -11,6 +11,7 @@ class ItemsModel {
   final String? itemDescription;
   final String? imageUrl;
   final int? hasVariants;
+  final int? disabled;
   final String? variantOf;
   final String? itemGroup;
   List<ItemAttribute>? attributes;
@@ -20,6 +21,7 @@ class ItemsModel {
   ItemsModel({
     this.itemName,
     this.itemCode,
+    this.disabled,
     this.price = 0,
     this.quantity = 1,
     // this.currency,
@@ -55,6 +57,7 @@ class ItemsModel {
         // currency: json['currency'],
         itemDescription: json['item_description'],
         imageUrl: json['image'],
+        disabled: json['disabled'],
         hasVariants: json['has_variants'],
         variantOf: json['variant_of'],
         attributes: attributeList,

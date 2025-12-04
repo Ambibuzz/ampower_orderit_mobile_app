@@ -586,6 +586,7 @@ class ItemsViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  // get products list without disabled items
   Future<List<Product>> getProductList() async {
     var data = locator.get<OfflineStorage>().getItem(Strings.item);
     // cached data is there then show cached item
@@ -594,6 +595,7 @@ class ItemsViewModel extends BaseViewModel {
       var productList = ProductList.fromJson(itemdata);
       if (productList.productList != null) {
         var list = productList.productList!;
+        list = list.where((e) => e.disabled != 1).toList();
         return list;
       }
       // product list is null

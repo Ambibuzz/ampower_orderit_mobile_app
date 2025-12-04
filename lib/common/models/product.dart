@@ -255,6 +255,7 @@ class Product {
     data['variant_of'] = variantOf;
     data['has_variants'] = hasVariants;
     data['image'] = image;
+    data['disabled'] = disabled;
     return data;
   }
 }
