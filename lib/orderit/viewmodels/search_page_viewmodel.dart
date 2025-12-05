@@ -59,6 +59,9 @@ class SearchPageViewModel extends BaseViewModel {
         Provider.of<ConnectivityStatus>(context, listen: false);
     itemsModelList =
         await locator.get<ItemsService>().getItemsList(connectivityStatus);
+    itemsModelList = itemsModelList
+        .where((e) => e.disabled != 1)
+        .toList();
     productsList =
         await locator.get<FetchCachedDoctypeService>().fetchCachedItemData();
 

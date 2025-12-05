@@ -165,11 +165,11 @@ class OrderitApiService {
     var list = [];
     var itemlist = <Product>[];
     filters.add(['Item', 'is_stock_item', '=', 1]);
-    filters.add(['Item', 'disabled', '=', 0]);
+    // filters.add(['Item', 'disabled', '=', 0]);
     var url = '/api/resource/Item';
     var queryParams = {
       'fields':
-          '["name","item_code","item_name","item_group","stock_uom","description","shelf_life_in_days","warranty_period","image"]',
+          '["name","item_code","item_name","item_group","stock_uom","description","shelf_life_in_days","warranty_period","image","disabled"]',
       'limit_page_length': '*',
       'filters': jsonEncode(filters)
     };
@@ -362,11 +362,11 @@ class OrderitApiService {
     var list = [];
     var itemlist = <Product>[];
     filters.add(['Item', 'is_stock_item', '=', 1]);
-    filters.add(['Item', 'disabled', '=', 0]);
+    // filters.add(['Item', 'disabled', '=', 0]);
     var url = '/api/resource/Item';
     var queryParams = {
       'fields':
-          '["name","item_code","item_name","item_group","stock_uom","description","shelf_life_in_days","warranty_period","brand","image"]',
+          '["name","item_code","item_name","item_group","stock_uom","description","shelf_life_in_days","warranty_period","brand","image","disabled"]',
       'limit_page_length': '*',
       'filters': jsonEncode(filters)
     };

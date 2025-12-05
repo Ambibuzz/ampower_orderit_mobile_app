@@ -58,12 +58,12 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: "v2.3.0" # Replace with your desired tag name
-        release_name: "v2.3.0" # Replace with your desired release name
+        tag_name: "v2.3.1" # Replace with your desired tag name
+        release_name: "v2.3.1" # Replace with your desired release name
         body: |
           This release includes:
-          - made currency symbol dynamic
-          - added drawer menu
+          - fetched disabled items from api
+          - update gitignore
         draft: false
         prerelease: false
       env:
